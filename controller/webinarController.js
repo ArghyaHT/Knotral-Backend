@@ -145,22 +145,36 @@ export const getWebinarsBySlug = async (req, res, next) => {
 
 export const searchWebinarsByCategory = async (req, res, next) => {
   try {
-    const { category } = req.query;
+    const { category, page } = req.query;
 
-    if (!category) {
-      return res.status(400).json({
-        success: false,
-        message: "Category is required",
-      });
+    const currentPage = parseInt(page) || 1;
+    const limit = 6; // hardcoded limit
+    const skip = (currentPage - 1) * limit;
+
+    let webinars, totalItems;
+
+    if (category) {
+      // Fetch webinars by category
+      webinars = await searchWebinarsByCategoryService(category, { skip, limit });
+      totalItems = await searchWebinarsByCategoryService(category, { countOnly: true });
+    } else {
+      // No category provided → fetch all webinars with pagination
+      webinars = await geAllWebinarPaginationService({ skip, limit });
+      totalItems = await geAllWebinarPaginationService({ countOnly: true });
     }
 
-    const webinars = await searchWebinarsByCategoryService(category);
+    const totalPages = Math.ceil(totalItems / limit);
 
     return res.status(200).json({
       success: true,
       message: "Webinars fetched successfully",
-      count: webinars.length,
       response: webinars,
+      pagination: {
+        page: currentPage,
+        limit,
+        totalPages,
+        totalItems,
+      },
     });
   } catch (error) {
     next(error);

@@ -46,10 +46,24 @@ export const getWebinarBySlugService = async(slug) => {
     return webinars;
 }
 
-export const searchWebinarsByCategoryService = async (category) => {
-  const webinars = await Webinars.find({
-    category: { $regex: category, $options: "i" },
-  });
+export const searchWebinarsByCategoryService = async (category = "", options = {}) => {
+  const { skip = 0, limit = 0, countOnly = false } = options;
+
+  const query = category
+    ? { category: { $regex: category, $options: "i" } } // filter by category
+    : {}; // no category → all webinars
+
+  if (countOnly) {
+    // Return total count
+    const totalCount = await Webinars.countDocuments(query);
+    return totalCount;
+  }
+
+  // Fetch paginated webinars
+  const webinars = await Webinars.find(query)
+    .skip(skip)
+    .limit(limit)
+    .sort({ date: -1 }); // optional: sort by date descending
 
   return webinars;
 };
