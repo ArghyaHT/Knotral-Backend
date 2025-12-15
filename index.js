@@ -5,7 +5,7 @@ import http from "http"
 import dotenv from "dotenv";
 import connectDB from "./db/db.js";
 import webinarRoutes from "./routes/webinarRoutes.js"
-import { GlobalErrorHandler } from "./middlewares/GlobalErrorhandler.js";
+import { GlobalErrorHandler } from "./middlewares/GlobalErrorHandler.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
