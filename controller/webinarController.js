@@ -1,4 +1,4 @@
-import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, searchWebinarsByCategoryService } from "../services/webinarServices.js";
+import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getWebinarBySlugService, searchWebinarsByCategoryService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -86,6 +86,30 @@ export const getWebinarsById = async (req, res, next) => {
       response: webinar,
     });
   } catch (error) {
+    next(error);
+  }
+};
+
+export const getWebinarsBySlug = async (req, res, next) => {
+  try {
+    const { slug } = req.query; // or req.params
+
+    const webinar = await getWebinarBySlugService(slug);
+
+    if (!webinar) {
+      return res.status(400).json({
+        success: false,
+        message: "Webinar not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Webinar retrieved successfully",
+      response: webinar,
+    });
+  } catch (error) {
+    console.log(error)
     next(error);
   }
 };

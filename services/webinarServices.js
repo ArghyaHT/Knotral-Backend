@@ -21,6 +21,12 @@ export const geAllWebinarByIdService = async(id) => {
     return webinars;
 }
 
+export const getWebinarBySlugService = async(slug) => {
+    const webinars = await Webinars.findOne({slug: slug})
+
+    return webinars;
+}
+
 export const searchWebinarsByCategoryService = async (category) => {
   const webinars = await Webinars.find({
     category: { $regex: category, $options: "i" },

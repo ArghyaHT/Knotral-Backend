@@ -1,5 +1,5 @@
 import express from "express";
-import { createWebinar, filterWebinars, getAllWebinars, getWebinarsById, searchWebinarsByCategory, uploadWebinarLogo } from "../controller/webinarController.js";
+import { createWebinar, filterWebinars, getAllWebinars, getWebinarsById, getWebinarsBySlug, searchWebinarsByCategory, uploadWebinarLogo } from "../controller/webinarController.js";
 import { upload } from "../middlewares/Upload.js";
 
 const router = express.Router()
@@ -11,6 +11,9 @@ router.route("/upload-webinar-logo").post(upload.single("logo"), uploadWebinarLo
 router.route("/get-webinars").get(getAllWebinars)
 
 router.route("/get-webinar-by-id").post(getWebinarsById)
+
+router.get("/get-webinar-by-slug", getWebinarsBySlug);
+
 
 router.route("/get-webinars-by-category").get(searchWebinarsByCategory)
 
