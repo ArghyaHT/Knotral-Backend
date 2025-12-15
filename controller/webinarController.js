@@ -1,4 +1,4 @@
-import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getWebinarBySlugService, searchWebinarsByCategoryService } from "../services/webinarServices.js";
+import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarPaginationService, geAllWebinarService, getWebinarBySlugService, searchWebinarsByCategoryService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -73,6 +73,35 @@ export const getAllWebinars = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getAllWebinarsByPagination = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // default to page 1
+    const skip = (page - 1) * 6; // 6 is hardcoded in service
+
+    // Fetch webinars with pagination
+    const webinars = await geAllWebinarPaginationService({ skip });
+
+    // Get total count to calculate total pages
+    const totalWebinars = await geAllWebinarPaginationService({ countOnly: true });
+    const totalPages = Math.ceil(totalWebinars / 6);
+
+    return res.status(200).json({
+      success: true,
+      message: "Webinars retrieved successfully",
+      response: webinars,
+      pagination: {
+        page,
+        limit: 6,
+        totalPages,
+        totalItems: totalWebinars,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 export const getWebinarsById = async (req, res, next) => {
   try {

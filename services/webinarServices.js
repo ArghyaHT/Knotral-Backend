@@ -15,6 +15,25 @@ export const geAllWebinarService = async() => {
 
 }
 
+export const geAllWebinarPaginationService = async (options = {}) => {
+  const { skip = 0, countOnly = false } = options;
+  const limit = 6; // hardcoded limit
+
+  if (countOnly) {
+    // Return total count only
+    const totalCount = await Webinars.countDocuments({});
+    return totalCount;
+  }
+
+  // Fetch paginated webinars
+  const webinars = await Webinars.find({})
+    .skip(skip)
+    .limit(limit)
+    .sort({ date: -1 }); // optional: sort by date descending
+
+  return webinars;
+};
+
 export const geAllWebinarByIdService = async(id) => {
     const webinars = await Webinars.findById(id)
 
