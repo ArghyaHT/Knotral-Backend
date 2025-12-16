@@ -1,9 +1,9 @@
-import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarPaginationService, geAllWebinarService, getWebinarBySlugService, searchWebinarsByCategoryService } from "../services/webinarServices.js";
+import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getWebinarBySlugService, searchWebinarsByCategoryService, searchWebinarsWithFilterService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
-export const createWebinar = async(req, res, next) => {
-    try {
+export const createWebinar = async (req, res, next) => {
+  try {
     const webinar = await createWebinarService(req.body)
 
     return res.status(200).json({
@@ -12,8 +12,8 @@ export const createWebinar = async(req, res, next) => {
       response: webinar,
     });
   } catch (error) {
-        next(error);
-    }
+    next(error);
+  }
 }
 
 
@@ -28,7 +28,7 @@ export const uploadWebinarLogo = async (req, res, next) => {
 
     const webinar = await geAllWebinarByIdService(id);
     if (!webinar) {
-      return res.status(404).json({ success: false, message: "Webinar not found" });
+      return res.status(400).json({ success: false, message: "Webinar not found" });
     }
 
     // Delete old logo if exists
@@ -74,38 +74,119 @@ export const getAllWebinars = async (req, res, next) => {
   }
 };
 
+// export const getAllWebinarsByPagination = async (req, res, next) => {
+//   try {
+//     const page = parseInt(req.query.page) || 1; // default to page 1
+//     const skip = (page - 1) * 6; // 6 is hardcoded in service
+
+//     // Fetch webinars with pagination
+//     const webinars = await geAllWebinarPaginationService({ skip });
+
+//     // Get total count to calculate total pages
+//     const totalWebinars = await geAllWebinarPaginationService({ countOnly: true });
+//     const totalPages = Math.ceil(totalWebinars / 6);
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Webinars retrieved successfully",
+//       response: webinars,
+//       pagination: {
+//         page,
+//         limit: 6,
+//         totalPages,
+//         totalItems: totalWebinars,
+//       },
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 export const getAllWebinarsByPagination = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page) || 1; // default to page 1
-    const skip = (page - 1) * 6; // 6 is hardcoded in service
+    const {
+      page,
+      category,
+      type,
+      price,
+      search,
+    } = req.query;
 
-    // Fetch webinars with pagination
-    const webinars = await geAllWebinarPaginationService({ skip });
+    const currentPage = parseInt(page) || 1;
+    const limit = 6; // default limit
+    const skip = (currentPage - 1) * limit;
 
-    // Get total count to calculate total pages
-    const totalWebinars = await geAllWebinarPaginationService({ countOnly: true });
-    const totalPages = Math.ceil(totalWebinars / 6);
+    // Build filter object dynamically
+    let filter = {};
+
+    if (category) filter.category = category;
+
+    if (type) {
+      switch (type.toLowerCase()) {
+        case "live":
+          filter.isLive = true;
+          break;
+        case "certified":
+          filter.isCertified = true;
+          break;
+        case "ondemand":
+          filter.isOnDemand = true;
+          break;
+        default:
+          return res.status(400).json({
+            success: false,
+            message: "Invalid filter type",
+          });
+      }
+    }
+
+    // ✅ PRICE → isFree mapping
+    if (price) {
+      if (price === "free") {
+        filter.isFree = true;
+      } else if (price === "paid") {
+        filter.isFree = false;
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid price filter. Use 'free' or 'paid'",
+        });
+      }
+    }
+
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { organisedBy: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Fetch webinars with filter and pagination
+    const webinars = await searchWebinarsWithFilterService(filter, { skip, limit });
+
+    // Count total items with the same filter (for pagination)
+    const totalItems = await searchWebinarsWithFilterService(filter, { countOnly: true });
+    const totalPages = Math.ceil(totalItems / limit);
 
     return res.status(200).json({
       success: true,
       message: "Webinars retrieved successfully",
       response: webinars,
       pagination: {
-        page,
-        limit: 6,
+        page: currentPage,
+        limit,
         totalPages,
-        totalItems: totalWebinars,
+        totalItems,
       },
     });
   } catch (error) {
     next(error);
   }
-};
-
+}
 
 export const getWebinarsById = async (req, res, next) => {
   try {
-    const {_id} = req.body;
+    const { _id } = req.body;
 
     const webinar = await geAllWebinarByIdService(_id)
 
