@@ -1,4 +1,4 @@
-import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getWebinarBySlugService, searchWebinarsByCategoryService, searchWebinarsWithFilterService } from "../services/webinarServices.js";
+import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, searchWebinarsByCategoryService, searchWebinarsWithFilterService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -183,6 +183,46 @@ export const getAllWebinarsByPagination = async (req, res, next) => {
     next(error);
   }
 }
+
+
+export const getAllCertifiedWebinarsByPagination = async (req, res, next) => {
+  try {
+    const { page } = req.query;
+
+    const currentPage = parseInt(page) || 1;
+    const limit = 6;
+    const skip = (currentPage - 1) * limit;
+
+    // 🔹 Certified filter
+    const filter = { isCertified: true };
+
+   const webinars = await getCertifiedWebinarsPaginationService({
+      skip,
+      limit,
+    });
+
+   
+    const totalItems = await getCertifiedWebinarsPaginationService({
+      countOnly: true,
+    });
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return res.status(200).json({
+      success: true,
+      message: "Certified webinars retrieved successfully",
+      response: webinars,
+      pagination: {
+        page: currentPage,
+        limit,
+        totalPages,
+        totalItems,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getWebinarsById = async (req, res, next) => {
   try {

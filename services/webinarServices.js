@@ -15,24 +15,18 @@ export const geAllWebinarService = async() => {
 
 }
 
-// export const geAllWebinarPaginationService = async (options = {}) => {
-//   const { skip = 0, countOnly = false } = options;
-//   const limit = 6; // hardcoded limit
+export const getCertifiedWebinarsPaginationService = async ({ skip = 0, limit = 6, countOnly = false }) => {
+  const filter = { isCertified: true };
 
-//   if (countOnly) {
-//     // Return total count only
-//     const totalCount = await Webinars.countDocuments({});
-//     return totalCount;
-//   }
+  if (countOnly) {
+    return await Webinars.countDocuments(filter);
+  }
 
-//   // Fetch paginated webinars
-//   const webinars = await Webinars.find({})
-//     .skip(skip)
-//     .limit(limit)
-//     .sort({ date: -1 }); // optional: sort by date descending
-
-//   return webinars;
-// };
+  return await Webinars.find(filter)
+    .skip(skip)
+    .limit(limit)
+    .sort({ date: -1 });
+};
 
 export const searchWebinarsWithFilterService = async (filter = {}, options = {}) => {
   const { skip = 0, limit = 6, countOnly = false } = options;
