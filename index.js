@@ -5,6 +5,9 @@ import http from "http"
 import dotenv from "dotenv";
 import connectDB from "./db/db.js";
 import webinarRoutes from "./routes/webinarRoutes.js"
+import registrationRoutes from "./routes/registrationRoutes.js"
+
+
 import { GlobalErrorHandler } from "./middlewares/GlobalErrorHandler.js";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -72,6 +75,8 @@ app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/webinars", webinarRoutes)
+app.use("/api/registration", registrationRoutes)
+
 
 app.use(GlobalErrorHandler)
 
