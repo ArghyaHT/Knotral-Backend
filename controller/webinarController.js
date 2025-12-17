@@ -16,6 +16,48 @@ export const createWebinar = async (req, res, next) => {
   }
 }
 
+export const createBulkWebinars = async (req, res, next) => {
+  try {
+    const webinars = req.body;
+
+    if (!Array.isArray(webinars) || webinars.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Request body must be a non-empty array of webinars",
+      });
+    }
+
+    const created = [];
+    const failed = [];
+
+    for (let i = 0; i < webinars.length; i++) {
+      try {
+        // 🔥 reuse single webinar creation logic
+        const webinar = await createWebinarService(webinars[i]);
+        created.push(webinar);
+      } catch (err) {
+        failed.push({
+          index: i,
+          title: webinars[i]?.title || "Unknown",
+          error: err.message,
+        });
+      }
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: "Bulk webinar upload completed",
+      total: webinars.length,
+      created: created.length,
+      failed: failed.length,
+      response: created,
+      errors: failed,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 export const uploadWebinarLogo = async (req, res, next) => {
   try {
