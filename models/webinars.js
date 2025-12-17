@@ -38,6 +38,10 @@ const webinarsSchema = new mongoose.Schema(
         date: {
             type: Date,
         },
+        views: {
+            type: Number,
+            default: 0,
+        },
 
         startTime: {
             type: String,

@@ -1,5 +1,5 @@
 import express from "express";
-import { createWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getWebinarsById, getWebinarsBySlug, searchWebinarsByCategory, uploadWebinarLogo } from "../controller/webinarController.js";
+import { createWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, uploadWebinarLogo } from "../controller/webinarController.js";
 import { upload } from "../middlewares/Upload.js";
 
 const router = express.Router()
@@ -14,6 +14,7 @@ router.route("/get-limited-webinars").get(getAllWebinarsByPagination)
 
 router.route("/get-certified-webinars").get(getAllCertifiedWebinarsByPagination)
 
+router.put("/increment-views", incrementWebinarViews);
 
 
 router.route("/get-webinar-by-id").post(getWebinarsById)

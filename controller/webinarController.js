@@ -1,4 +1,4 @@
-import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, searchWebinarsByCategoryService, searchWebinarsWithFilterService } from "../services/webinarServices.js";
+import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -110,6 +110,7 @@ export const getAllWebinarsByPagination = async (req, res, next) => {
       type,
       price,
       search,
+      sort
     } = req.query;
 
     const currentPage = parseInt(page) || 1;
@@ -162,7 +163,7 @@ export const getAllWebinarsByPagination = async (req, res, next) => {
     }
 
     // Fetch webinars with filter and pagination
-    const webinars = await searchWebinarsWithFilterService(filter, { skip, limit });
+    const webinars = await searchWebinarsWithFilterService(filter, { skip, limit, sort });
 
     // Count total items with the same filter (for pagination)
     const totalItems = await searchWebinarsWithFilterService(filter, { countOnly: true });
@@ -348,6 +349,22 @@ export const filterWebinars = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+
+export const incrementWebinarViews = async (req, res, next) => {
+  try {
+    const { webinarId } = req.body;
+
+    const updatedWebinar = await incrementWebinarViewsService(webinarId);
+
+    res.status(200).json({
+      success: true,
+      response: updatedWebinar.views,
+    });
+  } catch (error) {
+    next(error); // will be handled by your error middleware
   }
 };
 
