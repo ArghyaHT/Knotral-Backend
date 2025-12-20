@@ -202,7 +202,7 @@ const webinarsSchema = new mongoose.Schema(
         bonus: {
             title: {
                 type: String,
-                required: true,
+                default: ""
             },
             description: {
                 type: String,
@@ -214,7 +214,8 @@ const webinarsSchema = new mongoose.Schema(
             default: "",
         },
         link: {
-            type: String
+            type: String,
+            default: ""
         }
     },
     { timestamps: true }
