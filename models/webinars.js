@@ -88,6 +88,9 @@ const webinarsSchema = new mongoose.Schema(
                 default: false,
             },
         },
+        meta: {
+            type: String
+        },
 
         features: [
             {
