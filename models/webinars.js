@@ -209,9 +209,13 @@ const webinarsSchema = new mongoose.Schema(
                 default: "",
             },
         },
-         link: {
-        type: String
-    }
+        mode: {
+            type: String,
+            default: "",
+        },
+        link: {
+            type: String
+        }
     },
     { timestamps: true }
 
