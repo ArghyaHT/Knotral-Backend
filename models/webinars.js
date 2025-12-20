@@ -98,6 +98,29 @@ const webinarsSchema = new mongoose.Schema(
             },
         ],
 
+        whoCanAttend: [
+            {
+                key: {
+                    type: String,
+                    enum: [
+                        "leaders",
+                        "teachers",
+                        "heads",
+                        "tuition_owners",
+                        "coaching_owners",
+                        "consultants",
+                    ],
+                    required: true,
+                    lowercase: true,
+                    trim: true,
+                },
+                title: {
+                    type: String,
+                    required: true,
+                },
+            },
+        ],
+
         trainer: [
             {
                 trainerImage: {
@@ -174,7 +197,21 @@ const webinarsSchema = new mongoose.Schema(
                     default: ""
                 }
             }
-        ]
+        ],
+
+        bonus: {
+            title: {
+                type: String,
+                required: true,
+            },
+            description: {
+                type: String,
+                default: "",
+            },
+        },
+         link: {
+        type: String
+    }
     },
     { timestamps: true }
 
