@@ -109,6 +109,7 @@ const webinarsSchema = new mongoose.Schema(
                         "tuition_owners",
                         "coaching_owners",
                         "consultants",
+                        "counsellors"
                     ],
                     required: true,
                     lowercase: true,
