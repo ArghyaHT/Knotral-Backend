@@ -100,6 +100,56 @@ export const uploadWebinarLogo = async (req, res, next) => {
   }
 };
 
+export const uploadWebinarSpeakerImage = async (req, res, next) => {
+  try {
+    const { webinarId, trainerId } = req.body;
+    const image = req.file?.path;
+
+    if (!image) {
+      return res.status(400).json({ success: false, message: "No logo uploaded" });
+    }
+
+    const webinar = await geAllWebinarByIdService(webinarId);
+    if (!webinar) {
+      return res.status(400).json({ success: false, message: "Webinar not found" });
+    }
+
+    const trainer = webinar.trainer.id(trainerId);
+
+
+     if (!trainer) {
+      return res.status(404).json({
+        success: false,
+        message: "Trainer not found"
+      });
+    }
+
+      // 🧹 Remove old image if exists
+    if (trainer.trainerImage?.public_id) {
+      await cloudinary.uploader.destroy(trainer.trainerImage.public_id);
+    }
+
+    const upload = await cloudinary.uploader.upload(image, {
+      folder: "webinars/trainers"
+    });
+
+    trainer.trainerImage = {
+      public_id: upload.public_id,
+      url: upload.secure_url
+    };
+
+    await webinar.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Image uploaded successfully",
+      response: trainer.trainerImage ,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 
 export const getAllWebinars = async (req, res, next) => {
@@ -407,6 +457,55 @@ export const incrementWebinarViews = async (req, res, next) => {
     });
   } catch (error) {
     next(error); // will be handled by your error middleware
+  }
+};
+
+
+export const addTrainerToWebinar = async (req, res, next) => {
+  try {
+    const { webinarId, trainerName, designation, worksAt, description } = req.body;
+    const trainerImagePath = req.file?.path;
+
+    if (!webinarId || !trainerName) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    const webinar = await geAllWebinarByIdService(webinarId);
+
+    if (!webinar) {
+      return res.status(400).json({ success: false, message: "Webinar not found" });
+    }
+
+    let trainerImage = {
+      public_id: "",
+      url: "https://res.cloudinary.com/dpynxkjfq/image/upload/v1720520065/default-avatar-icon-of-social-media-user-vector_wl5pm0.jpg"
+    };
+
+    if (trainerImagePath) {
+      const upload = await cloudinary.uploader.upload(trainerImagePath, {
+        folder: "webinars/trainers",
+      });
+      trainerImage = { public_id: upload.public_id, url: upload.secure_url };
+    }
+
+    webinar.trainer.push({
+      trainerName,
+      designation,
+      worksAt,
+      description,
+      trainerImage,
+    });
+
+    await webinar.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Trainer added successfully",
+      trainer: webinar.trainer,
+    });
+  } catch (error) {
+    console.log(error)
+    next(error);
   }
 };
 

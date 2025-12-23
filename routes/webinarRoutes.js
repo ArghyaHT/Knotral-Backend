@@ -1,5 +1,5 @@
 import express from "express";
-import { createBulkWebinars, createWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, uploadWebinarLogo } from "../controller/webinarController.js";
+import { addTrainerToWebinar, createBulkWebinars, createWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, uploadWebinarLogo, uploadWebinarSpeakerImage } from "../controller/webinarController.js";
 import { upload } from "../middlewares/Upload.js";
 
 const router = express.Router()
@@ -9,6 +9,12 @@ router.route("/create-webinar").post(createWebinar)
 router.post("/bulk-webinar-upload", createBulkWebinars);
 
 router.route("/upload-webinar-logo").post(upload.single("logo"), uploadWebinarLogo);
+
+router.route("/upload-webinar-logo").post(upload.single("logo"), uploadWebinarLogo);
+
+router.route("/upload-webinar-trainer-image").post(upload.single("image"), uploadWebinarSpeakerImage);
+
+router.post("/add-trainer", upload.single("trainerImage"), addTrainerToWebinar);
 
 router.route("/get-webinars").get(getAllWebinars)
 
