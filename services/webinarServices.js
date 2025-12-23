@@ -30,8 +30,6 @@ export const getCertifiedWebinarsPaginationService = async ({ skip = 0, limit = 
 export const searchWebinarsWithFilterService = async (filter = {}, options = {}) => {
   const { skip = 0, limit = 6, countOnly = false, sort } = options;
 
-  console.log(sort)
-
   if (countOnly) {
     // Return total count with filter
     const totalCount = await Webinars.countDocuments(filter);
