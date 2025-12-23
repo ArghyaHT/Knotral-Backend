@@ -45,7 +45,7 @@ export const searchWebinarsWithFilterService = async (filter = {}, options = {})
     case "dateOld":    sortObj = { date: 1 }; break;   // oldest first
     case "popular":    sortObj = { views: -1 }; break; // if you track views
     case "provider":   sortObj = { organisedBy: 1 }; break; // A-Z
-    default:           sortObj = { date: -1 }; break;  // default newest
+    default:           sortObj = { date: 1 }; break;  // default newest
   }
 
   // Fetch webinars with filter, pagination
