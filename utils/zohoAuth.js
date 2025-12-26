@@ -18,7 +18,7 @@ export const getZohoAccessToken = async () => {
       }
     );
 
-    console.log("Zoho Token Response:", data); // log full response
+    // console.log("Zoho Token Response:", data); // log full response
 
     if (!data.access_token) {
       throw new Error("No access token returned from Zoho");
