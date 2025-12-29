@@ -19,7 +19,8 @@ export const createZohoLead = async (req, res) => {
           City: req.body.City,
           Designation: req.body.Designation,
           Lead_Status: req.body.Lead_Status,
-          Lead_Source: req.body.Lead_Source
+          Lead_Source: req.body.Lead_Source,
+          Grade: req.body.Grade
         }
       ]
     };
