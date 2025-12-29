@@ -224,7 +224,16 @@ const webinarsSchema = new mongoose.Schema(
         registerFormSubheading: {
             type: String,
             default: ""
-        }
+        },
+
+        metaTitle: {
+            type: String,
+            default: ""
+        },
+        metaDescription: {
+            type: String,
+            default: ""
+        },
 
     },
     { timestamps: true }

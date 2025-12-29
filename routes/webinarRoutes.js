@@ -36,9 +36,9 @@ router.route("/get-webinars-by-category").get(searchWebinarsByCategory)
 router.route("/get-webinars-by-type").get(filterWebinars)
 
 
-// router.put("/update-subheading", async (req, res) => {
+// router.put("/update-meta", async (req, res) => {
 //   try {
-//     const { webinarId, registerFormSubheading } = req.body;
+//     const { webinarId, metaTitle, metaDescription } = req.body;
 
 //     // Validate inputs
 //     if (!webinarId) {
@@ -48,17 +48,17 @@ router.route("/get-webinars-by-type").get(filterWebinars)
 //       });
 //     }
 
-//     if (!registerFormSubheading) {
+//     if (!metaTitle && !metaDescription) {
 //       return res.status(400).json({
 //         success: false,
-//         message: "registerFormSubheading is required",
+//         message: "metaTitle or metaDescription is required",
 //       });
 //     }
 
 //     // Update entry
 //     const updatedWebinar = await Webinars.findByIdAndUpdate(
 //       webinarId,
-//       { registerFormSubheading },
+//       { metaTitle, metaDescription },
 //       { new: true }
 //     );
 
@@ -71,12 +71,12 @@ router.route("/get-webinars-by-type").get(filterWebinars)
 
 //     return res.status(200).json({
 //       success: true,
-//       message: "Subheading updated successfully",
+//       message: "Meta details updated successfully",
 //       data: updatedWebinar,
 //     });
 
 //   } catch (error) {
-//     console.error("Error updating webinar:", error);
+//     console.error("Error updating webinar meta:", error);
 //     return res.status(500).json({
 //       success: false,
 //       message: "Server error",
