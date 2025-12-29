@@ -20,7 +20,8 @@ export const createZohoLead = async (req, res) => {
           Designation: req.body.Designation,
           Lead_Status: req.body.Lead_Status,
           Lead_Source: req.body.Lead_Source,
-          Grade: req.body.Grade
+          Grade: req.body.Grade,
+          Adress: req.body.Address
         }
       ]
     };
