@@ -220,7 +220,12 @@ const webinarsSchema = new mongoose.Schema(
         link: {
             type: String,
             default: ""
+        },
+        registerFormSubheading: {
+            type: String,
+            default: ""
         }
+
     },
     { timestamps: true }
 
