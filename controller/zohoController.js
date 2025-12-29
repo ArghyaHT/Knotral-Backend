@@ -49,3 +49,51 @@ export const createZohoLead = async (req, res) => {
     });
   }
 };
+
+
+export const createZohoContact = async (req, res) => {
+  try {
+    const accessToken = await getZohoAccessToken();
+
+    const payload = {
+      data: [
+        {
+          First_Name: req.body.firstName,
+          Last_Name: req.body.lastName,
+          Email: req.body.email,
+          Mobile: req.body.phone,
+          FORM_NAME: "Contact Us",
+          Category: req.body.category,
+          Company: req.body.organization || "",
+          Subject: req.body.subject,
+          Description: req.body.message,
+          Lead_Source: "Website Contact Form"
+        }
+      ]
+    };
+
+    const response = await axios.post(
+      `${process.env.ZOHO_API_DOMAIN}/crm/v2/Leads`,
+      payload,
+      {
+        headers: {
+          Authorization: `Zoho-oauthtoken ${accessToken}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Contact request submitted successfully",
+      data: response.data
+    });
+
+  } catch (error) {
+    console.error("❌ Zoho Contact API Error:", error.response?.data || error);
+    return res.status(500).json({
+      success: false,
+      error: error.response?.data || "Zoho CRM error occurred"
+    });
+  }
+};
