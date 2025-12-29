@@ -55,7 +55,9 @@ cloudinary.config({
 
 const allowedOrigins = [
   "http://localhost:3000",
-  /\.netlify\.app$/ 
+  "https://training.knotral.com",
+  /\.netlify\.app$/,
+  ""
 ];
 
 // //Use Multiple Cors
@@ -91,5 +93,5 @@ app.get("/", (req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
