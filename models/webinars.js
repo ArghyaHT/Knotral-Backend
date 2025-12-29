@@ -40,7 +40,7 @@ const webinarsSchema = new mongoose.Schema(
         },
         views: {
             type: Number,
-            default: 0,
+            default: 10,
         },
 
         startTime: {
