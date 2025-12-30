@@ -4,7 +4,6 @@ import { getZohoAccessToken } from "../utils/zohoAuth.js";
 export const createZohoLead = async (req, res) => {
   try {
     const accessToken = await getZohoAccessToken();
-    console.log(accessToken)
 
     const payload = {
       data: [
