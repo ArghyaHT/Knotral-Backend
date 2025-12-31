@@ -7,6 +7,7 @@ import connectDB from "./db/db.js";
 import webinarRoutes from "./routes/webinarRoutes.js"
 import registrationRoutes from "./routes/registrationRoutes.js"
 import zohoRoutes from "./routes/zohoRoutes.js"
+import paymentRoutes from "./routes/paymentRoutes.js"
 
 
 import { GlobalErrorHandler } from "./middlewares/GlobalErrorHandler.js";
@@ -79,6 +80,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/webinars", webinarRoutes)
 app.use("/api/registration", registrationRoutes)
 app.use("/api/zoho", zohoRoutes)
+app.use("/api/payment", paymentRoutes)
 
 
 
