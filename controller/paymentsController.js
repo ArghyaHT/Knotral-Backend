@@ -1,4 +1,5 @@
 import Razorpay from "razorpay";
+import { createPaymentRecord, updatePaymentStatus } from "../services/paymentService.js";
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
