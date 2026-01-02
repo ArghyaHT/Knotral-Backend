@@ -6,7 +6,7 @@ router.route("/register").post(createZohoLead)
 
 router.route("/contact-us").post(createZohoContact)
 
-router.route("/soution-providers-form").post(createZohoSlutionProvidersForm)
+router.route("/solution-providers-form").post(createZohoSlutionProvidersForm)
 
 
 
