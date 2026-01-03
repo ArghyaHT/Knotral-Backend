@@ -1,5 +1,5 @@
 import express from "express";
-import { addTrainerToWebinar, createBulkWebinars, createWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, uploadWebinarLogo, uploadWebinarSpeakerImage } from "../controller/webinarController.js";
+import { addTrainerToWebinar, createBulkWebinars, createWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, uploadWebinarLogo, uploadWebinarOg, uploadWebinarSpeakerImage } from "../controller/webinarController.js";
 import { upload } from "../middlewares/Upload.js";
 import Webinars from "../models/webinars.js";
 
@@ -11,7 +11,8 @@ router.post("/bulk-webinar-upload", createBulkWebinars);
 
 router.route("/upload-webinar-logo").post(upload.single("logo"), uploadWebinarLogo);
 
-router.route("/upload-webinar-logo").post(upload.single("logo"), uploadWebinarLogo);
+router.route("/upload-webinar-og").post(upload.single("ogImage"), uploadWebinarOg);
+
 
 router.route("/upload-webinar-trainer-image").post(upload.single("image"), uploadWebinarSpeakerImage);
 

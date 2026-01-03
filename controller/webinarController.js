@@ -510,4 +510,48 @@ export const addTrainerToWebinar = async (req, res, next) => {
 };
 
 
+export const uploadWebinarOg = async (req, res, next) => {
+  try {
+    const { id } = req.body;
+    const ogPath = req.file?.path;
+
+    console.log(ogPath)
+
+    if (!ogPath) {
+      return res.status(400).json({ success: false, message: "No OG image uploaded" });
+    }
+
+    const webinar = await geAllWebinarByIdService(id);
+    if (!webinar) {
+      return res.status(400).json({ success: false, message: "Webinar not found" });
+    }
+
+    // Delete old OG image if exists
+    if (webinar.ogImage?.public_id) {
+      await cloudinary.uploader.destroy(webinar.ogImage.public_id);
+    }
+
+    // Upload new OG image to Cloudinary
+    const upload = await cloudinary.uploader.upload(ogPath, {
+      folder: "webinars/ogImages",
+    });
+
+    webinar.ogImage = {
+      public_id: upload.public_id,
+      url: upload.secure_url,
+    };
+
+    await webinar.save();
+
+    res.status(200).json({
+      success: true,
+      message: "OG image uploaded successfully",
+      response: webinar.ogImage,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 

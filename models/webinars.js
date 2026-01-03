@@ -234,8 +234,18 @@ const webinarsSchema = new mongoose.Schema(
             type: String,
             default: ""
         },
+         ogImage: {
+            public_id: {
+                type: String,
+                default: "",
+            },
+              url: {
+                type: String,
+                default: "",
+            },
 
     },
+},
     { timestamps: true }
 
 );
