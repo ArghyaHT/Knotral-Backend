@@ -6,24 +6,28 @@ export const createZohoLead = async (req, res) => {
     const accessToken = await getZohoAccessToken();
 
     const payload = {
-      data: [
+    data: [
         {
           Name: req.body.Name,
-          First_Name: req.body.First_Name,
-          Last_Name: req.body.Last_Name,
+          First_Name: req.body.First_Name || "",
+          Last_Name: req.body.Last_Name || "",
           Mobile: req.body.Mobile,
           Email: req.body.Email,
           FORM_NAME: req.body.FORM_NAME,
           Category: req.body.Category,
-          Company: req.body.Company,
-          City: req.body.City,
-          Designation: req.body.Designation,
+          Company: req.body.Company || "",
+          City: req.body.City || "",
+          Designation: req.body.Designation || "",
           Lead_Status: req.body.Lead_Status,
           Lead_Source: req.body.Lead_Source,
-          Grade: req.body.Grade,
-          Address_of_Firm: req.body.Address,
-          Landmark: req.body.Landmark,
-          Region_To_Operate: req.body.Region_To_Operate
+          Grade: req.body.Grade || "",
+          Student_Name: req.body.Student_Name || "",
+          Student_Age: req.body.Student_Age || "",
+          School_Board: req.body.School_Board || "",
+          Preferred_Program_Level: req.body.Preferred_Program_Level || "",
+          Region_To_Operate: req.body.Region_To_Operate || "",
+          Address_of_Firm: req.body.Address || "",
+          Landmark: req.body.Landmark || "",
         }
       ]
     };
