@@ -108,3 +108,23 @@ export const incrementWebinarViewsService = async (webinarId) => {
 
   return updatedWebinar;
 };
+
+
+export const updateWebinarService = async (webinarId, updateData) => {
+  const webinar = await Webinars.findByIdAndUpdate(
+    webinarId,
+    {
+      $set: updateData,   // replaces provided fields fully
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (!webinar) {
+    throw new Error("Webinar not found");
+  }
+
+  return webinar;
+};

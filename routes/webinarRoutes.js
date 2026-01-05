@@ -1,11 +1,13 @@
 import express from "express";
-import { addTrainerToWebinar, createBulkWebinars, createWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, uploadWebinarLogo, uploadWebinarOg, uploadWebinarSpeakerImage } from "../controller/webinarController.js";
+import { addTrainerToWebinar, createBulkWebinars, createWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, updateWebinar, uploadWebinarLogo, uploadWebinarOg, uploadWebinarSpeakerImage } from "../controller/webinarController.js";
 import { upload } from "../middlewares/Upload.js";
 import Webinars from "../models/webinars.js";
 
 const router = express.Router()
 
 router.route("/create-webinar").post(createWebinar)
+
+router.route("/update-webinar").put(updateWebinar)
 
 router.post("/bulk-webinar-upload", createBulkWebinars);
 

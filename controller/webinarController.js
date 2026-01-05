@@ -1,4 +1,4 @@
-import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService } from "../services/webinarServices.js";
+import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, updateWebinarService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -553,5 +553,21 @@ export const uploadWebinarOg = async (req, res, next) => {
   }
 };
 
+
+export const updateWebinar = async (req, res, next) => {
+  try {
+    const { webinarId } = req.body;
+
+    const webinar = await updateWebinarService(webinarId, req.body);
+
+    return res.status(200).json({
+      success: true,
+      message: "Webinar updated successfully",
+      response: webinar,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 
