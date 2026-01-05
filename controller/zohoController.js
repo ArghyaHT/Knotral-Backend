@@ -8,6 +8,7 @@ export const createZohoLead = async (req, res) => {
     const payload = {
       data: [
         {
+          Name: req.body.Name,
           First_Name: req.body.First_Name,
           Last_Name: req.body.Last_Name,
           Mobile: req.body.Mobile,
