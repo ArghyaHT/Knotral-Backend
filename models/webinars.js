@@ -76,6 +76,10 @@ const webinarsSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        isStopped: {
+            type: Boolean,
+            default: false
+        },
 
         /** 🔽 ACTION CONTROLS (Start Program / Enroll) */
         actions: {
@@ -234,18 +238,31 @@ const webinarsSchema = new mongoose.Schema(
             type: String,
             default: ""
         },
-         ogImage: {
+        ogImage: {
             public_id: {
                 type: String,
                 default: "",
             },
-              url: {
+            url: {
                 type: String,
                 default: "",
             },
 
+        },
+        utm_source: {
+            type: String,
+            default: ""
+        },
+        utm_medium: {
+            type: String,
+            default: ""
+        },
+        utm_campaign: {
+            type: String,
+            default: ""
+        }
+
     },
-},
     { timestamps: true }
 
 );

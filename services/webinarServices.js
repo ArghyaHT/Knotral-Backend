@@ -1,16 +1,16 @@
 import Webinars from "../models/webinars.js"
 
-export const createWebinarService = async(data) => {
-    const webinar = await Webinars.create(data)
+export const createWebinarService = async (data) => {
+  const webinar = await Webinars.create(data)
 
-    return webinar;
+  return webinar;
 
 }
 
-export const geAllWebinarService = async() => {
-    const webinars = await Webinars.find({})
+export const geAllWebinarService = async () => {
+  const webinars = await Webinars.find({})
 
-    return webinars;
+  return webinars;
 
 }
 
@@ -36,14 +36,14 @@ export const searchWebinarsWithFilterService = async (filter = {}, options = {})
     return totalCount;
   }
 
-   // Define sort object
+  // Define sort object
   let sortObj = {};
   switch (sort) {
-    case "dateNew":    sortObj = { date: -1 }; break;  // newest first
-    case "dateOld":    sortObj = { date: 1 }; break;   // oldest first
-    case "popular":    sortObj = { views: -1 }; break; // if you track views
-    case "provider":   sortObj = { organisedBy: 1 }; break; // A-Z
-    default:           sortObj = { date: 1 }; break;  // default oldest
+    case "dateNew": sortObj = { date: -1 }; break;  // newest first
+    case "dateOld": sortObj = { date: 1 }; break;   // oldest first
+    case "popular": sortObj = { views: -1 }; break; // if you track views
+    case "provider": sortObj = { organisedBy: 1 }; break; // A-Z
+    default: sortObj = { date: 1 }; break;  // default oldest
   }
 
   // Fetch webinars with filter, pagination
@@ -55,16 +55,16 @@ export const searchWebinarsWithFilterService = async (filter = {}, options = {})
   return webinars;
 };
 
-export const geAllWebinarByIdService = async(id) => {
-    const webinars = await Webinars.findById(id)
+export const geAllWebinarByIdService = async (id) => {
+  const webinars = await Webinars.findById(id)
 
-    return webinars;
+  return webinars;
 }
 
-export const getWebinarBySlugService = async(slug) => {
-    const webinars = await Webinars.findOne({slug: slug})
+export const getWebinarBySlugService = async (slug) => {
+  const webinars = await Webinars.findOne({ slug: slug })
 
-    return webinars;
+  return webinars;
 }
 
 export const searchWebinarsByCategoryService = async (category = "", options = {}) => {
@@ -127,4 +127,23 @@ export const updateWebinarService = async (webinarId, updateData) => {
   }
 
   return webinar;
+};
+
+
+export const updateWebinarUtmService = async (webinarId, utmData) => {
+
+  // Remove undefined values (important for partial updates)
+  const updateData = Object.fromEntries(
+    Object.entries(utmData).filter(([_, value]) => value !== undefined)
+  );
+  return await Webinars.findByIdAndUpdate(
+    webinarId,
+    {
+      $set: updateData,
+    },
+    {
+      new: true,
+      runValidators: true
+    }
+  );
 };
