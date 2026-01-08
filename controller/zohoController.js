@@ -31,7 +31,7 @@ export const createZohoLead = async (req, res) => {
           // ✅ UTM fields
           utm_source: req.body.utm_source || "",
           utm_medium: req.body.utm_medium || "",
-          utm_campaign: req.bdoy.utm_campaign || "",
+          utm_campaign: req.body.utm_campaign || "",
         }
       ]
     };
