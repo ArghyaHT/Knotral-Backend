@@ -6,7 +6,7 @@ export const createZohoLead = async (req, res) => {
     const accessToken = await getZohoAccessToken();
 
     const payload = {
-    data: [
+      data: [
         {
           First_Name: req.body.First_Name || "",
           Last_Name: req.body.Last_Name || "",
@@ -27,6 +27,11 @@ export const createZohoLead = async (req, res) => {
           Region_Zone: req.body.Region_To_Operate || "",
           Address_of_Firm: req.body.Address || "",
           Landmark: req.body.Landmark || "",
+
+          // ✅ UTM fields
+          utm_source: req.body.utm_source || "",
+          utm_medium: req.body.utm_medium || "",
+          utm_campaign: req.bdoy.utm_campaign || "",
         }
       ]
     };
@@ -127,13 +132,13 @@ export const createZohoSlutionProvidersForm = async (req, res) => {
         }
       ]
 
-        //  Name: "",
-        // Email: "",
-        // Mobile: "",
-        // Designation: "",
-        // FORM_NAME: "Solution Providers Landing Page",
-        // Solution_Type: "",
-        // Target_Audience: ""
+      //  Name: "",
+      // Email: "",
+      // Mobile: "",
+      // Designation: "",
+      // FORM_NAME: "Solution Providers Landing Page",
+      // Solution_Type: "",
+      // Target_Audience: ""
     };
 
     const response = await axios.post(
