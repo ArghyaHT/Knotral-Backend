@@ -147,3 +147,17 @@ export const updateWebinarUtmService = async (webinarId, utmData) => {
     }
   );
 };
+
+
+export const updateWebinarSchemaService = async(webinarId, schemaMarkup) => {
+   const webinar = await Webinars.findByIdAndUpdate(
+      webinarId,
+      {
+        $set: {
+          schemaMarkup,
+        },
+      },
+      { new: true }
+    );
+    return webinar
+}

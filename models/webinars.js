@@ -260,7 +260,11 @@ const webinarsSchema = new mongoose.Schema(
         utm_campaign: {
             type: String,
             default: ""
-        }
+        },
+        schemaMarkup: {
+            type: mongoose.Schema.Types.Mixed,
+            default: {},
+        },
 
     },
     { timestamps: true }

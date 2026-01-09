@@ -1,4 +1,4 @@
-import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
+import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, updateWebinarSchemaService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -571,6 +571,44 @@ export const updateWebinarUtm = async (req, res, next) => {
       success: true,
       message: "UTM details updated successfully",
       response: webinar,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const updateWebinarSchema = async (req, res, next) => {
+  try {
+    const { webinarId, schemaMarkup } = req.body;
+
+    if (!webinarId) {
+      return res.status(400).json({
+        success: false,
+        message: "Webinar ID is required",
+      });
+    }
+
+    if (!schemaMarkup || typeof schemaMarkup !== "object") {
+      return res.status(400).json({
+        success: false,
+        message: "Valid schemaMarkup object is required",
+      });
+    }
+
+    const webinar = await updateWebinarSchemaService(webinarId, schemaMarkup)
+
+    if (!webinar) {
+      return res.status(404).json({
+        success: false,
+        message: "Webinar not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Schema markup updated successfully",
+      response: webinar.schemaMarkup,
     });
   } catch (error) {
     next(error);
