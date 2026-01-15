@@ -9,6 +9,4 @@ router.route("/contact-us").post(createZohoContact)
 router.route("/solution-providers-form").post(createZohoSlutionProvidersForm)
 
 
-
-
 export default router;
