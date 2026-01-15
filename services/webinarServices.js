@@ -8,7 +8,7 @@ export const createWebinarService = async (data) => {
 }
 
 export const geAllWebinarService = async () => {
-  const webinars = await Webinars.find({isStopped: false})
+  const webinars = await Webinars.find({})
 
   return webinars;
 
