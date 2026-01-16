@@ -36,7 +36,7 @@ export const createZohoLead = async (req, res) => {
       ]
     };
 
-    // console.log("ZOHO PAYLOAD", payload)
+    console.log("ZOHO PAYLOAD", payload)
 
     const response = await axios.post(
       `${process.env.ZOHO_API_DOMAIN}/crm/v2/Leads`,
