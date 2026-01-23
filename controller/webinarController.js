@@ -1,4 +1,4 @@
-import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, updateWebinarSchemaService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
+import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, updateWebinarBenefitsService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -580,7 +580,9 @@ export const updateWebinarUtm = async (req, res, next) => {
 
 export const updateWebinarSchema = async (req, res, next) => {
   try {
-    const { webinarId, schemaMarkup } = req.body;
+    const { webinarId, teachersBenifits,
+      schoolBenifits,
+      resellerBenifits } = req.body;
 
     if (!webinarId) {
       return res.status(400).json({
@@ -589,14 +591,8 @@ export const updateWebinarSchema = async (req, res, next) => {
       });
     }
 
-    if (!schemaMarkup || typeof schemaMarkup !== "object") {
-      return res.status(400).json({
-        success: false,
-        message: "Valid schemaMarkup object is required",
-      });
-    }
 
-    const webinar = await updateWebinarSchemaService(webinarId, schemaMarkup)
+    const webinar = await updateWebinarBenefitsService(webinarId, teachersBenifits, schoolBenifits, resellerBenifits)
 
     if (!webinar) {
       return res.status(404).json({
@@ -607,8 +603,8 @@ export const updateWebinarSchema = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: "Schema markup updated successfully",
-      response: webinar.schemaMarkup,
+      message: "Training benifits updated successfully",
+      response: webinar,
     });
   } catch (error) {
     next(error);

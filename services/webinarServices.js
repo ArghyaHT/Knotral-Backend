@@ -149,15 +149,25 @@ export const updateWebinarUtmService = async (webinarId, utmData) => {
 };
 
 
-export const updateWebinarSchemaService = async(webinarId, schemaMarkup) => {
-   const webinar = await Webinars.findByIdAndUpdate(
-      webinarId,
-      {
-        $set: {
-          schemaMarkup,
-        },
-      },
-      { new: true }
-    );
-    return webinar
-}
+export const updateWebinarBenefitsService = async (
+  webinarId,
+  teachersBenifits,
+  schoolBenifits,
+  resellerBenifits
+) => {
+  const updatePayload = {};
+
+  if (teachersBenifits) updatePayload.teachersBenifits = teachersBenifits;
+  if (schoolBenifits) updatePayload.schoolBenifits = schoolBenifits;
+  if (resellerBenifits) updatePayload.resellerBenifits = resellerBenifits;
+
+  return await Webinars.findByIdAndUpdate(
+    webinarId,
+    updatePayload,
+    {
+      new: true,
+      runValidators: true
+    }
+  );
+};
+

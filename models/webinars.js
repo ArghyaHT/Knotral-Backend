@@ -190,6 +190,45 @@ const webinarsSchema = new mongoose.Schema(
             ],
         },
 
+        teachersBenifits: {
+            features: [
+                {
+                    type: String,
+                },
+            ],
+            whyNeeded: [
+                {
+                    type: String
+                }
+            ]
+        },
+
+         schoolBenifits: {
+            features: [
+                {
+                    type: String,
+                },
+            ],
+            whyNeeded: [
+                {
+                    type: String
+                }
+            ]
+        },
+
+          resellerBenifits: {
+            features: [
+                {
+                    type: String,
+                },
+            ],
+            whyNeeded: [
+                {
+                    type: String
+                }
+            ]
+        },
+
         modules: [
             {
                 moduleTitle: {
@@ -265,6 +304,21 @@ const webinarsSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.Mixed,
             default: {},
         },
+
+        pastSessions: [
+            {
+            youtubeId: {
+                type: String,
+                default: ""
+            },
+            title: {
+                type: String,
+                default: ""
+            }
+        }
+        ]
+
+
 
     },
     { timestamps: true }
