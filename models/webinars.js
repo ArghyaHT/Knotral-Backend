@@ -203,7 +203,7 @@ const webinarsSchema = new mongoose.Schema(
             ]
         },
 
-         schoolBenifits: {
+        schoolBenifits: {
             features: [
                 {
                     type: String,
@@ -216,7 +216,7 @@ const webinarsSchema = new mongoose.Schema(
             ]
         },
 
-          resellerBenifits: {
+        resellerBenifits: {
             features: [
                 {
                     type: String,
@@ -307,18 +307,19 @@ const webinarsSchema = new mongoose.Schema(
 
         pastSessions: [
             {
-            youtubeId: {
-                type: String,
-                default: ""
-            },
-            title: {
-                type: String,
-                default: ""
+                youtubeId: {
+                    type: String,
+                    default: ""
+                },
+                title: {
+                    type: String,
+                    default: ""
+                },
+                date: {
+                    type: Date,
+                }
             }
-        }
         ]
-
-
 
     },
     { timestamps: true }

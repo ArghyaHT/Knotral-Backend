@@ -1,4 +1,4 @@
-import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, updateWebinarBenefitsService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
+import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, getYoutubeVideoId, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, updateWebinarBenefitsService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -611,4 +611,52 @@ export const updateWebinarSchema = async (req, res, next) => {
   }
 };
 
+
+
+export const addPastSession = async (req, res) => {
+  try {
+    const { webinarId, youtubeUrl, title, date } = req.body;
+
+    if (!youtubeUrl || !title) {
+      return res.status(400).json({
+        success: false,
+        message: "YouTube URL and title are required",
+      });
+    }
+
+    const youtubeId = getYoutubeVideoId(youtubeUrl);
+
+    if (!youtubeId) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid YouTube URL",
+      });
+    }
+
+    const webinar = await geAllWebinarByIdService(webinarId);
+
+    if (!webinar) {
+      return res.status(404).json({
+        success: false,
+        message: "Webinar not found",
+      });
+    }
+
+    webinar.pastSessions.push({
+      youtubeId,
+      title,
+      date: date ? new Date(date) : new Date(),
+    });
+
+    await webinar.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Past session added successfully",
+      response: webinar.pastSessions,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
