@@ -1,5 +1,5 @@
 import express from "express";
-import { addPastSession, addTrainerToWebinar, createBulkWebinars, createWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, updateWebinar, updateWebinarSchema, updateWebinarUtm, uploadWebinarLogo, uploadWebinarOg, uploadWebinarSpeakerImage } from "../controller/webinarController.js";
+import { addPastSession, addTrainerToWebinar, createBulkWebinars, createWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, stopWebinar, updateWebinar, updateWebinarSchema, updateWebinarUtm, uploadWebinarLogo, uploadWebinarOg, uploadWebinarSpeakerImage } from "../controller/webinarController.js";
 import { upload } from "../middlewares/Upload.js";
 import Webinars from "../models/webinars.js";
 
@@ -43,6 +43,9 @@ router.route("/update-webinar-utm").put(updateWebinarUtm)
 router.route("/update-webinar-schema").put(updateWebinarSchema)
 
 router.route("/upload-past-sessions").put(addPastSession)
+
+router.route("/stop-webinar").post(stopWebinar)
+
 
 // router.put("/update-meta", async (req, res) => {
 //   try {

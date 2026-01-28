@@ -1,4 +1,4 @@
-import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, getYoutubeVideoId, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, updateWebinarBenefitsService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
+import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, getYoutubeVideoId, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, stopWebinarService, updateWebinarBenefitsService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -613,7 +613,7 @@ export const updateWebinarSchema = async (req, res, next) => {
 
 
 
-export const addPastSession = async (req, res) => {
+export const addPastSession = async (req, res, next) => {
   try {
     const { webinarId, youtubeUrl, title, date } = req.body;
 
@@ -659,4 +659,28 @@ export const addPastSession = async (req, res) => {
     next(error);
   }
 };
+
+export const stopWebinar = async(req, res, next) => {
+ try {
+    const { webinarId } = req.body;
+
+    const webinar = await stopWebinarService(webinarId);
+
+    if (!webinar) {
+      return res.status(400).json({
+        success: false,
+        message: "Webinar not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Campaign stopped successfully",
+      response: webinar,
+    });
+  }
+  catch (error) {
+    next(error);
+  }
+}
 
