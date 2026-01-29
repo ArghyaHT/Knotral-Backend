@@ -209,11 +209,6 @@ const webinarsSchema = new mongoose.Schema(
                     type: String,
                 },
             ],
-            whyNeeded: [
-                {
-                    type: String
-                }
-            ]
         },
 
         resellerBenifits: {
@@ -222,11 +217,6 @@ const webinarsSchema = new mongoose.Schema(
                     type: String,
                 },
             ],
-            whyNeeded: [
-                {
-                    type: String
-                }
-            ]
         },
 
         modules: [
