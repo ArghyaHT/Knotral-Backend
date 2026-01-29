@@ -200,3 +200,18 @@ export const stopWebinarService = async (webinarId) => {
   return webinar;
 };
 
+
+export const deleteWebinarService = async (webinarId) => {
+    if (!webinarId) {
+        throw new Error("Webinar ID is required");
+    }
+
+    const deletedWebinar = await Webinars.findByIdAndDelete(webinarId);
+
+    if (!deletedWebinar) {
+        throw new Error("Webinar not found");
+    }
+
+    return deletedWebinar;
+};
+

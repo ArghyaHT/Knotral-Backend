@@ -1,4 +1,5 @@
-import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, getYoutubeVideoId, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, stopWebinarService, updateWebinarBenefitsService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
+import { response } from "express";
+import { createWebinarService, deleteWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, getYoutubeVideoId, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, stopWebinarService, updateWebinarBenefitsService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -684,3 +685,25 @@ export const stopWebinar = async(req, res, next) => {
   }
 }
 
+export const deleteWebinar = async (req, res, next) => {
+    try {
+        const { webinarId } = req.body;
+
+        if (!webinarId) {
+            return res.status(400).json({
+                success: false,
+                message: "webinarId is required",
+            });
+        }
+
+       const deletedWebinar = await deleteWebinarService(webinarId);
+
+        res.status(200).json({
+            success: true,
+            message: "Webinar deleted successfully",
+            response: deletedWebinar
+        });
+    } catch (error) {
+        next(error);
+    }
+};
