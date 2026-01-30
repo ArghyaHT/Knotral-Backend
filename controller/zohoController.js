@@ -27,6 +27,7 @@ export const createZohoLead = async (req, res) => {
           Region_Zone: req.body.Region_To_Operate || "",
           Address_of_Firm: req.body.Address || "",
           Landmark: req.body.Landmark || "",
+          Webinar_Date_TIme: req.body.Webinar_Date_TIme || "",
 
           // ✅ UTM fields
           utm_source: req.body.utm_source || "",
