@@ -316,23 +316,23 @@ const webinarsSchema = new mongoose.Schema(
 
 );
 
-/* 🔥 AUTO-GENERATE SLUG FROM TITLE */
-webinarsSchema.pre("save", async function () {
-    if (!this.isModified("title")) return;
+// /* 🔥 AUTO-GENERATE SLUG FROM TITLE */
+// webinarsSchema.pre("save", async function () {
+//     if (!this.isModified("title")) return;
 
-    let slug = slugify(this.title, {
-        lower: true,
-        strict: true,
-    });
+//     let slug = slugify(this.title, {
+//         lower: true,
+//         strict: true,
+//     });
 
-    // Ensure slug uniqueness
-    const existing = await this.constructor.findOne({ slug });
-    if (existing) {
-        slug = `${slug}-${Date.now()}`;
-    }
+//     // Ensure slug uniqueness
+//     const existing = await this.constructor.findOne({ slug });
+//     if (existing) {
+//         slug = `${slug}-${Date.now()}`;
+//     }
 
-    this.slug = slug;
-});
+//     this.slug = slug;
+// });
 
 
 const Webinars = mongoose.model("Webinars", webinarsSchema);
