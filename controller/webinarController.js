@@ -620,26 +620,16 @@ export const updateWebinarSchema = async (req, res, next) => {
 
 export const addPastSession = async (req, res, next) => {
   try {
-    const { webinarId, youtubeUrl, title, date } = req.body;
+    const { webinarId, pastSessions } = req.body;
 
-    if (!youtubeUrl || !title) {
+    if (!webinarId || !pastSessions || !Array.isArray(pastSessions) || pastSessions.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "YouTube URL and title are required",
-      });
-    }
-
-    const youtubeId = getYoutubeVideoId(youtubeUrl);
-
-    if (!youtubeId) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid YouTube URL",
+        message: "Webinar ID and pastSessions array are required",
       });
     }
 
     const webinar = await geAllWebinarByIdService(webinarId);
-
     if (!webinar) {
       return res.status(404).json({
         success: false,
@@ -647,20 +637,42 @@ export const addPastSession = async (req, res, next) => {
       });
     }
 
-    webinar.pastSessions.push({
-      youtubeId,
-      title,
-      date: date ? new Date(date) : new Date(),
-    });
+    // Loop through each past session and validate
+    for (let session of pastSessions) {
+      const { title, youtubeUrl, date } = session;
+
+      if (!title || !youtubeUrl) {
+        return res.status(400).json({
+          success: false,
+          message: "Each session must have a title and YouTube URL",
+        });
+      }
+
+      const youtubeId = getYoutubeVideoId(youtubeUrl);
+      if (!youtubeId) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid YouTube URL for session: ${title}`,
+        });
+      }
+
+      webinar.pastSessions.push({
+        title,
+        youtubeUrl,
+        youtubeId,
+        date: date ? new Date(date) : new Date(),
+      });
+    }
 
     await webinar.save();
 
     return res.status(200).json({
       success: true,
-      message: "Past session added successfully",
-      response: webinar.pastSessions,
+      message: "Past sessions added successfully",
+      pastSessions: webinar.pastSessions,
     });
   } catch (error) {
+    console.error("Add Past Sessions Error:", error);
     next(error);
   }
 };
