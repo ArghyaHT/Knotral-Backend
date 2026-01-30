@@ -622,7 +622,7 @@ export const addPastSession = async (req, res, next) => {
   try {
     const { webinarId, pastSessions } = req.body;
 
-    if (!webinarId || !pastSessions || !Array.isArray(pastSessions) || pastSessions.length === 0) {
+    if (!webinarId || !Array.isArray(pastSessions)) {
       return res.status(400).json({
         success: false,
         message: "Webinar ID and pastSessions array are required",
@@ -630,6 +630,7 @@ export const addPastSession = async (req, res, next) => {
     }
 
     const webinar = await geAllWebinarByIdService(webinarId);
+
     if (!webinar) {
       return res.status(404).json({
         success: false,
@@ -637,45 +638,47 @@ export const addPastSession = async (req, res, next) => {
       });
     }
 
-    // Loop through each past session and validate
-    for (let session of pastSessions) {
+    /* ---------------- VALIDATE & TRANSFORM ---------------- */
+    const updatedPastSessions = pastSessions.map((session, index) => {
       const { title, youtubeUrl, date } = session;
 
       if (!title || !youtubeUrl) {
-        return res.status(400).json({
-          success: false,
-          message: "Each session must have a title and YouTube URL",
-        });
+        throw new Error(`Title and YouTube URL are required for session ${index + 1}`);
       }
 
       const youtubeId = getYoutubeVideoId(youtubeUrl);
+
       if (!youtubeId) {
-        return res.status(400).json({
-          success: false,
-          message: `Invalid YouTube URL for session: ${title}`,
-        });
+        throw new Error(`Invalid YouTube URL for session: ${title}`);
       }
 
-      webinar.pastSessions.push({
+      return {
         title,
-        youtubeUrl,
-        youtubeId,
+        youtubeId,                 // store only ID
         date: date ? new Date(date) : new Date(),
-      });
-    }
+      };
+    });
+
+    /* ---------------- REPLACE ARRAY (NOT PUSH) ---------------- */
+    webinar.pastSessions = updatedPastSessions;
 
     await webinar.save();
 
     return res.status(200).json({
       success: true,
-      message: "Past sessions added successfully",
+      message: "Past sessions updated successfully",
       pastSessions: webinar.pastSessions,
     });
+
   } catch (error) {
     console.error("Add Past Sessions Error:", error);
-    next(error);
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Something went wrong",
+    });
   }
 };
+
 
 export const stopWebinar = async(req, res, next) => {
  try {
