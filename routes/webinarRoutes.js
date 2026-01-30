@@ -16,7 +16,7 @@ router.route("/upload-webinar-logo").post(upload.single("logo"), uploadWebinarLo
 router.route("/upload-webinar-og").post(upload.single("ogImage"), uploadWebinarOg);
 
 
-router.route("/update-webinar-trainer-image").post(upload.single("image"), updateWebinarSpeaker);
+router.route("/update-trainer").post(upload.single("image"), updateWebinarSpeaker);
 
 router.post("/add-trainer", upload.single("trainerImage"), addTrainerToWebinar);
 
