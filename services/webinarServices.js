@@ -182,3 +182,36 @@ export const getYoutubeVideoId = (url = "") => {
   return match ? match[1] : "";
 };
 
+
+export const stopWebinarService = async (webinarId) => {
+  const webinar = await Webinars.findByIdAndUpdate(
+    webinarId,
+    {
+      $set: {
+        isStopped: true,
+        isLive: false,
+        "actions.canStartProgram": false,
+        "actions.canEnroll": false,
+      },
+    },
+    { new: true }
+  );
+
+  return webinar;
+};
+
+
+export const deleteWebinarService = async (webinarId) => {
+    if (!webinarId) {
+        throw new Error("Webinar ID is required");
+    }
+
+    const deletedWebinar = await Webinars.findByIdAndDelete(webinarId);
+
+    if (!deletedWebinar) {
+        throw new Error("Webinar not found");
+    }
+
+    return deletedWebinar;
+};
+

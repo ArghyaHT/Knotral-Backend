@@ -1,4 +1,5 @@
-import { createWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, getYoutubeVideoId, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, updateWebinarBenefitsService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
+import { response } from "express";
+import { createWebinarService, deleteWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, getYoutubeVideoId, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, stopWebinarService, updateWebinarBenefitsService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -100,50 +101,54 @@ export const uploadWebinarLogo = async (req, res, next) => {
   }
 };
 
-export const uploadWebinarSpeakerImage = async (req, res, next) => {
+export const updateWebinarSpeaker = async (req, res, next) => {
   try {
-    const { webinarId, trainerId } = req.body;
-    const image = req.file?.path;
+    const { webinarId, trainerName, designation, worksAt, description, trainerId } = req.body;
+    const image = req.file?.path; // multer should be applied before this
 
-    if (!image) {
-      return res.status(400).json({ success: false, message: "No logo uploaded" });
+    if (!webinarId || !trainerId) {
+      return res.status(400).json({ success: false, message: "Webinar ID and Trainer ID are required" });
     }
 
     const webinar = await geAllWebinarByIdService(webinarId);
     if (!webinar) {
-      return res.status(400).json({ success: false, message: "Webinar not found" });
+      return res.status(404).json({ success: false, message: "Webinar not found" });
     }
 
-    const trainer = webinar.trainer.id(trainerId);
+    const trainer = webinar.trainer.id(trainerId); // subdocument method
+    if (!trainer) {
+      return res.status(404).json({ success: false, message: "Trainer not found" });
+    }
 
+    // Update text fields if provided
+    if (trainerName) trainer.trainerName = trainerName;
+    if (designation) trainer.designation = designation;
+    if (worksAt) trainer.worksAt = worksAt;
+    if (description) trainer.description = description;
 
-     if (!trainer) {
-      return res.status(404).json({
-        success: false,
-        message: "Trainer not found"
+    // Update image if provided
+    if (image) {
+      // Remove old image
+      if (trainer.trainerImage?.public_id) {
+        await cloudinary.uploader.destroy(trainer.trainerImage.public_id);
+      }
+
+      const upload = await cloudinary.uploader.upload(image, {
+        folder: "webinars/trainers"
       });
+
+      trainer.trainerImage = {
+        public_id: upload.public_id,
+        url: upload.secure_url
+      };
     }
-
-      // 🧹 Remove old image if exists
-    if (trainer.trainerImage?.public_id) {
-      await cloudinary.uploader.destroy(trainer.trainerImage.public_id);
-    }
-
-    const upload = await cloudinary.uploader.upload(image, {
-      folder: "webinars/trainers"
-    });
-
-    trainer.trainerImage = {
-      public_id: upload.public_id,
-      url: upload.secure_url
-    };
 
     await webinar.save();
 
     res.status(200).json({
       success: true,
-      message: "Image uploaded successfully",
-      response: trainer.trainerImage ,
+      message: "Trainer updated successfully",
+      trainer,
     });
   } catch (error) {
     next(error);
@@ -613,23 +618,14 @@ export const updateWebinarSchema = async (req, res, next) => {
 
 
 
-export const addPastSession = async (req, res) => {
+export const addPastSession = async (req, res, next) => {
   try {
-    const { webinarId, youtubeUrl, title, date } = req.body;
+    const { webinarId, pastSessions } = req.body;
 
-    if (!youtubeUrl || !title) {
+    if (!webinarId || !Array.isArray(pastSessions)) {
       return res.status(400).json({
         success: false,
-        message: "YouTube URL and title are required",
-      });
-    }
-
-    const youtubeId = getYoutubeVideoId(youtubeUrl);
-
-    if (!youtubeId) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid YouTube URL",
+        message: "Webinar ID and pastSessions array are required",
       });
     }
 
@@ -642,21 +638,91 @@ export const addPastSession = async (req, res) => {
       });
     }
 
-    webinar.pastSessions.push({
-      youtubeId,
-      title,
-      date: date ? new Date(date) : new Date(),
+    /* ---------------- VALIDATE & TRANSFORM ---------------- */
+    const updatedPastSessions = pastSessions.map((session, index) => {
+      const { title, youtubeUrl, date } = session;
+
+      if (!title || !youtubeUrl) {
+        throw new Error(`Title and YouTube URL are required for session ${index + 1}`);
+      }
+
+      const youtubeId = getYoutubeVideoId(youtubeUrl);
+
+      if (!youtubeId) {
+        throw new Error(`Invalid YouTube URL for session: ${title}`);
+      }
+
+      return {
+        title,
+        youtubeId,                 // store only ID
+        date: date ? new Date(date) : new Date(),
+      };
     });
+
+    /* ---------------- REPLACE ARRAY (NOT PUSH) ---------------- */
+    webinar.pastSessions = updatedPastSessions;
 
     await webinar.save();
 
     return res.status(200).json({
       success: true,
-      message: "Past session added successfully",
-      response: webinar.pastSessions,
+      message: "Past sessions updated successfully",
+      pastSessions: webinar.pastSessions,
     });
+
   } catch (error) {
-    next(error);
+    console.error("Add Past Sessions Error:", error);
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Something went wrong",
+    });
   }
 };
 
+
+export const stopWebinar = async(req, res, next) => {
+ try {
+    const { webinarId } = req.body;
+
+    const webinar = await stopWebinarService(webinarId);
+
+    if (!webinar) {
+      return res.status(400).json({
+        success: false,
+        message: "Webinar not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Campaign stopped successfully",
+      response: webinar,
+    });
+  }
+  catch (error) {
+    next(error);
+  }
+}
+
+export const deleteWebinar = async (req, res, next) => {
+    try {
+        const { webinarId } = req.body;
+
+        if (!webinarId) {
+            return res.status(400).json({
+                success: false,
+                message: "webinarId is required",
+            });
+        }
+
+       const deletedWebinar = await deleteWebinarService(webinarId);
+
+        res.status(200).json({
+            success: true,
+            message: "Webinar deleted successfully",
+            response: deletedWebinar
+        });
+    } catch (error) {
+        next(error);
+    }
+};

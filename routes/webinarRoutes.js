@@ -1,5 +1,5 @@
 import express from "express";
-import { addPastSession, addTrainerToWebinar, createBulkWebinars, createWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, updateWebinar, updateWebinarSchema, updateWebinarUtm, uploadWebinarLogo, uploadWebinarOg, uploadWebinarSpeakerImage } from "../controller/webinarController.js";
+import { addPastSession, addTrainerToWebinar, createBulkWebinars, createWebinar, deleteWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, stopWebinar, updateWebinar, updateWebinarSchema, updateWebinarSpeaker, updateWebinarUtm, uploadWebinarLogo, uploadWebinarOg } from "../controller/webinarController.js";
 import { upload } from "../middlewares/Upload.js";
 import Webinars from "../models/webinars.js";
 
@@ -16,7 +16,7 @@ router.route("/upload-webinar-logo").post(upload.single("logo"), uploadWebinarLo
 router.route("/upload-webinar-og").post(upload.single("ogImage"), uploadWebinarOg);
 
 
-router.route("/upload-webinar-trainer-image").post(upload.single("image"), uploadWebinarSpeakerImage);
+router.route("/update-trainer").post(upload.single("image"), updateWebinarSpeaker);
 
 router.post("/add-trainer", upload.single("trainerImage"), addTrainerToWebinar);
 
@@ -44,56 +44,9 @@ router.route("/update-webinar-schema").put(updateWebinarSchema)
 
 router.route("/upload-past-sessions").put(addPastSession)
 
-// router.put("/update-meta", async (req, res) => {
-//   try {
-//     const { webinarId, metaTitle, metaDescription } = req.body;
+router.route("/stop-webinar").post(stopWebinar)
 
-//     // Validate inputs
-//     if (!webinarId) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "webinarId is required",
-//       });
-//     }
-
-//     if (!metaTitle && !metaDescription) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "metaTitle or metaDescription is required",
-//       });
-//     }
-
-//     // Update entry
-//     const updatedWebinar = await Webinars.findByIdAndUpdate(
-//       webinarId,
-//       { metaTitle, metaDescription },
-//       { new: true }
-//     );
-
-//     if (!updatedWebinar) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Webinar not found",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Meta details updated successfully",
-//       data: updatedWebinar,
-//     });
-
-//   } catch (error) {
-//     console.error("Error updating webinar meta:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Server error",
-//       error: error.message,
-//     });
-//   }
-// });
-
-
+router.route("/delete-webinar").post(deleteWebinar)
 
 
 
