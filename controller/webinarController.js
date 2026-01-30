@@ -101,50 +101,54 @@ export const uploadWebinarLogo = async (req, res, next) => {
   }
 };
 
-export const uploadWebinarSpeakerImage = async (req, res, next) => {
+export const updateWebinarSpeaker = async (req, res, next) => {
   try {
-    const { webinarId, trainerId } = req.body;
-    const image = req.file?.path;
+    const { webinarId, trainerName, designation, worksAt, description, trainerId } = req.body;
+    const image = req.file?.path; // multer should be applied before this
 
-    if (!image) {
-      return res.status(400).json({ success: false, message: "No logo uploaded" });
+    if (!webinarId || !trainerId) {
+      return res.status(400).json({ success: false, message: "Webinar ID and Trainer ID are required" });
     }
 
     const webinar = await geAllWebinarByIdService(webinarId);
     if (!webinar) {
-      return res.status(400).json({ success: false, message: "Webinar not found" });
+      return res.status(404).json({ success: false, message: "Webinar not found" });
     }
 
-    const trainer = webinar.trainer.id(trainerId);
+    const trainer = webinar.trainer.id(trainerId); // subdocument method
+    if (!trainer) {
+      return res.status(404).json({ success: false, message: "Trainer not found" });
+    }
 
+    // Update text fields if provided
+    if (trainerName) trainer.trainerName = trainerName;
+    if (designation) trainer.designation = designation;
+    if (worksAt) trainer.worksAt = worksAt;
+    if (description) trainer.description = description;
 
-     if (!trainer) {
-      return res.status(404).json({
-        success: false,
-        message: "Trainer not found"
+    // Update image if provided
+    if (image) {
+      // Remove old image
+      if (trainer.trainerImage?.public_id) {
+        await cloudinary.uploader.destroy(trainer.trainerImage.public_id);
+      }
+
+      const upload = await cloudinary.uploader.upload(image, {
+        folder: "webinars/trainers"
       });
+
+      trainer.trainerImage = {
+        public_id: upload.public_id,
+        url: upload.secure_url
+      };
     }
-
-      // 🧹 Remove old image if exists
-    if (trainer.trainerImage?.public_id) {
-      await cloudinary.uploader.destroy(trainer.trainerImage.public_id);
-    }
-
-    const upload = await cloudinary.uploader.upload(image, {
-      folder: "webinars/trainers"
-    });
-
-    trainer.trainerImage = {
-      public_id: upload.public_id,
-      url: upload.secure_url
-    };
 
     await webinar.save();
 
     res.status(200).json({
       success: true,
-      message: "Image uploaded successfully",
-      response: trainer.trainerImage ,
+      message: "Trainer updated successfully",
+      trainer,
     });
   } catch (error) {
     next(error);
