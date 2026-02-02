@@ -202,6 +202,9 @@ export const getAllWebinarsByPagination = async (req, res, next) => {
         case "ondemand":
           filter.isOnDemand = true;
           break;
+        case "completed":
+          filter.isStopped = true;
+          break;
         default:
           return res.status(400).json({
             success: false,
@@ -266,12 +269,12 @@ export const getAllCertifiedWebinarsByPagination = async (req, res, next) => {
     // 🔹 Certified filter
     const filter = { isCertified: true };
 
-   const webinars = await getCertifiedWebinarsPaginationService({
+    const webinars = await getCertifiedWebinarsPaginationService({
       skip,
       limit,
     });
 
-   
+
     const totalItems = await getCertifiedWebinarsPaginationService({
       countOnly: true,
     });
@@ -680,8 +683,8 @@ export const addPastSession = async (req, res, next) => {
 };
 
 
-export const stopWebinar = async(req, res, next) => {
- try {
+export const stopWebinar = async (req, res, next) => {
+  try {
     const { webinarId } = req.body;
 
     const webinar = await stopWebinarService(webinarId);
@@ -705,24 +708,24 @@ export const stopWebinar = async(req, res, next) => {
 }
 
 export const deleteWebinar = async (req, res, next) => {
-    try {
-        const { webinarId } = req.body;
+  try {
+    const { webinarId } = req.body;
 
-        if (!webinarId) {
-            return res.status(400).json({
-                success: false,
-                message: "webinarId is required",
-            });
-        }
-
-       const deletedWebinar = await deleteWebinarService(webinarId);
-
-        res.status(200).json({
-            success: true,
-            message: "Webinar deleted successfully",
-            response: deletedWebinar
-        });
-    } catch (error) {
-        next(error);
+    if (!webinarId) {
+      return res.status(400).json({
+        success: false,
+        message: "webinarId is required",
+      });
     }
+
+    const deletedWebinar = await deleteWebinarService(webinarId);
+
+    res.status(200).json({
+      success: true,
+      message: "Webinar deleted successfully",
+      response: deletedWebinar
+    });
+  } catch (error) {
+    next(error);
+  }
 };
