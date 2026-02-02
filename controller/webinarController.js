@@ -729,3 +729,87 @@ export const deleteWebinar = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const getPastWebinarsByPagination = async (req, res, next) => {
+  try {
+    const {
+      page,
+      category,
+      type,
+      price,
+      search,
+      sort
+    } = req.query;
+
+    const currentPage = parseInt(page) || 1;
+    const limit = 6; // default limit
+    const skip = (currentPage - 1) * limit;
+
+    // Build filter object dynamically
+    let filter = {
+      isStopped: true,
+      isLive: false,
+    };
+
+    if (category) filter.category = category;
+
+    if (type) {
+      switch (type.toLowerCase()) {
+        case "certified":
+          filter.isCertified = true;
+          break;
+        case "ondemand":
+          filter.isOnDemand = true;
+          break;
+        default:
+          return res.status(400).json({
+            success: false,
+            message: "Invalid filter type",
+          });
+      }
+    }
+
+    // ✅ PRICE → isFree mapping
+    if (price) {
+      if (price === "free") {
+        filter.isFree = true;
+      } else if (price === "paid") {
+        filter.isFree = false;
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid price filter. Use 'free' or 'paid'",
+        });
+      }
+    }
+
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { organisedBy: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Fetch webinars with filter and pagination
+    const webinars = await searchWebinarsWithFilterService(filter, { skip, limit, sort });
+
+    // Count total items with the same filter (for pagination)
+    const totalItems = await searchWebinarsWithFilterService(filter, { countOnly: true });
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return res.status(200).json({
+      success: true,
+      message: "Webinars retrieved successfully",
+      response: webinars,
+      pagination: {
+        page: currentPage,
+        limit,
+        totalPages,
+        totalItems,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
