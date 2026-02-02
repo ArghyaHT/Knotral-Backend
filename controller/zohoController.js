@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getZohoAccessToken } from "../utils/zohoAuth.js";
+import Registrations from "../models/registrations.js";
 
 export const createZohoLead = async (req, res) => {
   try {
@@ -38,6 +39,9 @@ export const createZohoLead = async (req, res) => {
     };
 
     console.log("ZOHO PAYLOAD", payload)
+
+    await Registrations.create(payload.data);
+
 
     const response = await axios.post(
       `${process.env.ZOHO_API_DOMAIN}/crm/v2/Leads`,
