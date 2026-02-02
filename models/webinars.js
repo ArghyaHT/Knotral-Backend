@@ -85,7 +85,7 @@ const webinarsSchema = new mongoose.Schema(
         actions: {
             canStartProgram: {
                 type: Boolean,
-                default: true,
+                default: false,
             },
             canEnroll: {
                 type: Boolean,
