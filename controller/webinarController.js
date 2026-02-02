@@ -754,21 +754,21 @@ export const getPastWebinarsByPagination = async (req, res, next) => {
 
     if (category) filter.category = category;
 
-    // if (type) {
-    //   switch (type.toLowerCase()) {
-    //     case "certified":
-    //       filter.isCertified = true;
-    //       break;
-    //     case "ondemand":
-    //       filter.isOnDemand = true;
-    //       break;
-    //     default:
-    //       return res.status(400).json({
-    //         success: false,
-    //         message: "Invalid filter type",
-    //       });
-    //   }
-    // }
+    if (type) {
+      switch (type.toLowerCase()) {
+        case "certified":
+          filter.isCertified = true;
+          break;
+        case "ondemand":
+          filter.isOnDemand = true;
+          break;
+        default:
+          return res.status(400).json({
+            success: false,
+            message: "Invalid filter type",
+          });
+      }
+    }
 
     // ✅ PRICE → isFree mapping
     if (price) {
