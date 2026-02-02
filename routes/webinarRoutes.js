@@ -1,5 +1,5 @@
 import express from "express";
-import { addPastSession, addTrainerToWebinar, createBulkWebinars, createWebinar, deleteWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getPastWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, stopWebinar, updateWebinar, updateWebinarSchema, updateWebinarSpeaker, updateWebinarUtm, uploadWebinarLogo, uploadWebinarOg } from "../controller/webinarController.js";
+import { addPastSession, addTrainerToWebinar, createBulkWebinars, createWebinar, deleteWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getLiveWebinarsByPagination, getPastWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, stopWebinar, updateWebinar, updateWebinarSchema, updateWebinarSpeaker, updateWebinarUtm, uploadWebinarLogo, uploadWebinarOg } from "../controller/webinarController.js";
 import { upload } from "../middlewares/Upload.js";
 import Webinars from "../models/webinars.js";
 
@@ -22,7 +22,7 @@ router.post("/add-trainer", upload.single("trainerImage"), addTrainerToWebinar);
 
 router.route("/get-webinars").get(getAllWebinars)
 
-router.route("/get-limited-webinars").get(getAllWebinarsByPagination)
+router.route("/get-limited-webinars").get(getLiveWebinarsByPagination)
 
 router.route("/get-past-webinars").get(getPastWebinarsByPagination)
 
@@ -49,6 +49,10 @@ router.route("/upload-past-sessions").put(addPastSession)
 router.route("/stop-webinar").post(stopWebinar)
 
 router.route("/delete-webinar").post(deleteWebinar)
+
+
+router.route("/get-all-webinars").get(getAllWebinarsByPagination)
+
 
 
 
