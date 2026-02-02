@@ -215,3 +215,49 @@ export const deleteWebinarService = async (webinarId) => {
     return deletedWebinar;
 };
 
+
+export const searchPastWebinarsWithFilterService = async (
+  filter = {},
+  options = {}
+) => {
+  const {
+    skip = 0,
+    limit = 6,
+    countOnly = false,
+    sort = "dateNew",
+  } = options;
+
+  // ✅ Count only
+  if (countOnly) {
+    return await Webinars.countDocuments(filter);
+  }
+
+  // ✅ Sorting logic
+  let sortObj;
+  switch (sort) {
+    case "dateNew":
+      sortObj = { date: -1 }; // newest first
+      break;
+    case "dateOld":
+      sortObj = { date: 1 }; // oldest first
+      break;
+    case "popular":
+      sortObj = { views: -1 };
+      break;
+    case "provider":
+      sortObj = { organisedBy: 1 }; // A-Z
+      break;
+    default:
+      sortObj = { date: -1 }; // safe default
+  }
+
+  // ✅ Fetch webinars
+  const webinars = await Webinars.find(filter)
+    .sort(sortObj)
+    .skip(skip)
+    .limit(limit)
+    .lean(); // ⚡ performance boost
+
+  return webinars;
+};
+

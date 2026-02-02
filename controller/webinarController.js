@@ -1,5 +1,5 @@
 import { response } from "express";
-import { createWebinarService, deleteWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, getYoutubeVideoId, incrementWebinarViewsService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, stopWebinarService, updateWebinarBenefitsService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
+import { createWebinarService, deleteWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, getYoutubeVideoId, incrementWebinarViewsService, searchPastWebinarsWithFilterService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, stopWebinarService, updateWebinarBenefitsService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -754,21 +754,21 @@ export const getPastWebinarsByPagination = async (req, res, next) => {
 
     if (category) filter.category = category;
 
-    if (type) {
-      switch (type.toLowerCase()) {
-        case "certified":
-          filter.isCertified = true;
-          break;
-        case "ondemand":
-          filter.isOnDemand = true;
-          break;
-        default:
-          return res.status(400).json({
-            success: false,
-            message: "Invalid filter type",
-          });
-      }
-    }
+    // if (type) {
+    //   switch (type.toLowerCase()) {
+    //     case "certified":
+    //       filter.isCertified = true;
+    //       break;
+    //     case "ondemand":
+    //       filter.isOnDemand = true;
+    //       break;
+    //     default:
+    //       return res.status(400).json({
+    //         success: false,
+    //         message: "Invalid filter type",
+    //       });
+    //   }
+    // }
 
     // ✅ PRICE → isFree mapping
     if (price) {
@@ -792,10 +792,10 @@ export const getPastWebinarsByPagination = async (req, res, next) => {
     }
 
     // Fetch webinars with filter and pagination
-    const webinars = await searchWebinarsWithFilterService(filter, { skip, limit, sort });
+    const webinars = await searchPastWebinarsWithFilterService(filter, { skip, limit, sort });
 
     // Count total items with the same filter (for pagination)
-    const totalItems = await searchWebinarsWithFilterService(filter, { countOnly: true });
+    const totalItems = await searchPastWebinarsWithFilterService(filter, { countOnly: true });
     const totalPages = Math.ceil(totalItems / limit);
 
     return res.status(200).json({
