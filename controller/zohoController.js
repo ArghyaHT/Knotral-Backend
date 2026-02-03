@@ -63,12 +63,39 @@ export const createZohoLead = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("❌ Zoho Lead API Error:", error.response?.data || error);
-    return res.status(500).json({
+  console.error("❌ Zoho Lead API Error");
+
+  if (error.response) {
+    // Zoho responded with an error (4xx / 5xx)
+    console.error("STATUS:", error.response.status);
+    console.error("HEADERS:", error.response.headers);
+    console.error("DATA:", JSON.stringify(error.response.data, null, 2));
+
+    return res.status(error.response.status).json({
       success: false,
-      error: error.response?.data || "Zoho CRM error occurred"
+      error: error.response.data,
     });
   }
+
+  if (error.request) {
+    // Request was sent but no response received
+    console.error("NO RESPONSE FROM ZOHO");
+    console.error("REQUEST:", error.request);
+
+    return res.status(502).json({
+      success: false,
+      error: "No response from Zoho CRM",
+    });
+  }
+
+  // Something else failed
+  console.error("MESSAGE:", error.message);
+
+  return res.status(500).json({
+    success: false,
+    error: error.message,
+  });
+}
 };
 
 
