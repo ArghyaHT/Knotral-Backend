@@ -1,9 +1,16 @@
 import axios from "axios";
 import { getZohoAccessToken } from "../utils/zohoAuth.js";
 import Registrations from "../models/registrations.js";
+import logger from "../utils/logger.js";
 
 export const createZohoLead = async (req, res) => {
   try {
+    logger.info("🚀 Creating Zoho Lead", {
+  body: {
+    ...req.body,
+    Email: req.body.Email ? req.body.Email : undefined,
+  },
+});
     const accessToken = await getZohoAccessToken();
 
     const payload = {
@@ -54,8 +61,10 @@ export const createZohoLead = async (req, res) => {
       }
     );
 
-    console.log("Zoho lead",response)
-
+    logger.info("✅ Zoho Lead Created", {
+      status: response.status,
+      data: response.data,
+    });
     return res.status(200).json({
       success: true,
       message: "Lead stored in Zoho CRM successfully",
@@ -63,37 +72,20 @@ export const createZohoLead = async (req, res) => {
     });
 
   } catch (error) {
-  console.error("❌ Zoho Lead API Error");
-
-  if (error.response) {
-    // Zoho responded with an error (4xx / 5xx)
-    console.error("STATUS:", error.response.status);
-    console.error("HEADERS:", error.response.headers);
-    console.error("DATA:", JSON.stringify(error.response.data, null, 2));
-
-    return res.status(error.response.status).json({
-      success: false,
-      error: error.response.data,
-    });
-  }
-
-  if (error.request) {
-    // Request was sent but no response received
-    console.error("NO RESPONSE FROM ZOHO");
-    console.error("REQUEST:", error.request);
-
-    return res.status(502).json({
-      success: false,
-      error: "No response from Zoho CRM",
-    });
-  }
-
-  // Something else failed
-  console.error("MESSAGE:", error.message);
+ logger.error("❌ Zoho Lead API Error", {
+  message: error.message,
+  status: error.response?.status,
+  zohoError: error.response?.data,
+  request: {
+    method: error.config?.method,
+    url: error.config?.url,
+  },
+  stack: error.stack,
+});
 
   return res.status(500).json({
     success: false,
-    error: error.message,
+    error: "Zoho CRM error occurred",
   });
 }
 };
