@@ -1,7 +1,6 @@
 import express from "express";
 import { addPastSession, addTrainerToWebinar, createBulkWebinars, createWebinar, deleteWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getLiveWebinarsByPagination, getPastWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, stopWebinar, updateWebinar, updateWebinarSchema, updateWebinarSpeaker, updateWebinarUtm, uploadWebinarLogo, uploadWebinarOg } from "../controller/webinarController.js";
 import { upload } from "../middlewares/Upload.js";
-import Webinars from "../models/webinars.js";
 
 const router = express.Router()
 
@@ -49,7 +48,6 @@ router.route("/upload-past-sessions").put(addPastSession)
 router.route("/stop-webinar").post(stopWebinar)
 
 router.route("/delete-webinar").post(deleteWebinar)
-
 
 router.route("/get-all-webinars").get(getAllWebinarsByPagination)
 

@@ -38,7 +38,7 @@ export const createZohoLead = async (req, res) => {
       ]
     };
 
-    console.log("ZOHO PAYLOAD", payload)
+    // console.log("ZOHO PAYLOAD", payload)
 
     await Registrations.create(payload.data);
 
@@ -53,6 +53,8 @@ export const createZohoLead = async (req, res) => {
         }
       }
     );
+
+    console.log("Zoho lead",response)
 
     return res.status(200).json({
       success: true,
