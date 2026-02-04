@@ -1,11 +1,10 @@
-import { Users } from "../models/user";
+import { Users } from "../models/user.js";
 
-export const createUser = async (email, hashedPassword, userType, isSuperAdmin) => {
+export const createUser = async (email, hashedPassword, isSuperAdmin) => {
    const user = new Users({
       email,
       password: hashedPassword,
-      role: "Admin",
-      userType,
+      userType: "SuperAdmin",
       isSuperAdmin
    })
    await user.save();
@@ -14,7 +13,7 @@ export const createUser = async (email, hashedPassword, userType, isSuperAdmin) 
 
 
 export const findAdminByEmailandRole = async (email) => {
-   const admin = await Users.findOne({ email })
+   const admin = await Users.findOne({ email, isSuperAdmin: true })
      .exec();
    return admin;
  };

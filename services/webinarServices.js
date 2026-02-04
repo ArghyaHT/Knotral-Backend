@@ -190,8 +190,8 @@ export const stopWebinarService = async (webinarId) => {
       $set: {
         isStopped: true,
         isLive: false,
-        "actions.canStartProgram": false,
-        "actions.canEnroll": false,
+        // "actions.canStartProgram": false,
+        // "actions.canEnroll": false,
       },
     },
     { new: true }

@@ -1,20 +1,21 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express"
 import cors from "cors"
 import { rateLimit } from "express-rate-limit";
 import http from "http"
-import dotenv from "dotenv";
 import connectDB from "./db/db.js";
 import webinarRoutes from "./routes/webinarRoutes.js"
 import registrationRoutes from "./routes/registrationRoutes.js"
 import zohoRoutes from "./routes/zohoRoutes.js"
 import paymentRoutes from "./routes/paymentRoutes.js"
-
+import userRoutes from "./routes/userRoutes.js"
 
 import { GlobalErrorHandler } from "./middlewares/GlobalErrorHandler.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
-dotenv.config()
 const app = express()
 const server = http.createServer(app);
 app.set("trust proxy", 1);
@@ -82,7 +83,7 @@ app.use("/api/webinars", webinarRoutes)
 app.use("/api/registration", registrationRoutes)
 app.use("/api/zoho", zohoRoutes)
 app.use("/api/payment", paymentRoutes)
-
+app.use("/api/user", userRoutes)
 
 
 app.use(GlobalErrorHandler)

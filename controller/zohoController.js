@@ -1,16 +1,16 @@
 import axios from "axios";
 import { getZohoAccessToken } from "../utils/zohoAuth.js";
 import Registrations from "../models/registrations.js";
-import logger from "../utils/logger.js";
+import logger, { logToFile } from "../utils/logger.js";
 
 export const createZohoLead = async (req, res) => {
   try {
     logger.info("🚀 Creating Zoho Lead", {
-  body: {
-    ...req.body,
-    Email: req.body.Email ? req.body.Email : undefined,
-  },
-});
+      body: {
+        ...req.body,
+        Email: req.body.Email ? req.body.Email : undefined,
+      },
+    });
     const accessToken = await getZohoAccessToken();
 
     const payload = {
@@ -72,22 +72,30 @@ export const createZohoLead = async (req, res) => {
     });
 
   } catch (error) {
- logger.error("❌ Zoho Lead API Error", {
-  message: error.message,
-  status: error.response?.status,
-  zohoError: error.response?.data,
-  request: {
-    method: error.config?.method,
-    url: error.config?.url,
-  },
-  stack: error.stack,
-});
+    logger.error("❌ Zoho Lead API Error", {
+      message: error.message,
+      status: error.response?.status,
+      zohoError: error.response?.data,
+      request: {
+        method: error.config?.method,
+        url: error.config?.url,
+      },
+      stack: error.stack,
+      timestamp: new Date(),
 
-  return res.status(500).json({
-    success: false,
-    error: "Zoho CRM error occurred",
-  });
-}
+    });
+
+      // ✅ Save to file
+    logToFile(logData);
+
+    // ✅ Log to Winston/Render console
+    logger.error("❌ Zoho Lead API Error", logData);
+
+    return res.status(500).json({
+      success: false,
+      error: "Zoho CRM error occurred",
+    });
+  }
 };
 
 

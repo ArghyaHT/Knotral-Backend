@@ -1,120 +1,158 @@
-import { createUser } from "../services/userService"
+import { validateEmail } from "../middlewares/validator.js";
+import { createUser, findAdminByEmailandRole } from "../services/userService.js"
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
-export const registerAdmin = async (req, res, next) => {
+export const registerSuperAdmin = async (req, res, next) => {
     try {
-        let { email, password, userType, isSuperAdmin} = req.body
+        let { email, password, isSuperAdmin } = req.body;
 
         if (!email && !password) {
-            return ErrorHandler(EMAIL_AND_PASSWORD_NOT_FOUND_ERROR, ERROR_STATUS_CODE, res)
-        }
-
-        if (!email) {
-            return ErrorHandler(EMAIL_NOT_PRESENT_ERROR, ERROR_STATUS_CODE, res)
-        }
-
-        if (!validateEmail(email)) {
-            return ErrorHandler(INVALID_EMAIL_ERROR, ERROR_STATUS_CODE, res)
-        }
-
-
-        if (!password) {
-            return ErrorHandler(PASSWORD_NOT_PRESENT_ERROR, ERROR_STATUS_CODE, res)
-        }
-
-        if (password.length < 8) {
-            return ErrorHandler(PASSWORD_LENGTH_ERROR, ERROR_STATUS_CODE, res)
-        }
-
-        email = email.toLowerCase();
-
-        const existingUser = await findAdminByEmailandRole(email)
-
-        if (existingUser) {
-            return ErrorHandler(ADMIN_EXISTS_ERROR, ERROR_STATUS_CODE, res)
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10)
-
-        const newUser = await createUser(email, hashedPassword, userType, isSuperAdmin)
-
-        return SuccessHandler(SIGNUP_SUCCESS, SUCCESS_STATUS_CODE, res, { newUser })
-
-    }
-    catch (error) {
-        next(error);
-    }
-}
-
-export const loginAdmin = async (req, res, next) => {
-    try {
-        let { email, password } = req.body
-
-        if (!email && !password) {
-            return ErrorHandler(EMAIL_AND_PASSWORD_NOT_FOUND_ERROR, ERROR_STATUS_CODE, res)
-        }
-
-        if (!email) {
-            return ErrorHandler(EMAIL_NOT_PRESENT_ERROR, ERROR_STATUS_CODE, res)
-        }
-
-        if (!validateEmail(email)) {
-            return ErrorHandler(INVALID_EMAIL_ERROR, ERROR_STATUS_CODE, res)
-        }
-
-
-        if (!password) {
-            return ErrorHandler(PASSWORD_NOT_PRESENT_ERROR, ERROR_STATUS_CODE, res)
-        }
-
-        if (password.length < 8) {
-            return ErrorHandler(PASSWORD_LENGTH_ERROR, ERROR_STATUS_CODE, res)
-        }
-
-        email = email.toLowerCase();
-
-        const foundUser = await findAdminByEmailandRole(email)
-        console.log(email)
-
-
-        if (!foundUser) {
-            return ErrorHandler(EMAIL_OR_PASSWORD_DONOT_MATCH_ERROR, ERROR_STATUS_CODE, res)
-        }
-
-         if (foundUser.AuthType == "google") {
             return res.status(400).json({
                 success: false,
-                message: 'Use Google login for this email.'
-            })
+                message: "Email and password not found",
+            });
         }
 
-        const match = await bcrypt.compare(password, foundUser.password)
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is not present",
+            });
+        }
+
+        if (!validateEmail(email)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email",
+            });
+        }
+
+        if (!password) {
+            return res.status(400).json({
+                success: false,
+                message: "Password is not present",
+            });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must be at least 8 characters",
+            });
+        }
+
+        email = email.toLowerCase();
+
+        const existingUser = await findAdminByEmailandRole(email);
+
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: "Admin already exists",
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = await createUser(email, hashedPassword, isSuperAdmin);
+
+        return res.status(200).json({
+            success: true,
+            message: "Super admin registered successfully",
+            response: { newUser },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+export const loginSuperAdmin = async (req, res, next) => {
+    try {
+        let { email, password } = req.body;
+
+        /* ---------------- VALIDATIONS ---------------- */
+
+        if (!email && !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password not found"
+            });
+        }
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is not present"
+            });
+        }
+
+        if (!validateEmail(email)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email"
+            });
+        }
+
+        if (!password) {
+            return res.status(400).json({
+                success: false,
+                message: "Password is not present"
+            });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must be at least 8 characters"
+            });
+        }
+
+        /* ---------------- NORMALIZE EMAIL ---------------- */
+        email = email.toLowerCase();
+
+        /* ---------------- FIND USER ---------------- */
+        const foundUser = await findAdminByEmailandRole(email);
+
+        if (!foundUser) {
+            return res.status(400).json({
+                success: false,
+                message: "Email or password does not match"
+            });
+        }
+
+        /* ---------------- PASSWORD CHECK ---------------- */
+        const match = await bcrypt.compare(password, foundUser.password);
 
         if (!match) {
-            return ErrorHandler(EMAIL_OR_PASSWORD_DONOT_MATCH_ERROR, ERROR_STATUS_CODE, res)
+            return res.status(400).json({
+                success: false,
+                message: "Email or password does not match"
+            });
         }
 
+        /* ---------------- JWT TOKEN ---------------- */
         const accessToken = jwt.sign(
             {
-                "email": foundUser.email,
-                "role": foundUser.role
+                email: foundUser.email,
+                role: foundUser.role
             },
             process.env.JWT_ADMIN_ACCESS_SECRET,
-            { expiresIn: '7d' }
-        )
+            { expiresIn: "7d" }
+        );
 
-        // res.cookie('AdminToken', accessToken, {
-        //     httpOnly: true, //accessible only by web server 
-        //     secure: true, //https
-        //     sameSite: 'None', //cross-site cookie 
-        //     maxAge: 1 * 24 * 60 * 60 * 1000 //cookie expiry: set to match rT
-        // })
+        /* ---------------- SUCCESS RESPONSE ---------------- */
+        return res.status(200).json({
+            success: true,
+            message: "Signin successful",
+            response: {
+                accessToken,
+                foundUser
+            }
+        });
 
-        return SuccessHandler(SIGNIN_SUCCESS, SUCCESS_STATUS_CODE, res, {
-            accessToken,
-            foundUser
-        })
-    }
-    catch (error) {
+    } catch (error) {
         next(error);
     }
 };
