@@ -67,12 +67,13 @@ app.use(cors({
   origin: function (origin, callback) {
     // Check if the origin is in the allowed origins list or if it's undefined (like in case of same-origin requests)
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true); // Allow the request
+      callback(null, true);
+       // Allow the request
     } else {
       callback(new Error("Not allowed by CORS")); // Deny the request
     }
   },
-  // credentials: true
+  credentials: true
 }));
 
 app.use(rateLimiter)
