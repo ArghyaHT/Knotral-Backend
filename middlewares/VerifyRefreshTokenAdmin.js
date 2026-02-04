@@ -14,9 +14,12 @@ export const verifySuperAdminAccessToken = (req, res, next) => {
       return res.status(401).json({ success: false, message: "Token expired" });
     }
 
-    if (decoded.role !== "SuperAdmin") {
-      return res.status(403).json({ success: false, message: "Forbidden" });
-    }
+  if (decoded.userType !== "SuperAdmin") {
+  return res.status(403).json({
+    success: false,
+    message: "Forbidden",
+  });
+}
 
     req.user = decoded;
     next();
