@@ -135,9 +135,9 @@ export const loginSuperAdmin = async (req, res, next) => {
         /* ---------------- JWT TOKEN ---------------- */
         const accessToken = jwt.sign(
             {
-                userId: user._id,
-                userType: user.userType,
-                isSuperAdmin: user.isSuperAdmin,
+                userId: foundUser._id,
+                userType: foundUser.userType,
+                isSuperAdmin: foundUser.isSuperAdmin,
             },
             process.env.JWT_ADMIN_ACCESS_SECRET,
             { expiresIn: "7d" }
