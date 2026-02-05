@@ -263,7 +263,9 @@ export const searchPastWebinarsWithFilterService = async (
 
 
 export const fetchFutureWebinars = async () => {
-  const now = new Date();
+   const nowUTC = new Date(
+    new Date().toISOString().split("T")[0]
+  );
 
   return await Webinars.find({
     date: { $gte: now },
