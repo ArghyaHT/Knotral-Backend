@@ -1,9 +1,9 @@
-import { createRegistrationService } from "../services/registrationService.js";
+import { createRegistrationService, fetchAllRegistrations } from "../services/registrationService.js";
 
 /**
  * Controller to handle creating a new registration
  */
-export const createRegistration= async (req, res) => {
+export const createRegistration= async (req, res, next) => {
   try {
     // Take all fields from request body
     const registrationData = req.body;
@@ -17,11 +17,20 @@ export const createRegistration= async (req, res) => {
       data: newRegistration,
     });
   } catch (error) {
-    console.error("Registration error:", error.message);
+        next(error);
+    }
+};
 
-    return res.status(400).json({
-      success: false,
-      message: error.message || "Failed to create registration",
+export const getRegistrations = async (req, res, next) => {
+  try {
+    const registrations = await fetchAllRegistrations();
+
+    return res.status(200).json({
+      success: true,
+      message: "Registrations fetched successfully",
+      data: registrations
     });
+  } catch (error) {
+    next(error);
   }
 };

@@ -261,3 +261,14 @@ export const searchPastWebinarsWithFilterService = async (
   return webinars;
 };
 
+
+export const fetchFutureWebinars = async () => {
+  const now = new Date();
+
+  return await Webinars.find({
+    date: { $gte: now },
+    isStopped: false
+  })
+    .sort({ date: 1 })
+    .lean();
+};

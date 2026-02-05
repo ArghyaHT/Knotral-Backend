@@ -1,4 +1,5 @@
 import Registrations from "../models/registrations.js";
+import { fetchFutureWebinars } from "./webinarServices.js";
 
 /**
  * Create a new registration
@@ -40,4 +41,32 @@ export const createRegistrationService = async (data) => {
  */
 export const getRegistrationsByWebinar = async (webinarId) => {
   return await Registrations.find({ webinarId });
+};
+
+
+export const fetchAllRegistrations = async () => {
+  const futureWebinars = await fetchFutureWebinars();
+
+  if (!futureWebinars.length) return [];
+
+  /* 1️⃣ Collect organiser words */
+  const organiserWords = futureWebinars
+    .map(w => w.organisedBy)
+    .filter(Boolean)
+    .flatMap(name =>
+      name
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(word => word.length > 2) // ignore small words
+    );
+
+  if (!organiserWords.length) return [];
+
+  /* 2️⃣ Build regex: match ANY word */
+  const organiserRegex = new RegExp(organiserWords.join("|"), "i");
+
+  /* 3️⃣ Fetch only matching registrations */
+  return await Registrations.find({
+    FORM_NAME: { $regex: organiserRegex }
+  }).lean();
 };
