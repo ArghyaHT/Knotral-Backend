@@ -30,7 +30,7 @@ const registrationSchema = new mongoose.Schema(
     Preferred_Program_Level: { type: String },
 
     // 📅 Webinar Info
-    Webinar_Date_TIme: { type: String },
+    Webinar_Date_TIme: { type: Date },
 
     // 📊 UTM Tracking
     utm_source: { type: String },
