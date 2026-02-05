@@ -268,7 +268,7 @@ export const fetchFutureWebinars = async () => {
   );
 
   return await Webinars.find({
-    date: { $gte: now },
+    date: { $gte: nowUTC },
     isStopped: false
   })
     .sort({ date: 1 })
