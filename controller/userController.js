@@ -140,7 +140,7 @@ export const loginSuperAdmin = async (req, res, next) => {
         isSuperAdmin: foundUser.isSuperAdmin,
       },
       process.env.JWT_ADMIN_ACCESS_SECRET,
-      { expiresIn: "15m" }
+      { expiresIn: "5d" }
     );
 
     /* ---------------- REFRESH TOKEN (LONG LIVED) ---------------- */
