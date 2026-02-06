@@ -180,7 +180,47 @@ export const updateWebinarSpeaker = async (req, res, next) => {
 };
 
 
+export const removeTrainer = async (req, res, next) => {
+  try {
+    const { webinarId, trainerId } = req.body;
 
+    if (!webinarId || !trainerId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Both webinarId and trainerId are required" 
+      });
+    }
+
+    const webinar = await geAllWebinarByIdService(webinarId);
+    if (!webinar) {
+      return res.status(404).json({ success: false, message: "Webinar not found" });
+    }
+
+    const trainer = webinar.trainer.id(trainerId);
+    if (!trainer) {
+      return res.status(404).json({ success: false, message: "Trainer not found" });
+    }
+
+    // Delete trainer image from Cloudinary if exists
+    if (trainer.trainerImage?.public_id) {
+      await cloudinary.uploader.destroy(trainer.trainerImage.public_id);
+    }
+
+    // Remove trainer from the array
+    trainer.remove();
+
+    webinar.markModified("trainer");
+    await webinar.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Trainer removed successfully",
+      trainers: webinar.trainer,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 
 export const getAllWebinars = async (req, res, next) => {

@@ -1,5 +1,5 @@
 import express from "express";
-import { addPastSession, addTrainerToWebinar, createBulkWebinars, createWebinar, deleteWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getLiveWebinarsByPagination, getPastWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, searchWebinarsByCategory, stopWebinar, updateWebinar, updateWebinarSchema, updateWebinarSpeaker, updateWebinarUtm, uploadWebinarLogo, uploadWebinarOg } from "../controller/webinarController.js";
+import { addPastSession, addTrainerToWebinar, createBulkWebinars, createWebinar, deleteWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getLiveWebinarsByPagination, getPastWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, removeTrainer, searchWebinarsByCategory, stopWebinar, updateWebinar, updateWebinarSchema, updateWebinarSpeaker, updateWebinarUtm, uploadWebinarLogo, uploadWebinarOg } from "../controller/webinarController.js";
 import { upload } from "../middlewares/Upload.js";
 
 const router = express.Router()
@@ -15,6 +15,9 @@ router.route("/upload-webinar-logo").post(upload.single("logo"), uploadWebinarLo
 router.route("/upload-webinar-og").post(upload.single("ogImage"), uploadWebinarOg);
 
 router.route("/update-trainer").post(upload.single("image"), updateWebinarSpeaker);
+
+router.route("/remove-trainer").post(removeTrainer);
+
 
 router.post("/add-trainer", upload.single("trainerImage"), addTrainerToWebinar);
 
