@@ -175,3 +175,16 @@ export const loginSuperAdmin = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const logoutSuperAdmin = (req, res) => {
+  res.clearCookie("superAdminRefreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  return res.status(200).json({
+    success: true,
+  });
+};
