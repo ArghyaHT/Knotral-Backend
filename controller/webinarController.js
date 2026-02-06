@@ -123,7 +123,7 @@ export const updateWebinarSpeaker = async (req, res, next) => {
 
     let trainer;
 
-    /* ===================== UPDATE ===================== */
+    /* ===================== UPDATE EXISTING TRAINER ===================== */
     if (trainerId) {
       trainer = webinar.trainer.id(trainerId);
 
@@ -135,7 +135,7 @@ export const updateWebinarSpeaker = async (req, res, next) => {
       }
     }
 
-    /* ===================== ADD NEW ===================== */
+    /* ===================== ADD NEW TRAINER ===================== */
     else {
       trainer = {
         trainerName,
@@ -144,22 +144,23 @@ export const updateWebinarSpeaker = async (req, res, next) => {
         description,
         trainerImage: {
           public_id: "",
-          url: "https://res.cloudinary.com/dpynxkjfq/image/upload/v1720520065/default-avatar-icon-of-social-media-user-vector_wl5pm0.jpg",
+          url: "",
         },
       };
 
       webinar.trainer.push(trainer);
-      trainer = webinar.trainer[webinar.trainer.length - 1]; // get ref
+      trainer = webinar.trainer[webinar.trainer.length - 1]; // get ref to subdoc
     }
 
-    /* ===================== TEXT FIELDS ===================== */
+    /* ===================== UPDATE TEXT FIELDS ===================== */
     if (trainerName) trainer.trainerName = trainerName;
     if (designation) trainer.designation = designation;
     if (worksAt) trainer.worksAt = worksAt;
     if (description) trainer.description = description;
 
-    /* ===================== IMAGE ===================== */
+    /* ===================== HANDLE IMAGE UPLOAD ===================== */
     if (image) {
+      // Delete old image if exists
       if (trainer.trainerImage?.public_id) {
         await cloudinary.uploader.destroy(trainer.trainerImage.public_id);
       }
@@ -172,8 +173,16 @@ export const updateWebinarSpeaker = async (req, res, next) => {
         public_id: upload.public_id,
         url: upload.secure_url,
       };
+    } else if (!trainer.trainerImage?.url) {
+      // Set default only if no image uploaded
+      trainer.trainerImage = {
+        public_id: "",
+        url: "https://res.cloudinary.com/dpynxkjfq/image/upload/v1720520065/default-avatar-icon-of-social-media-user-vector_wl5pm0.jpg",
+      };
     }
 
+    /* ===================== SAVE WEBINAR ===================== */
+    webinar.markModified("trainer"); // Important: ensure Mongoose saves subdocument changes
     await webinar.save();
 
     res.status(200).json({
