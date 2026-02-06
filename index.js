@@ -65,7 +65,7 @@ const allowedOrigins = [
   /\.netlify\.app$/,
 ];
 
-// //Use Multiple Cors
+//Use Multiple Cors
 app.use(cors({
   origin: function (origin, callback) {
     // Check if the origin is in the allowed origins list or if it's undefined (like in case of same-origin requests)
