@@ -206,8 +206,8 @@ export const removeTrainer = async (req, res, next) => {
       await cloudinary.uploader.destroy(trainer.trainerImage.public_id);
     }
 
-    // Remove trainer from the array
-    trainer.remove();
+    // Remove trainer from the array using filter
+    webinar.trainer = webinar.trainer.filter(t => t._id.toString() !== trainerId);
 
     webinar.markModified("trainer");
     await webinar.save();
@@ -221,6 +221,7 @@ export const removeTrainer = async (req, res, next) => {
     next(error);
   }
 };
+
 
 
 export const getAllWebinars = async (req, res, next) => {
