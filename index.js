@@ -15,6 +15,8 @@ import adminRoutes from "./routes/adminRoutes.js"
 
 import { GlobalErrorHandler } from "./middlewares/GlobalErrorHandler.js";
 import { v2 as cloudinary } from "cloudinary";
+import cookieParser from "cookie-parser";
+
 
 
 const app = express()
@@ -80,6 +82,8 @@ app.use(cors({
 app.use(rateLimiter)
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
 
 app.use("/api/webinars", webinarRoutes)
 app.use("/api/registration", registrationRoutes)

@@ -69,91 +69,109 @@ export const registerSuperAdmin = async (req, res, next) => {
 
 
 export const loginSuperAdmin = async (req, res, next) => {
-    try {
-        let { email, password } = req.body;
+  try {
+    let { email, password } = req.body;
 
-        /* ---------------- VALIDATIONS ---------------- */
+    /* ---------------- VALIDATIONS ---------------- */
 
-        if (!email && !password) {
-            return res.status(400).json({
-                success: false,
-                message: "Email and password not found"
-            });
-        }
-
-        if (!email) {
-            return res.status(400).json({
-                success: false,
-                message: "Email is not present"
-            });
-        }
-
-        if (!validateEmail(email)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid email"
-            });
-        }
-
-        if (!password) {
-            return res.status(400).json({
-                success: false,
-                message: "Password is not present"
-            });
-        }
-
-        if (password.length < 8) {
-            return res.status(400).json({
-                success: false,
-                message: "Password must be at least 8 characters"
-            });
-        }
-
-        /* ---------------- NORMALIZE EMAIL ---------------- */
-        email = email.toLowerCase();
-
-        /* ---------------- FIND USER ---------------- */
-        const foundUser = await findAdminByEmailandRole(email);
-
-        if (!foundUser) {
-            return res.status(400).json({
-                success: false,
-                message: "Email or password does not match"
-            });
-        }
-
-        /* ---------------- PASSWORD CHECK ---------------- */
-        const match = await bcrypt.compare(password, foundUser.password);
-
-        if (!match) {
-            return res.status(400).json({
-                success: false,
-                message: "Email or password does not match"
-            });
-        }
-
-        /* ---------------- JWT TOKEN ---------------- */
-        const accessToken = jwt.sign(
-            {
-                userId: foundUser._id,
-                userType: foundUser.userType,
-                isSuperAdmin: foundUser.isSuperAdmin,
-            },
-            process.env.JWT_ADMIN_ACCESS_SECRET,
-            { expiresIn: "7d" }
-        );
-
-        /* ---------------- SUCCESS RESPONSE ---------------- */
-        return res.status(200).json({
-            success: true,
-            message: "Signin successful",
-            response: {
-                accessToken,
-                foundUser
-            }
-        });
-
-    } catch (error) {
-        next(error);
+    if (!email && !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password not found",
+      });
     }
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is not present",
+      });
+    }
+
+    if (!validateEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email",
+      });
+    }
+
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        message: "Password is not present",
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters",
+      });
+    }
+
+    /* ---------------- NORMALIZE EMAIL ---------------- */
+    email = email.toLowerCase();
+
+    /* ---------------- FIND USER ---------------- */
+    const foundUser = await findAdminByEmailandRole(email);
+
+    if (!foundUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email or password does not match",
+      });
+    }
+
+    /* ---------------- PASSWORD CHECK ---------------- */
+    const match = await bcrypt.compare(password, foundUser.password);
+
+    if (!match) {
+      return res.status(400).json({
+        success: false,
+        message: "Email or password does not match",
+      });
+    }
+
+    /* ---------------- ACCESS TOKEN (SHORT LIVED) ---------------- */
+    const accessToken = jwt.sign(
+      {
+        userId: foundUser._id,
+        userType: foundUser.userType,
+        isSuperAdmin: foundUser.isSuperAdmin,
+      },
+      process.env.JWT_ADMIN_ACCESS_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    /* ---------------- REFRESH TOKEN (LONG LIVED) ---------------- */
+    const refreshToken = jwt.sign(
+      {
+        email: foundUser.email,
+        userType: foundUser.userType,
+        isSuperAdmin: foundUser.isSuperAdmin,
+      },
+      process.env.JWT_ADMIN_REFRESH_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    /* ---------------- SET REFRESH TOKEN COOKIE ---------------- */
+    res.cookie("superAdminRefreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    /* ---------------- SUCCESS RESPONSE ---------------- */
+    return res.status(200).json({
+      success: true,
+      message: "Signin successful",
+      response: {
+        accessToken, // frontend stores this
+        foundUser,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
