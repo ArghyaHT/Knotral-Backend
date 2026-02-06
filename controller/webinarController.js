@@ -104,7 +104,7 @@ export const uploadWebinarLogo = async (req, res, next) => {
 export const updateWebinarSpeaker = async (req, res, next) => {
   try {
     const { webinarId, trainerId, trainerName, designation, worksAt, description } = req.body;
-    const image = req.file?.path;
+    const imageFile = req.file?.path;
 
     if (!webinarId) {
       return res.status(400).json({ success: false, message: "Webinar ID is required" });
@@ -117,42 +117,49 @@ export const updateWebinarSpeaker = async (req, res, next) => {
 
     let trainer;
 
-    // Update existing trainer
+    // ===================== UPDATE EXISTING TRAINER =====================
     if (trainerId) {
       trainer = webinar.trainer.id(trainerId);
       if (!trainer) {
         return res.status(404).json({ success: false, message: "Trainer not found" });
       }
     } 
-    // Add new trainer
+    // ===================== ADD NEW TRAINER ONLY IF DATA EXISTS =====================
     else {
+      // Only add if at least one field or image exists
+      if (!trainerName && !designation && !worksAt && !description && !imageFile) {
+        return res.status(400).json({ success: false, message: "Cannot add empty trainer" });
+      }
+
       trainer = {
-        trainerName: "",
-        designation: "",
-        worksAt: "",
-        description: "",
+        trainerName: trainerName || "",
+        designation: designation || "",
+        worksAt: worksAt || "",
+        description: description || "",
         trainerImage: { public_id: "", url: "" },
       };
       webinar.trainer.push(trainer);
-      trainer = webinar.trainer[webinar.trainer.length - 1]; // reference new trainer
+      trainer = webinar.trainer[webinar.trainer.length - 1];
     }
 
-    // Update text fields
+    // ===================== UPDATE TEXT FIELDS =====================
     if (trainerName) trainer.trainerName = trainerName;
     if (designation) trainer.designation = designation;
     if (worksAt) trainer.worksAt = worksAt;
     if (description) trainer.description = description;
 
-    // Handle image
-    if (image) {
+    // ===================== HANDLE IMAGE =====================
+    if (imageFile) {
       if (trainer.trainerImage?.public_id) {
         await cloudinary.uploader.destroy(trainer.trainerImage.public_id);
       }
-      const upload = await cloudinary.uploader.upload(image, { folder: "webinars/trainers" });
+
+      const upload = await cloudinary.uploader.upload(imageFile, {
+        folder: "webinars/trainers",
+      });
+
       trainer.trainerImage = { public_id: upload.public_id, url: upload.secure_url };
-    } 
-    // Default image
-    else if (!trainer.trainerImage?.url) {
+    } else if (!trainer.trainerImage?.url) {
       trainer.trainerImage = {
         public_id: "",
         url: "https://res.cloudinary.com/dpynxkjfq/image/upload/v1720520065/default-avatar-icon-of-social-media-user-vector_wl5pm0.jpg",
@@ -171,6 +178,7 @@ export const updateWebinarSpeaker = async (req, res, next) => {
     next(error);
   }
 };
+
 
 
 
