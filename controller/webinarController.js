@@ -103,13 +103,21 @@ export const uploadWebinarLogo = async (req, res, next) => {
 
 export const updateWebinarSpeaker = async (req, res, next) => {
   try {
-    const { webinarId, trainerId, trainerName, designation, worksAt, description } = req.body;
-    const image = req.file?.path;
+    const { webinarId, trainers } = req.body; // trainers is an array of trainer objects
+    // Each trainer object can have: trainerId, trainerName, designation, worksAt, description
+    // If an image is uploaded, req.files will contain them keyed by index or trainerId
 
     if (!webinarId) {
       return res.status(400).json({
         success: false,
         message: "Webinar ID is required",
+      });
+    }
+
+    if (!Array.isArray(trainers) || trainers.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Trainers array is required",
       });
     }
 
@@ -121,81 +129,85 @@ export const updateWebinarSpeaker = async (req, res, next) => {
       });
     }
 
-    let trainer;
+    // Collect IDs of trainers sent from frontend (only existing trainers)
+    const incomingTrainerIds = trainers
+      .filter(t => t.trainerId)
+      .map(t => t.trainerId);
 
-    /* ===================== UPDATE EXISTING TRAINER ===================== */
-    if (trainerId) {
-      trainer = webinar.trainer.id(trainerId);
+    // ===================== DELETE REMOVED TRAINERS =====================
+    webinar.trainer = webinar.trainer.filter(t =>
+      incomingTrainerIds.includes(t._id.toString())
+    );
 
-      if (!trainer) {
-        return res.status(404).json({
-          success: false,
-          message: "Trainer not found",
+    // ===================== ADD OR UPDATE TRAINERS =====================
+    for (const trainerData of trainers) {
+      let trainer;
+
+      // Update existing trainer
+      if (trainerData.trainerId) {
+        trainer = webinar.trainer.id(trainerData.trainerId);
+        if (!trainer) continue; // should not happen
+      } 
+      // Add new trainer
+      else {
+        trainer = {
+          trainerName: "",
+          designation: "",
+          worksAt: "",
+          description: "",
+          trainerImage: {
+            public_id: "",
+            url: "",
+          },
+        };
+        webinar.trainer.push(trainer);
+        trainer = webinar.trainer[webinar.trainer.length - 1];
+      }
+
+      // Update text fields
+      trainer.trainerName = trainerData.trainerName || trainer.trainerName;
+      trainer.designation = trainerData.designation || trainer.designation;
+      trainer.worksAt = trainerData.worksAt || trainer.worksAt;
+      trainer.description = trainerData.description || trainer.description;
+
+      // Handle image if sent (assuming each trainerData has imagePath)
+      if (trainerData.imagePath) {
+        // delete old image if exists
+        if (trainer.trainerImage?.public_id) {
+          await cloudinary.uploader.destroy(trainer.trainerImage.public_id);
+        }
+
+        const upload = await cloudinary.uploader.upload(trainerData.imagePath, {
+          folder: "webinars/trainers",
         });
-      }
-    }
 
-    /* ===================== ADD NEW TRAINER ===================== */
-    else {
-      trainer = {
-        trainerName,
-        designation,
-        worksAt,
-        description,
-        trainerImage: {
+        trainer.trainerImage = {
+          public_id: upload.public_id,
+          url: upload.secure_url,
+        };
+      } 
+      // if no image, set default only if empty
+      else if (!trainer.trainerImage?.url) {
+        trainer.trainerImage = {
           public_id: "",
-          url: "",
-        },
-      };
-
-      webinar.trainer.push(trainer);
-      trainer = webinar.trainer[webinar.trainer.length - 1]; // get ref to subdoc
-    }
-
-    /* ===================== UPDATE TEXT FIELDS ===================== */
-    if (trainerName) trainer.trainerName = trainerName;
-    if (designation) trainer.designation = designation;
-    if (worksAt) trainer.worksAt = worksAt;
-    if (description) trainer.description = description;
-
-    /* ===================== HANDLE IMAGE UPLOAD ===================== */
-    if (image) {
-      // Delete old image if exists
-      if (trainer.trainerImage?.public_id) {
-        await cloudinary.uploader.destroy(trainer.trainerImage.public_id);
+          url: "https://res.cloudinary.com/dpynxkjfq/image/upload/v1720520065/default-avatar-icon-of-social-media-user-vector_wl5pm0.jpg",
+        };
       }
-
-      const upload = await cloudinary.uploader.upload(image, {
-        folder: "webinars/trainers",
-      });
-
-      trainer.trainerImage = {
-        public_id: upload.public_id,
-        url: upload.secure_url,
-      };
-    } else if (!trainer.trainerImage?.url) {
-      // Set default only if no image uploaded
-      trainer.trainerImage = {
-        public_id: "",
-        url: "https://res.cloudinary.com/dpynxkjfq/image/upload/v1720520065/default-avatar-icon-of-social-media-user-vector_wl5pm0.jpg",
-      };
     }
 
-    /* ===================== SAVE WEBINAR ===================== */
-    webinar.markModified("trainer"); // Important: ensure Mongoose saves subdocument changes
+    webinar.markModified("trainer");
     await webinar.save();
 
     res.status(200).json({
       success: true,
-      message: trainerId
-        ? "Trainer updated successfully"
-        : "Trainer added successfully",
-      trainer,
+      message: "Trainers updated successfully",
+      trainers: webinar.trainer,
     });
   } catch (error) {
     next(error);
   }
 };
+
 
 
 
