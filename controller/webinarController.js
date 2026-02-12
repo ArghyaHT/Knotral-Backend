@@ -1,5 +1,4 @@
-import { response } from "express";
-import { createWebinarService, deleteWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, getYoutubeVideoId, incrementWebinarViewsService, searchPastWebinarsWithFilterService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, stopWebinarService, updateWebinarBenefitsService, updateWebinarService, updateWebinarUtmService } from "../services/webinarServices.js";
+import { createWebinarService, deleteWebinarService, filterWebinarsService, geAllWebinarByIdService, geAllWebinarService, getCertifiedWebinarsPaginationService, getWebinarBySlugService, getYoutubeVideoId, incrementWebinarViewsService, searchPastWebinarsWithFilterService, searchWebinarsByCategoryService, searchWebinarsWithFilterService, updateWebinarBenefitsService, updateWebinarService, updateWebinarStatusService, updateWebinarUtmService } from "../services/webinarServices.js";
 import { v2 as cloudinary } from "cloudinary";
 
 
@@ -750,14 +749,45 @@ export const addPastSession = async (req, res, next) => {
 };
 
 
-export const stopWebinar = async (req, res, next) => {
-  try {
-    const { webinarId } = req.body;
+// export const stopWebinar = async (req, res, next) => {
+//   try {
+//     const { webinarId } = req.body;
 
-    const webinar = await stopWebinarService(webinarId);
+//     const webinar = await stopWebinarService(webinarId);
+
+//     if (!webinar) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Webinar not found",
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Campaign stopped successfully",
+//       response: webinar,
+//     });
+//   }
+//   catch (error) {
+//     next(error);
+//   }
+// }
+
+export const updateWebinarStatus = async (req, res, next) => {
+  try {
+    const { webinarId, action } = req.body;
+
+    if (!webinarId || !action) {
+      return res.status(400).json({
+        success: false,
+        message: "webinarId and action are required",
+      });
+    }
+
+    const webinar = await updateWebinarStatusService(webinarId, action);
 
     if (!webinar) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: "Webinar not found",
       });
@@ -765,14 +795,17 @@ export const stopWebinar = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: "Campaign stopped successfully",
+      message:
+        action === "stop"
+          ? "Webinar stopped successfully"
+          : "Webinar resumed successfully",
       response: webinar,
     });
-  }
-  catch (error) {
+  } catch (error) {
     next(error);
   }
-}
+};
+
 
 export const deleteWebinar = async (req, res, next) => {
   try {

@@ -183,22 +183,45 @@ export const getYoutubeVideoId = (url = "") => {
 };
 
 
-export const stopWebinarService = async (webinarId) => {
-  const webinar = await Webinars.findByIdAndUpdate(
+// export const stopWebinarService = async (webinarId) => {
+//   const webinar = await Webinars.findByIdAndUpdate(
+//     webinarId,
+//     {
+//       $set: {
+//         isStopped: true,
+//         isLive: false,
+//       },
+//     },
+//     { new: true }
+//   );
+
+//   return webinar;
+// };
+
+export const updateWebinarStatusService = async (webinarId, action) => {
+  let updateFields = {};
+
+  if (action === "stop") {
+    updateFields = {
+      isStopped: true,
+      isLive: false,
+    };
+  }
+
+  if (action === "resume") {
+    updateFields = {
+      isStopped: false,
+      isLive: true,
+    };
+  }
+
+  return await Webinars.findByIdAndUpdate(
     webinarId,
-    {
-      $set: {
-        isStopped: true,
-        isLive: false,
-        // "actions.canStartProgram": false,
-        // "actions.canEnroll": false,
-      },
-    },
+    { $set: updateFields },
     { new: true }
   );
-
-  return webinar;
 };
+
 
 
 export const deleteWebinarService = async (webinarId) => {

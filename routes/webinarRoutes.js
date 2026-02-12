@@ -1,5 +1,5 @@
 import express from "express";
-import { addPastSession, addTrainerToWebinar, createBulkWebinars, createWebinar, deleteWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getLiveWebinarsByPagination, getPastWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, removeTrainer, searchWebinarsByCategory, stopWebinar, updateWebinar, updateWebinarSchema, updateWebinarSpeaker, updateWebinarUtm, uploadWebinarLogo, uploadWebinarOg } from "../controller/webinarController.js";
+import { addPastSession, addTrainerToWebinar, createBulkWebinars, createWebinar, deleteWebinar, filterWebinars, getAllCertifiedWebinarsByPagination, getAllWebinars, getAllWebinarsByPagination, getLiveWebinarsByPagination, getPastWebinarsByPagination, getWebinarsById, getWebinarsBySlug, incrementWebinarViews, removeTrainer, searchWebinarsByCategory, updateWebinar, updateWebinarSchema, updateWebinarSpeaker, updateWebinarStatus, updateWebinarUtm, uploadWebinarLogo, uploadWebinarOg } from "../controller/webinarController.js";
 import { upload } from "../middlewares/Upload.js";
 
 const router = express.Router()
@@ -47,7 +47,7 @@ router.route("/update-webinar-schema").put(updateWebinarSchema)
 
 router.route("/upload-past-sessions").put(addPastSession)
 
-router.route("/stop-webinar").post(stopWebinar)
+router.route("/update-webinar-status").post(updateWebinarStatus)
 
 router.route("/delete-webinar").post(deleteWebinar)
 
