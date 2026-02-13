@@ -115,3 +115,62 @@ export const getWebinarCertificates = async (req, res, next) => {
     }
 };
 
+
+export const getAllCertificates = async (req, res, next) => {
+  try {
+    const certificates = await Certificates.find()
+      .sort({ createdAt: -1 }); // latest first
+
+    return res.status(200).json({
+      success: true,
+      count: certificates.length,
+      response: certificates,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteCertificate = async (req, res, next) => {
+  try {
+    const { certificateId } = req.query;
+
+    if (!certificateId) {
+      return res.status(400).json({
+        success: false,
+        message: "Certificate ID is required",
+      });
+    }
+
+    const certificate = await Certificates.findById(certificateId);
+
+    if (!certificate) {
+      return res.status(404).json({
+        success: false,
+        message: "Certificate not found",
+      });
+    }
+
+    // 🔥 Delete from Cloudinary
+    if (certificate.certificateFile?.public_id) {
+      await cloudinary.uploader.destroy(
+        certificate.certificateFile.public_id,
+        { resource_type: "image" } // because you are uploading as image
+      );
+    }
+
+    // 🔥 Delete from Database
+    await Certificates.findByIdAndDelete(certificateId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Certificate deleted successfully",
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+
