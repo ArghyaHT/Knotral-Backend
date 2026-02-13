@@ -176,7 +176,7 @@ export const deleteCertificate = async (req, res, next) => {
 
 export const sendCertificateEmail = async (req, res, next) => {
   try {
-    const { certificateId, emailData } = req.body;
+    const { certificateId, subject, body, emailData,  } = req.body;
 
     if (!certificateId) {
       return res.status(400).json({
@@ -224,7 +224,9 @@ export const sendCertificateEmail = async (req, res, next) => {
       const result = await emailWithNodeMail(
         upperName,
         email,
-        certificateUrl
+        certificateUrl,
+        subject,
+        body,
       );
 
       results.push({
