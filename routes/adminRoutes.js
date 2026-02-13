@@ -11,7 +11,7 @@ import {
 import { upload, uploadCertificate } from "../middlewares/Upload.js";
 import { getRegistrations } from "../controller/registartionController.js";
 import { verifySuperAdminAccessToken } from "../middlewares/VerifyRefreshTokenAdmin.js";
-import { uploadWebinarCertificate } from "../controller/certificatesController.js";
+import { getWebinarCertificates, uploadWebinarCertificate } from "../controller/certificatesController.js";
 
 const router = express.Router();
 
@@ -60,5 +60,8 @@ router.post(
   uploadCertificate.single("certificate"),
   uploadWebinarCertificate
 );
+
+router.get("/get-certificates", getWebinarCertificates);
+
 
 export default router;

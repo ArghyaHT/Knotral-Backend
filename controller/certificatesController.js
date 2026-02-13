@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import { Certificates } from "../models/certificates.js";
 import { geAllWebinarByIdService } from "../services/webinarServices.js";
+import mongoose from "mongoose";
 
 export const uploadWebinarCertificate = async (req, res, next) => {
   try {
@@ -79,3 +80,38 @@ export const uploadWebinarCertificate = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getWebinarCertificates = async (req, res, next) => {
+  try {
+    const { webinarId } = req.query;
+
+    console.log(webinarId)
+
+    if (!mongoose.Types.ObjectId.isValid(webinarId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Webinar ID",
+      });
+    }
+
+    const certificate = await Certificates.findOne({
+      webinarId,
+    });
+
+    if (!certificate) {
+      return res.status(200).json({
+        success: true,
+        certificate: null,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      response: certificate,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
