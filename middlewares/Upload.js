@@ -18,3 +18,15 @@ const fileFilter = (req, file, cb) => {
 };
 
 export const upload = multer({ storage, fileFilter });
+
+
+// CERTIFICATE UPLOAD (For PDFs)
+export const uploadCertificate = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype !== "application/pdf") {
+      return cb(new Error("Only PDF files are allowed!"), false);
+    }
+    cb(null, true);
+  },
+});

@@ -8,9 +8,10 @@ import {
   uploadWebinarLogo,
   uploadWebinarOg,
 } from "../controller/webinarController.js";
-import { upload } from "../middlewares/Upload.js";
+import { upload, uploadCertificate } from "../middlewares/Upload.js";
 import { getRegistrations } from "../controller/registartionController.js";
 import { verifySuperAdminAccessToken } from "../middlewares/VerifyRefreshTokenAdmin.js";
+import { uploadWebinarCertificate } from "../controller/certificatesController.js";
 
 const router = express.Router();
 
@@ -48,9 +49,16 @@ router.post(
   getRegistrations
 );
 
-/* 🌍 PUBLIC ROUTES */
+/* PUBLIC ROUTES */
 router.get("/get-webinars", getAllWebinars);
 router.get("/get-webinar-by-slug", getWebinarsBySlug);
 router.get("/get-all-webinars", getAllWebinarsByPagination);
+
+/* CERTIFICATE ROUTES */
+router.post(
+  "/upload-webinar-certificate",
+  uploadCertificate.single("certificate"),
+  uploadWebinarCertificate
+);
 
 export default router;
