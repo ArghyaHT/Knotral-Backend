@@ -2,6 +2,7 @@ import { v2 as cloudinary } from "cloudinary";
 import { Certificates } from "../models/certificates.js";
 import { geAllWebinarByIdService } from "../services/webinarServices.js";
 import mongoose from "mongoose";
+import { emailWithNodeMail } from "../utils/emailSender.js";
 
 export const uploadWebinarCertificate = async (req, res, next) => {
     try {
@@ -166,6 +167,76 @@ export const deleteCertificate = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "Certificate deleted successfully",
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const sendCertificateEmail = async (req, res, next) => {
+  try {
+    const { certificateId, emailData } = req.body;
+
+    if (!certificateId) {
+      return res.status(400).json({
+        success: false,
+        message: "Certificate ID is required",
+      });
+    }
+
+    if (!emailData || !Array.isArray(emailData) || emailData.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Email data array is required",
+      });
+    }
+
+    // 🔹 Fetch Certificate
+    const certificate = await Certificates.findById(certificateId);
+
+    if (!certificate) {
+      return res.status(404).json({
+        success: false,
+        message: "Certificate not found",
+      });
+    }
+
+    const certificateUrl = certificate.certificateFile?.url;
+
+    if (!certificateUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "Certificate file URL not found",
+      });
+    }
+
+    const results = [];
+
+    // 🔹 Send Emails One By One
+    for (let i = 0; i < emailData.length; i++) {
+      const { email, name } = emailData[i];
+
+      if (!email || !name) continue;
+
+      const upperName = name.toUpperCase();
+
+      const result = await emailWithNodeMail(
+        upperName,
+        email,
+        certificateUrl
+      );
+
+      results.push({
+        email,
+        status: result?.success ? "sent" : "failed",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Certificate emails processed",
+      response: results,
     });
 
   } catch (error) {

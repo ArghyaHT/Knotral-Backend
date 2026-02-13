@@ -11,7 +11,7 @@ import {
 import { upload, uploadCertificate } from "../middlewares/Upload.js";
 import { getRegistrations } from "../controller/registartionController.js";
 import { verifySuperAdminAccessToken } from "../middlewares/VerifyRefreshTokenAdmin.js";
-import { deleteCertificate, getAllCertificates, getWebinarCertificates, uploadWebinarCertificate } from "../controller/certificatesController.js";
+import { deleteCertificate, getAllCertificates, getWebinarCertificates, sendCertificateEmail, uploadWebinarCertificate } from "../controller/certificatesController.js";
 
 const router = express.Router();
 
@@ -67,6 +67,7 @@ router.get("/get-all-certificates", getAllCertificates);
 
 router.delete("/delete-certificate", deleteCertificate);
 
+router.delete("/send-certificate-email", sendCertificateEmail);
 
 
 export default router;
