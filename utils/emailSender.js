@@ -53,7 +53,7 @@ export const emailWithNodeMail = async (name, email, imageUrl) => {
 
     page.drawText(name.toUpperCase(), {
       x: (imgWidth - textWidth) / 2,
-      y: imgHeight / 2, // adjust vertically
+      y: imgHeight / 2 + 90, // adjust vertically
       size: fontSize,
       font,
       color: rgb(0, 0, 0),

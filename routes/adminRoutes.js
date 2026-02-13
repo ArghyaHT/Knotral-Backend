@@ -67,7 +67,7 @@ router.get("/get-all-certificates", getAllCertificates);
 
 router.delete("/delete-certificate", deleteCertificate);
 
-router.delete("/send-certificate-email", sendCertificateEmail);
+router.post("/send-certificate-email", sendCertificateEmail);
 
 
 export default router;
