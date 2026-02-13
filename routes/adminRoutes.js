@@ -57,7 +57,7 @@ router.get("/get-all-webinars", getAllWebinarsByPagination);
 /* CERTIFICATE ROUTES */
 router.post(
   "/upload-webinar-certificate",
-  uploadCertificate.single("certificate"),
+  upload.single("certificate"),
   uploadWebinarCertificate
 );
 
