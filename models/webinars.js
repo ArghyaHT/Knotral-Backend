@@ -33,7 +33,7 @@ const webinarsSchema = new mongoose.Schema(
         },
         category: {
             type: String,
-            enum: ["Mathematics", "Literacy", "Science", "EdTech", "SEL & Wellbeing", "Arts & Music", "Languages", "NEP 2020", "Early Years", "Assessment"]
+            enum: ["Franchise & Edupreneurs", "Curriculum & Publishers", "Early Years", "EdTech & Digital Learning", "SEL & Wellbeing", "Teacher Professional Development", "Inclusion & Special Needs", "Higher Education", "Corporate & Professional Development", "Online & Alternate Schooling"]
         },
         date: {
             type: Date,
