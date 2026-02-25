@@ -2,6 +2,7 @@ import axios from "axios";
 import { getZohoAccessToken } from "../utils/zohoAuth.js";
 import Registrations from "../models/registrations.js";
 import logger, { logToFile } from "../utils/logger.js";
+import SolutionProvider from "../models/solutionProvider.js";
 
 export const createZohoLead = async (req, res) => {
   try {
@@ -85,7 +86,7 @@ export const createZohoLead = async (req, res) => {
 
     });
 
-      // ✅ Save to file
+    // ✅ Save to file
     logToFile(logData);
 
     // ✅ Log to Winston/Render console
@@ -155,25 +156,23 @@ export const createZohoSlutionProvidersForm = async (req, res) => {
     const payload = {
       data: [
         {
-          Name: req.body.Name,
-          // Last_Name: req.body.lastName,
+          First_Name: req.body.First_Name,
+          Last_Name: req.body.Last_Name,
           Email: req.body.Email,
           Mobile: req.body.Mobile,
           Designation: req.body.Designation,
           FORM_NAME: "Solution Providers Landing Page",
-          Solution_Type: req.body.Solution_Type,
-          Target_Audience: req.body.Target_Audience,
+          Type_of_Solution_You_Offer: req.body.Type_of_Solution_You_Offer,
+          Primary_Target_Audience: req.body.Primary_Target_Audience,
+          Lead_Status: "No Contact Initiated",
+          Lead_Source: "Knotral"
+
         }
       ]
-
-      //  Name: "",
-      // Email: "",
-      // Mobile: "",
-      // Designation: "",
-      // FORM_NAME: "Solution Providers Landing Page",
-      // Solution_Type: "",
-      // Target_Audience: ""
     };
+
+    await SolutionProvider.create(payload.data);
+
 
     const response = await axios.post(
       `${process.env.ZOHO_API_DOMAIN}/crm/v2/Leads`,
