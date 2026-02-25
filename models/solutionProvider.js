@@ -25,7 +25,11 @@ const solutionProviderSchema = new mongoose.Schema(
 
     // 🧩 Solution Info
     Type_of_Solution_You_Offer: [{ type: String }],
-    Primary_Target_Audience: [{ type: String }],      
+    Primary_Target_Audience: [{ type: String }],   
+    Products: { 
+      type: String, 
+      default: "Solution Provider"
+    },   
 
 
     // 🕒 Meta

@@ -165,7 +165,8 @@ export const createZohoSlutionProvidersForm = async (req, res) => {
           Type_of_Solution_You_Offer: [req.body.Type_of_Solution_You_Offer],
           Primary_Target_Audience: [req.body.Primary_Target_Audience],
           Lead_Status: "No Contact Initiated",
-          Lead_Source: "Knotral Trainings"
+          Lead_Source: "Knotral Trainings",
+          Products: "Solution Provider",
 
         }
       ]
