@@ -36,11 +36,6 @@ const certificateSchema = new mongoose.Schema(
       },
     },
 
-    certificateNumber: {
-      type: String,
-      unique: true,
-    },
-
     issuedAt: {
       type: Date,
       default: Date.now,
