@@ -23,7 +23,7 @@ export const createRegistration= async (req, res, next) => {
 
 export const getRegistrations = async (req, res, next) => {
   try {
-    const registrations = await fetchAllRegistrations();
+    const registrations = await fetchAllRegistrations().sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
