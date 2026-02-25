@@ -111,12 +111,13 @@ export const createZohoContact = async (req, res) => {
           Last_Name: req.body.lastName,
           Email: req.body.email,
           Mobile: req.body.phone,
-          FORM_NAME: "Contact Us",
-          Category: req.body.category,
+          FORM_NAME: "Knotral Trainings Contact Us",
+          Designation: req.body.category,
+          City: req.body.city,
           Company: req.body.organization || "",
-          Subject: req.body.subject,
           Description: req.body.message,
-          Lead_Source: "Website Contact Form"
+          Lead_Status: "No Contact Initiated",
+          Lead_Source: "Knotral Trainings",
         }
       ]
     };
