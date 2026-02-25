@@ -171,6 +171,8 @@ export const createZohoSlutionProvidersForm = async (req, res) => {
       ]
     };
 
+    console.log("ZOHO SOLUTION PROVIDER PAYLOAD", payload.data)
+
     await SolutionProvider.create(payload.data);
 
 
