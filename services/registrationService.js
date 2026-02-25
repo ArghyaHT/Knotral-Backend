@@ -49,7 +49,6 @@ export const fetchAllRegistrations = async () => {
 
   if (!futureWebinars.length) return [];
 
-  /* 1️⃣ Collect organiser words */
   const organiserWords = futureWebinars
     .map(w => w.organisedBy)
     .filter(Boolean)
@@ -57,16 +56,16 @@ export const fetchAllRegistrations = async () => {
       name
         .toLowerCase()
         .split(/\s+/)
-        .filter(word => word.length > 2) // ignore small words
+        .filter(word => word.length > 2)
     );
 
   if (!organiserWords.length) return [];
 
-  /* 2️⃣ Build regex: match ANY word */
   const organiserRegex = new RegExp(organiserWords.join("|"), "i");
 
-  /* 3️⃣ Fetch only matching registrations */
   return await Registrations.find({
     FORM_NAME: { $regex: organiserRegex }
-  }).lean();
+  })
+    .sort({ createdAt: -1 }) // ✅ SORT HERE
+    .lean();
 };
