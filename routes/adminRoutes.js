@@ -12,6 +12,7 @@ import { upload, uploadCertificate } from "../middlewares/Upload.js";
 import { getRegistrations } from "../controller/registartionController.js";
 import { verifySuperAdminAccessToken } from "../middlewares/VerifyRefreshTokenAdmin.js";
 import { deleteCertificate, getAllCertificates, getWebinarCertificates, sendCertificateEmail, uploadWebinarCertificate } from "../controller/certificatesController.js";
+import { getAllLeadsAndProviders } from "../controller/leadsController.js";
 
 const router = express.Router();
 
@@ -60,6 +61,8 @@ router.post(
   upload.single("certificate"),
   uploadWebinarCertificate
 );
+
+router.get("/get-all-leads", getAllLeadsAndProviders);
 
 router.get("/get-webinar-certificate", getWebinarCertificates);
 
