@@ -36,6 +36,21 @@ const certificateSchema = new mongoose.Schema(
       },
     },
 
+     // SAMPLE WATERMARKED VERSION (Public Use)
+    sampleCertificateFile: {
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
+      secure_url: String,
+      format: String,
+      resource_type: String,
+    },
+
     issuedAt: {
       type: Date,
       default: Date.now,

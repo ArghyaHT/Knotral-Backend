@@ -4,82 +4,209 @@ import { geAllWebinarByIdService } from "../services/webinarServices.js";
 import mongoose from "mongoose";
 import { emailWithNodeMail } from "../utils/emailSender.js";
 
+// export const uploadWebinarCertificate = async (req, res, next) => {
+//     try {
+//         const { webinarId } = req.body;
+//         const certificatePath = req.file?.path;
+
+//         if (!certificatePath) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "No certificate file uploaded",
+//             });
+//         }
+
+//         // Check if webinar exists
+//         const webinar = await geAllWebinarByIdService(webinarId);
+//         if (!webinar) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Webinar not found",
+//             });
+//         }
+
+//         // Check if certificate already exists for this webinar
+//         let existingCertificate = await Certificates.findOne({ webinarId });
+
+//         // Delete old certificate from Cloudinary if exists
+//         if (existingCertificate?.certificateFile?.public_id) {
+//             await cloudinary.uploader.destroy(
+//                 existingCertificate.certificateFile.public_id,
+//                 { resource_type: "image" },
+//             );
+//         }
+
+//         const upload = await cloudinary.uploader.upload(certificatePath, {
+//             folder: "webinars/certificates",
+//             resource_type: "image",   // keep this
+//             type: "upload",         // 🔥 THIS MAKES IT PUBLIC
+//         });
+
+//         // If certificate exists → update
+//         if (existingCertificate) {
+//             existingCertificate.certificateFile = {
+//                 public_id: upload.public_id,
+//                 url: upload.secure_url,
+//                 format: upload.format,
+//                 resource_type: upload.resource_type,
+//             };
+
+//             await existingCertificate.save();
+
+//             return res.status(200).json({
+//                 success: true,
+//                 message: "Certificate updated successfully",
+//                 response: existingCertificate,
+//             });
+//         }
+
+//         // Else create new certificate
+//         const newCertificate = await Certificates.create({
+//             webinarId,
+//             webinarOrganiser: webinar.organisedBy || "Unknown",
+//             certificateFile: {
+//                 public_id: upload.public_id,
+//                 url: upload.secure_url,
+//                 format: upload.format,
+//                 resource_type: upload.resource_type,
+//             },
+//         });
+
+//         res.status(200).json({
+//             success: true,
+//             message: "Certificate uploaded successfully",
+//             response: newCertificate,
+//         });
+//     } catch (error) {
+//         next(error);
+//     }
+// };
+
 export const uploadWebinarCertificate = async (req, res, next) => {
-    try {
-        const { webinarId } = req.body;
-        const certificatePath = req.file?.path;
+  try {
+    const { webinarId } = req.body;
+    const certificatePath = req.file?.path;
 
-        if (!certificatePath) {
-            return res.status(400).json({
-                success: false,
-                message: "No certificate file uploaded",
-            });
-        }
-
-        // Check if webinar exists
-        const webinar = await geAllWebinarByIdService(webinarId);
-        if (!webinar) {
-            return res.status(400).json({
-                success: false,
-                message: "Webinar not found",
-            });
-        }
-
-        // Check if certificate already exists for this webinar
-        let existingCertificate = await Certificates.findOne({ webinarId });
-
-        // Delete old certificate from Cloudinary if exists
-        if (existingCertificate?.certificateFile?.public_id) {
-            await cloudinary.uploader.destroy(
-                existingCertificate.certificateFile.public_id,
-                { resource_type: "image" },
-            );
-        }
-
-        const upload = await cloudinary.uploader.upload(certificatePath, {
-            folder: "webinars/certificates",
-            resource_type: "image",   // keep this
-            type: "upload",         // 🔥 THIS MAKES IT PUBLIC
-        });
-
-        // If certificate exists → update
-        if (existingCertificate) {
-            existingCertificate.certificateFile = {
-                public_id: upload.public_id,
-                url: upload.secure_url,
-                format: upload.format,
-                resource_type: upload.resource_type,
-            };
-
-            await existingCertificate.save();
-
-            return res.status(200).json({
-                success: true,
-                message: "Certificate updated successfully",
-                response: existingCertificate,
-            });
-        }
-
-        // Else create new certificate
-        const newCertificate = await Certificates.create({
-            webinarId,
-            webinarOrganiser: webinar.organisedBy || "Unknown",
-            certificateFile: {
-                public_id: upload.public_id,
-                url: upload.secure_url,
-                format: upload.format,
-                resource_type: upload.resource_type,
-            },
-        });
-
-        res.status(200).json({
-            success: true,
-            message: "Certificate uploaded successfully",
-            response: newCertificate,
-        });
-    } catch (error) {
-        next(error);
+    if (!certificatePath) {
+      return res.status(400).json({
+        success: false,
+        message: "No certificate file uploaded",
+      });
     }
+
+    // Check webinar
+    const webinar = await geAllWebinarByIdService(webinarId);
+    if (!webinar) {
+      return res.status(400).json({
+        success: false,
+        message: "Webinar not found",
+      });
+    }
+
+    // Check existing certificate
+    let existingCertificate = await Certificates.findOne({ webinarId });
+
+    // Delete old original + sample from Cloudinary
+    if (existingCertificate) {
+      if (existingCertificate.certificateFile?.public_id) {
+        await cloudinary.uploader.destroy(
+          existingCertificate.certificateFile.public_id,
+          { resource_type: "image" }
+        );
+      }
+
+      if (existingCertificate.sampleCertificateFile?.public_id) {
+        await cloudinary.uploader.destroy(
+          existingCertificate.sampleCertificateFile.public_id,
+          { resource_type: "image" }
+        );
+      }
+    }
+
+    // 1️⃣ Upload ORIGINAL
+    const originalUpload = await cloudinary.uploader.upload(certificatePath, {
+      folder: "webinars/certificates/original",
+      resource_type: "image",
+      type: "upload",
+    });
+
+ const sampleUpload = await cloudinary.uploader.upload(certificatePath, {
+  folder: "webinars/certificates/sample",
+  resource_type: "image",
+  type: "upload",
+  transformation: [
+    {
+      overlay: {
+        font_family: "Arial",
+        font_size: 250,
+        font_weight: "bold",
+        text: "SAMPLE",
+      },
+      color: "#FF0000",
+      opacity: 25,
+      gravity: "center",
+      angle: -35,
+    },
+  ],
+});
+
+    // Update existing
+    if (existingCertificate) {
+      existingCertificate.certificateFile = {
+        public_id: originalUpload.public_id,
+        url: originalUpload.secure_url,
+        secure_url: originalUpload.secure_url,
+        format: originalUpload.format,
+        resource_type: originalUpload.resource_type,
+      };
+
+      existingCertificate.sampleCertificateFile = {
+        public_id: sampleUpload.public_id,
+        url: sampleUpload.secure_url,
+        secure_url: sampleUpload.secure_url,
+        format: sampleUpload.format,
+        resource_type: sampleUpload.resource_type,
+      };
+
+      await existingCertificate.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Certificate updated successfully",
+        response: existingCertificate,
+      });
+    }
+
+    // Create new certificate
+    const newCertificate = await Certificates.create({
+      webinarId,
+      webinarOrganiser: webinar.organisedBy || "Unknown",
+
+      certificateFile: {
+        public_id: originalUpload.public_id,
+        url: originalUpload.secure_url,
+        secure_url: originalUpload.secure_url,
+        format: originalUpload.format,
+        resource_type: originalUpload.resource_type,
+      },
+
+      sampleCertificateFile: {
+        public_id: sampleUpload.public_id,
+        url: sampleUpload.secure_url,
+        secure_url: sampleUpload.secure_url,
+        format: sampleUpload.format,
+        resource_type: sampleUpload.resource_type,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Certificate uploaded successfully",
+      response: newCertificate,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getWebinarCertificates = async (req, res, next) => {
