@@ -111,7 +111,7 @@ export const createZohoContact = async (req, res) => {
           First_Name: req.body.firstName,
           Last_Name: req.body.lastName,
           Email: req.body.email,
-          Mobile: req.body.phone,
+          Mobile: req.body.Mobile,
           FORM_NAME: "Knotral Trainings Contact Us",
           Designation: req.body.category,
           City: req.body.city,
