@@ -12,6 +12,7 @@ import zohoRoutes from "./routes/zohoRoutes.js"
 import paymentRoutes from "./routes/paymentRoutes.js"
 import userRoutes from "./routes/userRoutes.js"
 import adminRoutes from "./routes/adminRoutes.js"
+import certificateRoutes from "./routes/certificateRoutes.js"
 
 import { GlobalErrorHandler } from "./middlewares/GlobalErrorHandler.js";
 import { v2 as cloudinary } from "cloudinary";
@@ -92,6 +93,7 @@ app.use("/api/payment", paymentRoutes)
 app.use("/api/user", userRoutes)
 app.use("/api/admin", adminRoutes)
 
+app.use("/api/certificates", certificateRoutes)
 
 app.use(GlobalErrorHandler)
 
