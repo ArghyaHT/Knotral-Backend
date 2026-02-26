@@ -3,6 +3,7 @@ import { getZohoAccessToken } from "../utils/zohoAuth.js";
 import Registrations from "../models/registrations.js";
 import logger, { logToFile } from "../utils/logger.js";
 import SolutionProvider from "../models/solutionProvider.js";
+import Leads from "../models/leads.js";
 
 export const createZohoLead = async (req, res) => {
   try {
@@ -121,6 +122,8 @@ export const createZohoContact = async (req, res) => {
         }
       ]
     };
+
+    await Leads.create(payload.data);
 
     const response = await axios.post(
       `${process.env.ZOHO_API_DOMAIN}/crm/v2/Leads`,
