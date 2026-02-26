@@ -28,7 +28,6 @@ export const getAllLeadsAndProviders = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      count: mergedData.length,
       response: mergedData
     });
 
