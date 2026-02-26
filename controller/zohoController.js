@@ -125,6 +125,9 @@ export const createZohoContact = async (req, res) => {
 
     await Leads.create(payload.data);
 
+        console.log("ZOHO Contact PAYLOAD", payload.data)
+
+
     const response = await axios.post(
       `${process.env.ZOHO_API_DOMAIN}/crm/v2/Leads`,
       payload,
