@@ -31,9 +31,25 @@ const webinarsSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+        // category: {
+        //     type: String,
+        //     enum: ["Franchise & Edupreneurs", "Curriculum & Publishers", "Early Years", "EdTech & Digital Learning", "SEL & Wellbeing", "Teacher Professional Development", "Inclusion & Special Needs", "Higher Education", "Corporate & Professional Development", "Online & Alternate Schooling"]
+        // },
         category: {
-            type: String,
-            enum: ["Franchise & Edupreneurs", "Curriculum & Publishers", "Early Years", "EdTech & Digital Learning", "SEL & Wellbeing", "Teacher Professional Development", "Inclusion & Special Needs", "Higher Education", "Corporate & Professional Development", "Online & Alternate Schooling"]
+            type: [String],
+            enum: [
+                "Franchise & Edupreneurs",
+                "Curriculum & Publishers",
+                "Early Years",
+                "EdTech & Digital Learning",
+                "SEL & Wellbeing",
+                "Teacher Professional Development",
+                "Inclusion & Special Needs",
+                "Higher Education",
+                "Corporate & Professional Development",
+                "Online & Alternate Schooling"
+            ],
+            default: []
         },
         date: {
             type: Date,
