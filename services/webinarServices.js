@@ -38,13 +38,26 @@ export const searchWebinarsWithFilterService = async (filter = {}, options = {})
 
   // Define sort object
   let sortObj = {};
-  switch (sort) {
-    case "dateNew": sortObj = { date: -1 }; break;  // newest first
-    case "dateOld": sortObj = { date: 1 }; break;   // oldest first
-    case "popular": sortObj = { views: -1 }; break; // if you track views
-    case "provider": sortObj = { organisedBy: 1 }; break; // A-Z
-    default: sortObj = { date: 1 }; break;  // default oldest
-  }
+switch (sort) {
+  case "dateNew":
+    sortObj = { date: -1, _id: -1 };
+    break;
+
+  case "dateOld":
+    sortObj = { date: 1, _id: 1 };
+    break;
+
+  case "popular":
+    sortObj = { views: -1, _id: -1 };
+    break;
+
+  case "provider":
+    sortObj = { organisedBy: 1, _id: 1 };
+    break;
+
+  default:
+    sortObj = { date: -1, _id: -1 }; // important
+}
 
  const webinars = await Webinars.find(filter)
     .sort(sortObj)   // ✅ sort first
