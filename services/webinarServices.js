@@ -46,11 +46,10 @@ export const searchWebinarsWithFilterService = async (filter = {}, options = {})
     default: sortObj = { date: 1 }; break;  // default oldest
   }
 
-  // Fetch webinars with filter, pagination
-  const webinars = await Webinars.find(filter)
-    .skip(skip)
-    .limit(limit)
-    .sort(sortObj);
+ const webinars = await Webinars.find(filter)
+    .sort(sortObj)   // ✅ sort first
+    .skip(skip)      // ✅ then skip
+    .limit(limit);   // ✅ then limit
 
   return webinars;
 };
