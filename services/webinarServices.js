@@ -36,6 +36,8 @@ export const searchWebinarsWithFilterService = async (filter = {}, options = {})
     return totalCount;
   }
 
+
+  
   // Define sort object
   let sortObj = {};
 switch (sort) {
