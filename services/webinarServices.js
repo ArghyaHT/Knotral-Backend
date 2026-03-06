@@ -59,6 +59,7 @@ switch (sort) {
     sortObj = { date: -1, _id: -1 }; // important
 }
 
+
  const webinars = await Webinars.find(filter)
     .sort(sortObj)   // ✅ sort first
     .skip(skip)      // ✅ then skip
