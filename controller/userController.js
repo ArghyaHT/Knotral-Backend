@@ -1,5 +1,5 @@
 import { validateEmail } from "../middlewares/validator.js";
-import { createUser, findAdminByEmailandRole } from "../services/userService.js"
+import { createAllUsers, createUser, findAdminByEmailandRole, findUserByEmail } from "../services/userService.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
@@ -187,4 +187,47 @@ export const logoutSuperAdmin = (req, res) => {
   return res.status(200).json({
     success: true,
   });
+};
+
+
+export const signupUser = async (req, res, next) => {
+  try {
+    const { name, email, password, phone, userType } = req.body;
+
+    // 🔴 Basic validation
+    if (!name || !email || !password || !phone || !userType) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // 🔴 Check existing user
+    const existingUser = await findUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already registered",
+      });
+    }
+
+    // 🔴 Split phone (last 10 digits = number)
+    const mobileNumber = Number(phone.slice(-10));
+    const countryCode = "+" + phone.slice(0, phone.length - 10);
+
+    // 🔐 Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // ✅ Create user
+    const user = await createAllUsers(name, email, hashedPassword, mobileNumber , countryCode, userType)
+
+    return res.status(200).json({
+      success: true,
+      message: "User registered successfully",
+      response: user
+    });
+
+  } catch (error) {
+        next(error);
+    }
 };

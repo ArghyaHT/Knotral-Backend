@@ -1,5 +1,5 @@
 import express from "express";
-import { loginSuperAdmin, logoutSuperAdmin, registerSuperAdmin } from "../controller/userController.js";
+import { loginSuperAdmin, logoutSuperAdmin, registerSuperAdmin, signupUser } from "../controller/userController.js";
 import { refreshSuperAdminToken } from "../middlewares/VerifyRefreshTokenAdmin.js";
 
 
@@ -13,6 +13,10 @@ router.post("/login-super-admin", loginSuperAdmin);
 router.post("/refresh-super-admin", refreshSuperAdminToken);
 
 router.post("/logout-super-admin", logoutSuperAdmin);
+
+
+router.post("/signup-user", signupUser);
+
 
 
 export default router

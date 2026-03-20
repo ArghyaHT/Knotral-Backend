@@ -17,3 +17,24 @@ export const findAdminByEmailandRole = async (email) => {
      .exec();
    return admin;
  };
+
+
+ export const createAllUsers = async(name, email, hashedPassword, mobileNumber , countryCode, userType) => {
+
+   const user = await Users.create({
+      name,
+      email,
+      password: hashedPassword,
+      mobileNumber,
+      countryCode,
+      userType,
+    });
+    return user
+ }
+
+
+ export const findUserByEmail= async (email) => {
+   const admin = await Users.findOne({ email })
+     .exec();
+   return admin;
+ };
