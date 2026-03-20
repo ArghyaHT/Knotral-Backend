@@ -1,4 +1,5 @@
 import { validateEmail } from "../middlewares/validator.js";
+import { TempUsers } from "../models/tempUsers.js";
 import { createAllUsers, createUser, findAdminByEmailandRole, findUserByEmail } from "../services/userService.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
@@ -194,7 +195,7 @@ export const signupUser = async (req, res, next) => {
   try {
     const { name, email, password, phone, userType } = req.body;
 
-    // 🔴 Basic validation
+    // 🔴 1. Basic validation
     if (!name || !email || !password || !phone || !userType) {
       return res.status(400).json({
         success: false,
@@ -202,7 +203,7 @@ export const signupUser = async (req, res, next) => {
       });
     }
 
-    // 🔴 Check existing user
+    // 🔴 2. Check existing user
     const existingUser = await findUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({
@@ -211,23 +212,43 @@ export const signupUser = async (req, res, next) => {
       });
     }
 
-    // 🔴 Split phone (last 10 digits = number)
+    // 🔥 3. CHECK OTP VERIFICATION (IMPORTANT)
+    const tempUser = await TempUsers.findOne({ email });
+
+    if (!tempUser || !tempUser.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "Please verify your email first",
+      });
+    }
+
+    // 🔴 4. Phone split logic
     const mobileNumber = Number(phone.slice(-10));
     const countryCode = "+" + phone.slice(0, phone.length - 10);
 
-    // 🔐 Hash password
+    // 🔐 5. Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ✅ Create user
-    const user = await createAllUsers(name, email, hashedPassword, mobileNumber , countryCode, userType)
+    // ✅ 6. Create user
+    const user = await createAllUsers(
+      name,
+      email,
+      hashedPassword,
+      mobileNumber,
+      countryCode,
+      userType
+    );
+
+    // 🧹 7. Cleanup temp user (important)
+    await TempUsers.deleteOne({ email });
 
     return res.status(200).json({
       success: true,
       message: "User registered successfully",
-      response: user
+      response: user,
     });
 
   } catch (error) {
-        next(error);
-    }
+    next(error);
+  }
 };

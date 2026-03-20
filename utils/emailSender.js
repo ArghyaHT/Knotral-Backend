@@ -91,3 +91,48 @@ export const emailWithNodeMail = async (name, email, imageUrl, subject, body) =>
         return { success: false };
     }
 };
+
+
+export const sendOtpEmail = async (email, otp) => {
+  try {
+    const mailOptions = {
+      from: `"India Market Entry" <contact@indiamarketentry.com>`,
+      to: email,
+      subject: "Verify Your Email - OTP Inside",
+      html: `
+        <div style="max-width: 500px; margin: auto; font-family: 'Segoe UI', sans-serif; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
+          
+          <div style="background: #4f5d8c; padding: 20px; text-align: center; color: white;">
+            <h2 style="margin: 0;">Knotral Tranings</h2>
+          </div>
+
+          <div style="padding: 30px; text-align: center;">
+            <p style="font-size: 16px; color: #555;">Use the OTP below to verify your email</p>
+
+            <div style="font-size: 32px; font-weight: bold; letter-spacing: 8px; margin: 20px 0; color: #000;">
+              ${otp}
+            </div>
+
+            <p style="color: #888;">Valid for 5 minutes</p>
+
+            <hr style="margin: 30px 0;" />
+
+            <p style="font-size: 12px; color: #aaa;">
+              If you didn’t request this, you can safely ignore this email.
+            </p>
+          </div>
+        </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+
+    console.log("✅ OTP Email sent:", email);
+
+    return { success: true, messageId: info.messageId };
+
+  } catch (error) {
+    console.error("❌ Error sending OTP email:", error);
+    return { success: false };
+  }
+};
