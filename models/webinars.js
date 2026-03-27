@@ -121,30 +121,6 @@ const webinarsSchema = new mongoose.Schema(
             },
         ],
 
-        whoCanAttend: [
-            {
-                key: {
-                    type: String,
-                    enum: [
-                        "leaders",
-                        "teachers",
-                        "heads",
-                        "tuition_owners",
-                        "coaching_owners",
-                        "consultants",
-                        "counsellors"
-                    ],
-                    required: true,
-                    lowercase: true,
-                    trim: true,
-                },
-                title: {
-                    type: String,
-                    required: true,
-                },
-            },
-        ],
-
         trainer: [
             {
                 trainerImage: {
@@ -225,10 +201,33 @@ const webinarsSchema = new mongoose.Schema(
                     type: String,
                 },
             ],
+              whyNeeded: [
+                {
+                    type: String,
+                },
+            ],
         },
 
         resellerBenifits: {
             features: [
+                {
+                    type: String,
+                },
+            ],
+              whyNeeded: [
+                {
+                    type: String,
+                },
+            ],
+        },
+        
+        competitionOrganizars: {
+            features: [
+                {
+                    type: String,
+                },
+            ],
+              whyNeeded: [
                 {
                     type: String,
                 },
@@ -309,6 +308,11 @@ const webinarsSchema = new mongoose.Schema(
         schemaMarkup: {
             type: mongoose.Schema.Types.Mixed,
             default: {},
+        },
+
+        theme: {
+            type: String,
+            default: "theme1" 
         },
 
         pastSessions: [
