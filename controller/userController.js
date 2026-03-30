@@ -287,14 +287,18 @@ export const loginUser = async (req, res, next) => {
 
     // 🎟 Generate JWT
     const token = jwt.sign(
-      {
-        userId: user._id,
-        email: user.email,
-        userType: user.userType,
-      },
-      process.env.JWT_USER_KEY,
-      { expiresIn: "7d" }
-    );
+  {
+    userId: user._id,
+    name: user.name,
+    email: user.email,
+    mobileNumber: user.mobileNumber,
+    countryCode: user.countryCode,
+    userType: user.userType,
+    isEmailVerified: user.isEmailVerified,
+  },
+  process.env.JWT_USER_KEY,
+  { expiresIn: "7d" }
+);
 
     // Remove password from response
     const { password: _, ...userData } = user.toObject();
