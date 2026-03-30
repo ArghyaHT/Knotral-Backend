@@ -299,14 +299,13 @@ export const loginUser = async (req, res, next) => {
     // Remove password from response
     const { password: _, ...userData } = user.toObject();
 
-    // 🍪 Store token in HTTP-only cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      secure: false,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-
+    
     return res.status(200).json({
       success: true,
       message: "Login successful",
