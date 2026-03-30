@@ -101,6 +101,8 @@ app.use("/api/user", otpRoutes);
 
 app.use(GlobalErrorHandler)
 
+app.use(cookieParser());
+
 const PORT = process.env.PORT || 3001;
 
 // ✅ Health check

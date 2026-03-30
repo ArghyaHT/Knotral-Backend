@@ -5,67 +5,67 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
 export const registerSuperAdmin = async (req, res, next) => {
-    try {
-        let { email, password, isSuperAdmin } = req.body;
+  try {
+    let { email, password, isSuperAdmin } = req.body;
 
-        if (!email && !password) {
-            return res.status(400).json({
-                success: false,
-                message: "Email and password not found",
-            });
-        }
-
-        if (!email) {
-            return res.status(400).json({
-                success: false,
-                message: "Email is not present",
-            });
-        }
-
-        if (!validateEmail(email)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid email",
-            });
-        }
-
-        if (!password) {
-            return res.status(400).json({
-                success: false,
-                message: "Password is not present",
-            });
-        }
-
-        if (password.length < 8) {
-            return res.status(400).json({
-                success: false,
-                message: "Password must be at least 8 characters",
-            });
-        }
-
-        email = email.toLowerCase();
-
-        const existingUser = await findAdminByEmailandRole(email);
-
-        if (existingUser) {
-            return res.status(400).json({
-                success: false,
-                message: "Admin already exists",
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const newUser = await createUser(email, hashedPassword, isSuperAdmin);
-
-        return res.status(200).json({
-            success: true,
-            message: "Super admin registered successfully",
-            response: { newUser },
-        });
-    } catch (error) {
-        next(error);
+    if (!email && !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password not found",
+      });
     }
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is not present",
+      });
+    }
+
+    if (!validateEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email",
+      });
+    }
+
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        message: "Password is not present",
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters",
+      });
+    }
+
+    email = email.toLowerCase();
+
+    const existingUser = await findAdminByEmailandRole(email);
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Admin already exists",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await createUser(email, hashedPassword, isSuperAdmin);
+
+    return res.status(200).json({
+      success: true,
+      message: "Super admin registered successfully",
+      response: { newUser },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 
@@ -159,7 +159,7 @@ export const loginSuperAdmin = async (req, res, next) => {
     res.cookie("superAdminRefreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-  sameSite: "none",   // 🔥 IMPORTANT
+      sameSite: "none",   // 🔥 IMPORTANT
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -302,8 +302,8 @@ export const loginUser = async (req, res, next) => {
     // 🍪 Store token in HTTP-only cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // HTTPS only in prod
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
