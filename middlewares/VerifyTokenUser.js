@@ -1,9 +1,6 @@
 export const authMiddleware = (req, res, next) => {
-    console.log("Raw cookie header:", req.headers.cookie);
-  console.log("Parsed cookies:", req.cookies);
-  const token = req.cookies.token;
 
-  console.log("Token from cookie:", token); // Debugging line
+  const token = req.cookies.token;
 
   if (!token) {
     return res.status(401).json({
@@ -14,6 +11,8 @@ export const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_USER_KEY);
+        console.log("Decoded token:", decoded);
+
     req.user = decoded;
     next();
   } catch {
