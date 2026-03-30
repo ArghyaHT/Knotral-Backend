@@ -15,10 +15,12 @@ export const authMiddleware = (req, res, next) => {
 
     req.user = decoded;
     next();
-  } catch {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid token",
-    });
-  }
+  }catch (err) {
+  console.log("JWT verify error:", err);
+
+  return res.status(401).json({
+    success: false,
+    message: "Invalid token",
+  });
+}
 };
