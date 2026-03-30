@@ -1,6 +1,8 @@
 export const authMiddleware = (req, res, next) => {
   const token = req.cookies.token;
 
+  console.log("Token from cookie:", token); // Debugging line
+
   if (!token) {
     return res.status(401).json({
       success: false,
