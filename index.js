@@ -85,8 +85,8 @@ app.use(cors({
 app.use(rateLimiter)
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
+app.use(cookieParser());
 
 app.use("/api/webinars", webinarRoutes)
 app.use("/api/registration", registrationRoutes)
@@ -100,8 +100,6 @@ app.use("/api/certificates", certificateRoutes)
 app.use("/api/user", otpRoutes);
 
 app.use(GlobalErrorHandler)
-
-app.use(cookieParser());
 
 const PORT = process.env.PORT || 3001;
 
