@@ -275,7 +275,7 @@ export const loginUser = async (req, res, next) => {
       });
     }
 
-    // 🔐 Match password
+    // 🔐 Compare password
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatch) {
@@ -296,13 +296,20 @@ export const loginUser = async (req, res, next) => {
       { expiresIn: "7d" }
     );
 
+    // Remove password from response
     const { password: _, ...userData } = user.toObject();
 
-    // ✅ Response
+    // 🍪 Store token in HTTP-only cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS only in prod
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      token,
       response: userData,
     });
 
