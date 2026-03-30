@@ -22,6 +22,7 @@ router.post("/login-user", loginUser);
 
 router.get("/user-info", authMiddleware, (req, res) => {
   res.json({
+    status: 200,
     success: true,
     response: req.user
   });
