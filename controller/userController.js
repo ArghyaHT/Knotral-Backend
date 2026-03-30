@@ -321,3 +321,24 @@ export const loginUser = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const logoutUser = async (req, res, next) => {
+  try {
+
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/"
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logout successful"
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
