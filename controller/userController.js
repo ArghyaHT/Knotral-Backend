@@ -252,3 +252,61 @@ export const signupUser = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const loginUser = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+      });
+    }
+
+    // 🔍 Find user
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // 🔐 Match password
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    // 🎟 Generate JWT
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        userType: user.userType,
+      },
+      process.env.JWT_USER_KEY,
+      { expiresIn: "7d" }
+    );
+
+    const { password: _, ...userData } = user.toObject();
+
+    // ✅ Response
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token,
+      response: userData,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
