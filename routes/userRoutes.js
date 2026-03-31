@@ -1,5 +1,5 @@
 import express, { response } from "express";
-import { loginSuperAdmin, loginUser, logoutSuperAdmin, logoutUser, registerSuperAdmin, signupUser } from "../controller/userController.js";
+import { loginSuperAdmin, loginUser, logoutSuperAdmin, logoutUser, registerSuperAdmin, resetPassword, signupUser } from "../controller/userController.js";
 import { refreshSuperAdminToken } from "../middlewares/VerifyRefreshTokenAdmin.js";
 import { authMiddleware } from "../middlewares/VerifyTokenUser.js";
 
@@ -22,6 +22,7 @@ router.post("/login-user", loginUser);
 
 router.post("/logout-user", logoutUser);
 
+router.post("/reset-password", resetPassword);
 
 
 router.get("/user-info", authMiddleware, (req, res) => {

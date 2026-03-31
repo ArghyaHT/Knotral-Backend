@@ -1,5 +1,6 @@
 import { validateEmail } from "../middlewares/validator.js";
 import { TempUsers } from "../models/tempUsers.js";
+import { Users } from "../models/user.js";
 import { createAllUsers, createUser, findAdminByEmailandRole, findUserByEmail } from "../services/userService.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
@@ -342,4 +343,24 @@ export const logoutUser = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+
+export const resetPassword = async (req,res)=>{
+
+  const { email,password } = req.body;
+
+  const hashed = await bcrypt.hash(password,10);
+
+  await Users.updateOne(
+    { email },
+    { password: hashed }
+  );
+
+  res.json({
+    status: 200,
+    success:true,
+    message:"Password updated successfully"
+  });
+
 };
