@@ -55,6 +55,8 @@ export const verifyPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
+      console.log("VERIFY PAYMENT BODY:", razorpay_order_id, razorpay_payment_id, razorpay_signature);
+
     const body = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
@@ -67,11 +69,13 @@ export const verifyPayment = async (req, res) => {
     }
 
     // Update success status
-    await updatePaymentStatus(razorpay_order_id, {
+   const updated =  await updatePaymentStatus(razorpay_order_id, {
       status: "success",
       paymentId: razorpay_payment_id,
       signature: razorpay_signature,
     });
+
+    console.log("Updated payment:", updated);
 
     return res.status(200).json({
       success: true,
