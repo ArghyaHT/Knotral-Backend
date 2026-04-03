@@ -17,7 +17,7 @@ const userWebinarRegistrationSchema = new mongoose.Schema(
     index: true
   },
 
-  webinarId: {
+  webinar: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Webinars",
     // required: true,
@@ -42,17 +42,19 @@ const userWebinarRegistrationSchema = new mongoose.Schema(
 
 // prevent duplicate registration for same session
 userWebinarRegistrationSchema.index(
-  { email: 1, webinarId: 1, webinarDate: 1 },
+  { email: 1, webinar: 1, webinarDate: 1 },
   { unique: true }
 );
 
 // fast webinar attendee lookup
-userWebinarRegistrationSchema.index({ webinarId: 1, webinarDate: 1 });
+userWebinarRegistrationSchema.index({ webinar: 1, webinarDate: 1 });
 
 // fast user history
 userWebinarRegistrationSchema.index({ userId: 1, webinarDate: -1 });
 
-export const UserWebinarRegistrations = mongoose.model(
+const UserWebinarRegistrations = mongoose.model(
   "UserWebinarRegistrations",
   userWebinarRegistrationSchema
 );
+
+export default UserWebinarRegistrations;

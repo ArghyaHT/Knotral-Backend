@@ -4,6 +4,7 @@ import { Users } from "../models/user.js";
 import { createAllUsers, createUser, findAdminByEmailandRole, findUserByEmail } from "../services/userService.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import { findUserWebinarRegistrations } from "../services/userWebinarRegistrationsService.js";
 
 export const registerSuperAdmin = async (req, res, next) => {
   try {
@@ -363,4 +364,23 @@ export const resetPassword = async (req,res)=>{
     message:"Password updated successfully"
   });
 
+};
+
+
+export const getUserWebinars = async (req, res, next) => {
+  try {
+
+    const userEmail = req.body.userEmail;
+
+    const registrations = await findUserWebinarRegistrations(userEmail);
+
+    return res.status(200).json({
+      success: true,
+      message: "Webinars fetched successfully",
+      response: registrations
+    });
+
+  } catch (error) {
+    next(error);
+  }
 };

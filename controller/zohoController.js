@@ -5,7 +5,7 @@ import logger, { logToFile } from "../utils/logger.js";
 import SolutionProvider from "../models/solutionProvider.js";
 import Leads from "../models/leads.js";
 import { Users } from "../models/user.js";
-import { UserWebinarRegistrations } from "../models/userWebinarRegistrations.js";
+import  UserWebinarRegistrations  from "../models/userWebinarRegistrations.js";
 
 export const createZohoLead = async (req, res) => {
   try {
@@ -93,7 +93,7 @@ export const createZohoLead = async (req, res) => {
       await UserWebinarRegistrations.create({
         userId: user?._id, // store if user exists
         email: req.body.Email,
-        webinarId: req.body.webinarId,
+        webinar: req.body.webinarId,
         webinarDate: req.body.Webinar_Date_TIme,
         registeredAt: new Date()
       });
