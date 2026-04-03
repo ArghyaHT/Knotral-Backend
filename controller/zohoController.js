@@ -4,9 +4,26 @@ import Registrations from "../models/registrations.js";
 import logger, { logToFile } from "../utils/logger.js";
 import SolutionProvider from "../models/solutionProvider.js";
 import Leads from "../models/leads.js";
+import { Users } from "../models/user.js";
+import { UserWebinarRegistrations } from "../models/userWebinarRegistrations.js";
 
 export const createZohoLead = async (req, res) => {
   try {
+
+       /* ✅ STEP 1: Check duplicate registration */
+    const exists = await UserWebinarRegistrations.findOne({
+      userId: req.user.id,
+      webinarId: req.body.webinarId,
+      webinarDate: req.body.Webinar_Date_TIme
+    });
+
+    if (exists) {
+      return res.status(400).json({
+        success: false,
+        message: "You are already registered for this webinar"
+      });
+    }
+    
     logger.info("🚀 Creating Zoho Lead", {
       body: {
         ...req.body,
@@ -67,6 +84,22 @@ export const createZohoLead = async (req, res) => {
       status: response.status,
       data: response.data,
     });
+
+    /* ✅ Save registration ONLY after Zoho success */
+    if (response.data?.data?.[0]?.code === "SUCCESS") {
+
+      const user = await Users.findOne({ email: req.body.Email });
+
+      await UserWebinarRegistrations.create({
+        userId: user?._id, // store if user exists
+        email: req.body.Email,
+        webinarId: req.body.webinarId,
+        webinarDate: req.body.Webinar_Date_TIme,
+        registeredAt: new Date()
+      });
+
+    }
+
     return res.status(200).json({
       success: true,
       message: "Lead stored in Zoho CRM successfully",
@@ -125,7 +158,7 @@ export const createZohoContact = async (req, res) => {
 
     await Leads.create(payload.data);
 
-        console.log("ZOHO Contact PAYLOAD", payload.data)
+    console.log("ZOHO Contact PAYLOAD", payload.data)
 
 
     const response = await axios.post(
