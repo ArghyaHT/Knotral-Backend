@@ -10,20 +10,20 @@ import { UserWebinarRegistrations } from "../models/userWebinarRegistrations.js"
 export const createZohoLead = async (req, res) => {
   try {
 
-       /* ✅ STEP 1: Check duplicate registration */
-    const exists = await UserWebinarRegistrations.findOne({
-      userId: req.user.id,
-      webinarId: req.body.webinarId,
-      webinarDate: req.body.Webinar_Date_TIme
-    });
+    //    /* ✅ STEP 1: Check duplicate registration */
+    // const exists = await UserWebinarRegistrations.findOne({
+    //   userId: req.user.id,
+    //   webinarId: req.body.webinarId,
+    //   webinarDate: req.body.Webinar_Date_TIme
+    // });
 
-    if (exists) {
-      return res.status(400).json({
-        success: false,
-        message: "You are already registered for this webinar"
-      });
-    }
-    
+    // if (exists) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "You are already registered for this webinar"
+    //   });
+    // }
+
     logger.info("🚀 Creating Zoho Lead", {
       body: {
         ...req.body,
