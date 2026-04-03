@@ -197,7 +197,7 @@ export const signupUser = async (req, res, next) => {
     const { name, email, password, phone, userType } = req.body;
 
     // 🔴 1. Basic validation
-    if (!name || !email || !password || !phone || !userType) {
+    if (!name || !email || !password || !phone ) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
