@@ -20,7 +20,7 @@ const userWebinarRegistrationSchema = new mongoose.Schema(
   webinarId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Webinars",
-    required: true,
+    // required: true,
     index: true
   },
 
