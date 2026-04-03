@@ -120,11 +120,11 @@ export const createZohoLead = async (req, res) => {
 
     });
 
-    // ✅ Save to file
-    logToFile(logData);
+    // // ✅ Save to file
+    // logToFile(logData);
 
-    // ✅ Log to Winston/Render console
-    logger.error("❌ Zoho Lead API Error", logData);
+    // // ✅ Log to Winston/Render console
+    // logger.error("❌ Zoho Lead API Error", logData);
 
     return res.status(500).json({
       success: false,
