@@ -34,7 +34,6 @@ const userSchema = new mongoose.Schema(
 
     userType: {
       type: String,
-      required: true,
       enum: ["student", "teacher", "school", "solutionProvider", "SuperAdmin"],
     },
 
