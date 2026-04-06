@@ -238,7 +238,7 @@ export const signupUser = async (req, res, next) => {
       hashedPassword,
       mobileNumber,
       countryCode,
-      userType
+      // userType
     );
 
     // 🧹 7. Cleanup temp user (important)
