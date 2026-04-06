@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
     userType: {
       type: String,
       enum: ["student", "teacher", "school", "solutionProvider", "SuperAdmin"],
-      default: "",
+      // default: "",
     },
 
     isSuperAdmin: {
