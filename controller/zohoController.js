@@ -85,20 +85,20 @@ export const createZohoLead = async (req, res) => {
       data: response.data,
     });
 
-    // /* ✅ Save registration ONLY after Zoho success */
-    // if (response.data?.data?.[0]?.code === "SUCCESS") {
+    /* ✅ Save registration ONLY after Zoho success */
+    if (response.data?.data?.[0]?.code === "SUCCESS") {
 
-    //   const user = await Users.findOne({ email: req.body.Email });
+      const user = await Users.findOne({ email: req.body.Email });
 
-    //   await UserWebinarRegistrations.create({
-    //     userId: user?._id, // store if user exists
-    //     email: req.body.Email,
-    //     webinar: req.body.webinarId,
-    //     webinarDate: req.body.Webinar_Date_TIme,
-    //     registeredAt: new Date()
-    //   });
+      await UserWebinarRegistrations.create({
+        userId: user?._id, // store if user exists
+        email: req.body.Email,
+        webinar: req.body.webinarId,
+        webinarDate: req.body.Webinar_Date_TIme,
+        registeredAt: new Date()
+      });
 
-    // }
+    }
 
     return res.status(200).json({
       success: true,
