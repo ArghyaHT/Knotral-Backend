@@ -10,12 +10,11 @@ export const sendOtp = async (req, res) => {
       return res.json({ success: false, message: "Email is required" });
     }
 
-    // 🔥 Generate OTP
-    const otp = otpGenerator.generate(6, {
-      digits: true,
-      alphabets: false,
-      upperCase: false,
+    const otp = otpGenerator.generate(4, {
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
       specialChars: false,
+      digits: true,
     });
 
     // 🔥 Expiry (5 minutes)
@@ -83,13 +82,13 @@ export const verifyOtp = async (req, res) => {
       return res.json({ success: false, message: "OTP expired" });
     }
 
-  await TempUsers.updateOne(
-  { email },
-  {
-    $set: { isVerified: true },
-    $unset: { otp: "", otpExpires: "" },
-  }
-);
+    await TempUsers.updateOne(
+      { email },
+      {
+        $set: { isVerified: true },
+        $unset: { otp: "", otpExpires: "" },
+      }
+    );
 
     await user.save();
 
