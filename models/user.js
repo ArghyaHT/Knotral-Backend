@@ -38,6 +38,12 @@ const userSchema = new mongoose.Schema(
       // default: "",
     },
 
+    authType: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
+    },
+
     isSuperAdmin: {
       type: Boolean,
       default: false,

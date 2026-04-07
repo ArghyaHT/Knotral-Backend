@@ -27,7 +27,7 @@ export const findAdminByEmailandRole = async (email) => {
       password: hashedPassword,
       mobileNumber,
       countryCode,
-      // userType,
+      authType: "local",
       isEmailVerified: true
     });
     return user

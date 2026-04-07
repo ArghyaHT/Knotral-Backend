@@ -195,7 +195,7 @@ export const logoutSuperAdmin = (req, res) => {
 
 export const signupUser = async (req, res, next) => {
   try {
-    const { name, email, password, phone, userType } = req.body;
+    const { name, email, password, phone } = req.body;
 
     // 🔴 1. Basic validation
     if (!name || !email || !password || !phone ) {
