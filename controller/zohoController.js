@@ -66,9 +66,6 @@ export const createZohoLead = async (req, res) => {
 
     console.log("ZOHO PAYLOAD", payload)
 
-    await Registrations.create(payload.data);
-
-
     const response = await axios.post(
       `${process.env.ZOHO_API_DOMAIN}/crm/v2/Leads`,
       payload,
@@ -86,19 +83,22 @@ export const createZohoLead = async (req, res) => {
     });
 
     /* ✅ Save registration ONLY after Zoho success */
-    // if (response.data?.data?.[0]?.code === "SUCCESS") {
+    if (response.data?.data?.[0]?.code === "SUCCESS") {
 
-    //   const user = await Users.findOne({ email: req.body.Email });
+      await Registrations.create(payload.data);
 
-    //   await UserWebinarRegistrations.create({
-    //     userId: user?._id, // store if user exists
-    //     email: req.body.Email,
-    //     webinar: req.body.webinarId,
-    //     webinarDate: req.body.Webinar_Date_TIme,
-    //     registeredAt: new Date()
-    //   });
 
-    // }
+      const user = await Users.findOne({ email: req.body.Email });
+
+      await UserWebinarRegistrations.create({
+        userId: user?._id, // store if user exists
+        email: req.body.Email,
+        webinar: req.body.webinarId,
+        webinarDate: req.body.Webinar_Date_TIme,
+        registeredAt: new Date()
+      });
+
+    }
 
     return res.status(200).json({
       success: true,
