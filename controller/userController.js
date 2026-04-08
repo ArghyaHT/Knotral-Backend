@@ -195,10 +195,11 @@ export const logoutSuperAdmin = (req, res) => {
 
 export const signupUser = async (req, res, next) => {
   try {
-    const { name, email, password, phone } = req.body;
+    const { firstName, lastName, email, password, phone, roleDescription,
+      otherRoleDescription } = req.body;
 
     // 🔴 1. Basic validation
-    if (!name || !email || !password || !phone ) {
+    if (!firstName || !lastName || !email || !password || !phone || !roleDescription) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -233,12 +234,14 @@ export const signupUser = async (req, res, next) => {
 
     // ✅ 6. Create user
     const user = await createAllUsers(
-      name,
+      firstName,
+      lastName,
       email,
       hashedPassword,
       mobileNumber,
       countryCode,
-      // userType
+      roleDescription,
+      otherRoleDescription
     );
 
     // 🧹 7. Cleanup temp user (important)
@@ -289,34 +292,34 @@ export const loginUser = async (req, res, next) => {
 
     // 🎟 Generate JWT
     const token = jwt.sign(
-  {
-    userId: user._id,
-    name: user.name,
-    email: user.email,
-    mobileNumber: user.mobileNumber,
-    countryCode: user.countryCode,
-    userType: user.userType,
-    isEmailVerified: user.isEmailVerified,
-  },
-  process.env.JWT_USER_KEY,
-  { expiresIn: "7d" }
-);
+      {
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+        mobileNumber: user.mobileNumber,
+        countryCode: user.countryCode,
+        userType: user.userType,
+        isEmailVerified: user.isEmailVerified,
+      },
+      process.env.JWT_USER_KEY,
+      { expiresIn: "7d" }
+    );
 
     // Remove password from response
     const { password: _, ...userData } = user.toObject();
 
-  res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,        // REQUIRED for cross-site cookies
-  sameSite: "none",    // REQUIRED for cross-domain
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-  path: "/"
-});
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,        // REQUIRED for cross-site cookies
+      sameSite: "none",    // REQUIRED for cross-domain
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/"
+    });
 
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      token: token, 
+      token: token,
       response: userData,
     });
 
@@ -347,11 +350,11 @@ export const logoutUser = async (req, res, next) => {
 };
 
 
-export const resetPassword = async (req,res)=>{
+export const resetPassword = async (req, res) => {
 
-  const { email,password } = req.body;
+  const { email, password } = req.body;
 
-  const hashed = await bcrypt.hash(password,10);
+  const hashed = await bcrypt.hash(password, 10);
 
   await Users.updateOne(
     { email },
@@ -360,8 +363,8 @@ export const resetPassword = async (req,res)=>{
 
   res.json({
     status: 200,
-    success:true,
-    message:"Password updated successfully"
+    success: true,
+    message: "Password updated successfully"
   });
 
 };
