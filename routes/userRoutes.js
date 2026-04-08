@@ -1,5 +1,5 @@
 import express, { response } from "express";
-import { getUserWebinars, loginSuperAdmin, loginUser, logoutSuperAdmin, logoutUser, registerSuperAdmin, resetPassword, signupUser } from "../controller/userController.js";
+import { getUserRegisteredWebinars, getUserWebinars, loginSuperAdmin, loginUser, logoutSuperAdmin, logoutUser, registerSuperAdmin, resetPassword, signupUser } from "../controller/userController.js";
 import { refreshSuperAdminToken } from "../middlewares/VerifyRefreshTokenAdmin.js";
 import { authMiddleware } from "../middlewares/VerifyTokenUser.js";
 
@@ -34,5 +34,8 @@ router.get("/user-info", authMiddleware, (req, res) => {
 });
 
 router.post("/get-user-webinars", getUserWebinars);
+
+router.post("/get-user-registered-webinars", getUserRegisteredWebinars);
+
 
 export default router

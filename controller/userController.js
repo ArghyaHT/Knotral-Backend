@@ -4,7 +4,7 @@ import { Users } from "../models/user.js";
 import { createAllUsers, createUser, findAdminByEmailandRole, findUserByEmail } from "../services/userService.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { findUserWebinarRegistrations } from "../services/userWebinarRegistrationsService.js";
+import { findUserWebinarRegistrations, findUserWebinars } from "../services/userWebinarRegistrationsService.js";
 
 export const registerSuperAdmin = async (req, res, next) => {
   try {
@@ -385,6 +385,28 @@ export const getUserWebinars = async (req, res, next) => {
       success: true,
       message: "Webinars fetched successfully",
       response: registrations
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const getUserRegisteredWebinars = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const registrations = await findUserWebinars(email);
+    const webinarSessions = registrations.map(r => ({
+      webinarId: r.webinar.toString(),
+      webinarDate: r.webinarDate
+    }));
+
+    res.json({
+      success: true,
+      message: "User webinars fetched successfully",
+      response: webinarSessions
     });
 
   } catch (error) {
