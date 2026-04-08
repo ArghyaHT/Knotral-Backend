@@ -19,7 +19,7 @@ export const findAdminByEmailandRole = async (email) => {
 };
 
 
-export const createAllUsers = async (firstName, lastName, email, hashedPassword, mobileNumber, countryCode, roleDescription, otherRoleDescription) => {
+export const createAllUsers = async (firstName, lastName, email, hashedPassword, mobileNumber, countryCode, roleDescription, otherRoleDescription, organizationName) => {
 
   const user = await Users.create({
     firstName,
@@ -32,6 +32,7 @@ export const createAllUsers = async (firstName, lastName, email, hashedPassword,
     isEmailVerified: true,
     roleDescription,
     otherRoleDescription,
+    organizationName,
   });
   return user
 }

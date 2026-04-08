@@ -70,7 +70,13 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
+
     otherRoleDescription: {
+      type: String,
+      trim: true,
+    },
+
+     organizationName: {
       type: String,
       trim: true,
     }

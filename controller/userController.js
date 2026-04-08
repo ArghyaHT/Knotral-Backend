@@ -195,8 +195,7 @@ export const logoutSuperAdmin = (req, res) => {
 
 export const signupUser = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password, phone, roleDescription,
-      otherRoleDescription } = req.body;
+    const { firstName, lastName, email, password, phone, roleDescription,otherRoleDescription, organizationName } = req.body;
 
     // 🔴 1. Basic validation
     if (!firstName || !lastName || !email || !password || !phone || !roleDescription) {
@@ -241,7 +240,8 @@ export const signupUser = async (req, res, next) => {
       mobileNumber,
       countryCode,
       roleDescription,
-      otherRoleDescription
+      otherRoleDescription,
+      organizationName
     );
 
     // 🧹 7. Cleanup temp user (important)
@@ -298,6 +298,7 @@ export const loginUser = async (req, res, next) => {
         lastName: user.lastName,
         roleDescription: user.roleDescription,
         otherRoleDescription: user.otherRoleDescription,
+        organizationName: user.organizationName,
         email: user.email,
         mobileNumber: user.mobileNumber,
         countryCode: user.countryCode,
