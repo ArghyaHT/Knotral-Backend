@@ -413,3 +413,58 @@ export const getUserRegisteredWebinars = async (req, res) => {
     next(error);
   }
 };
+
+
+export const updateUserProfile = async (req, res, next) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      email,
+      countryCode,
+      mobileNumber,
+      roleDescription,
+      otherRoleDescription,
+      organizationName,
+    } = req.body;
+
+    // 🔴 validation
+    if (!firstName || !lastName || !mobileNumber || !countryCode || !roleDescription || !email) {
+      return res.status(400).json({
+        success: false,
+        message: "Required fields missing",
+      });
+    }
+
+    // 🔥 update user using email
+    const updatedUser = await Users.findOneAndUpdate(
+      { email },
+      {
+        firstName,
+        lastName,
+        mobileNumber,
+        countryCode,
+        roleDescription,
+        otherRoleDescription,
+        organizationName,
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      response: updatedUser,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
