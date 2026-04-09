@@ -64,7 +64,7 @@ const userSchema = new mongoose.Schema(
         "Teacher",
         "School Leader",
         "Education Solution Partner",
-        "Education Consultant",
+        "Education Consultants",
         "Other"
       ],
       required: true,
