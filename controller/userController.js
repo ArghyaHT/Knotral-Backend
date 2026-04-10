@@ -468,3 +468,31 @@ export const updateUserProfile = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const getUserInfo = async (req, res, next) => {
+  try {
+
+    const userId = req.user.userId; // coming from JWT
+
+    console.log("User ID from token:", userId);
+
+    const user = await Users.findById({ _id: userId }).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      response: user
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
