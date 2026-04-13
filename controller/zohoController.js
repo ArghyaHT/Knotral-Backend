@@ -90,13 +90,13 @@ export const createZohoLead = async (req, res) => {
 
       const user = await Users.findOne({ email: req.body.Email });
 
-      await UserWebinarRegistrations.create({
-        userId: user?._id, // store if user exists
-        email: req.body.Email,
-        webinar: req.body.webinarId,
-        webinarDate: req.body.Webinar_Date_TIme,
-        registeredAt: new Date()
-      });
+      // await UserWebinarRegistrations.create({
+      //   userId: user?._id, // store if user exists
+      //   email: req.body.Email,
+      //   webinar: req.body.webinarId,
+      //   webinarDate: req.body.Webinar_Date_TIme,
+      //   registeredAt: new Date()
+      // });
 
     }
 
