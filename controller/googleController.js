@@ -21,7 +21,10 @@ export const connectGoogle = async (req, res) => {
     state: userId, // 👈 IMPORTANT
   });
 
+  console.log(GOOGLE_CONFIG.redirectUri);
+
   res.json({ url });
+
 };
 
 export const googleCallback = async (req, res) => {
