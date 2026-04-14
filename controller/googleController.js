@@ -6,7 +6,7 @@ import { Users } from "../models/user.js";
 
 
 export const connectGoogle = async (req, res) => {
-  const { userId } = req.query;
+  const { userId, redirect } = req.query;
 
   const oauth2Client = new google.auth.OAuth2(
     GOOGLE_CONFIG.clientId,
@@ -14,22 +14,29 @@ export const connectGoogle = async (req, res) => {
     GOOGLE_CONFIG.redirectUri
   );
 
+  // ✅ pass both userId + redirect
+  const state = JSON.stringify({
+    userId,
+    redirect,
+  });
+
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     prompt: "consent",
     scope: ["https://www.googleapis.com/auth/calendar.events"],
-    state: userId, // 👈 IMPORTANT
+    state,
   });
 
-  console.log(GOOGLE_CONFIG.redirectUri);
-
   res.json({ url });
-
 };
 
 export const googleCallback = async (req, res) => {
   try {
-    const { code, state } = req.query; // state = userId
+    const { code, state } = req.query;
+
+    // ✅ parse state
+    const parsedState = JSON.parse(state);
+    const { userId, redirect } = parsedState;
 
     const oauth2Client = new google.auth.OAuth2(
       GOOGLE_CONFIG.clientId,
@@ -43,13 +50,14 @@ export const googleCallback = async (req, res) => {
       return res.send("No refresh token received. Try again.");
     }
 
-    await Users.findByIdAndUpdate(state, {
+    await Users.findByIdAndUpdate(userId, {
       googleCalendarToken: tokens.refresh_token,
       isCalendarConnected: true,
     });
 
-    // redirect back to frontend
-    res.redirect("http://localhost:3000/profile?calendar=connected");
+    // ✅ redirect back to webinar page
+    res.redirect(`${redirect}?calendar=connected`);
+
   } catch (err) {
     console.error(err);
     res.send("Google connection failed");
