@@ -6,6 +6,7 @@ import SolutionProvider from "../models/solutionProvider.js";
 import Leads from "../models/leads.js";
 import { Users } from "../models/user.js";
 import  UserWebinarRegistrations  from "../models/userWebinarRegistrations.js";
+import { createCalendarEvent } from "../services/calendarService.js";
 
 export const createZohoLead = async (req, res) => {
   try {
