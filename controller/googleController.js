@@ -20,12 +20,12 @@ export const connectGoogle = async (req, res) => {
     redirect,
   });
 
-  const url = oauth2Client.generateAuthUrl({
-    access_type: "offline",
-    prompt: "consent",
-    scope: ["https://www.googleapis.com/auth/calendar.events"],
-    state,
-  });
+ const url = oauth2Client.generateAuthUrl({
+  access_type: "offline",
+  prompt: "select_account consent",
+  scope: ["https://www.googleapis.com/auth/calendar.events"],
+  state,
+});
 
   res.json({ url });
 };
