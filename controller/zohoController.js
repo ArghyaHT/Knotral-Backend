@@ -83,22 +83,61 @@ export const createZohoLead = async (req, res) => {
     });
 
     /* ✅ Save registration ONLY after Zoho success */
+    // if (response.data?.data?.[0]?.code === "SUCCESS") {
+
+    //   await Registrations.create(payload.data);
+
+
+    //   const user = await Users.findOne({ email: req.body.Email });
+
+
+    //   // await UserWebinarRegistrations.create({
+    //   //   userId: user?._id, // store if user exists
+    //   //   email: req.body.Email,
+    //   //   webinar: req.body.webinarId,
+    //   //   webinarDate: req.body.Webinar_Date_TIme,
+    //   //   registeredAt: new Date()
+    //   // });
+      
+
+    // }
+
     if (response.data?.data?.[0]?.code === "SUCCESS") {
 
-      await Registrations.create(payload.data);
+  // ✅ Save registration
+  await Registrations.create(payload.data);
 
+  // ✅ Find user
+  const user = await Users.findOne({ email: req.body.Email });
 
-      const user = await Users.findOne({ email: req.body.Email });
+  // 🔥 GOOGLE CALENDAR INTEGRATION
+  if (user?.googleCalendarToken) {
+    try {
+      await createCalendarEvent({
+        refreshToken: user.googleCalendarToken,
+        webinar: {
+          title: req.body.FORM_NAME,
+          organisedBy: req.body.Category,
+          startTime: req.body.Webinar_Date_TIme,
+        },
+      });
 
-      // await UserWebinarRegistrations.create({
-      //   userId: user?._id, // store if user exists
-      //   email: req.body.Email,
-      //   webinar: req.body.webinarId,
-      //   webinarDate: req.body.Webinar_Date_TIme,
-      //   registeredAt: new Date()
-      // });
-
+      console.log("📅 Calendar event created");
+    } catch (err) {
+      console.error("❌ Calendar error:", err.message);
     }
+  } else {
+    console.log("⚠️ User has not connected Google Calendar");
+  }
+
+    //   // await UserWebinarRegistrations.create({
+    //   //   userId: user?._id, // store if user exists
+    //   //   email: req.body.Email,
+    //   //   webinar: req.body.webinarId,
+    //   //   webinarDate: req.body.Webinar_Date_TIme,
+    //   //   registeredAt: new Date()
+    //   // });
+}
 
     return res.status(200).json({
       success: true,

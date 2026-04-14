@@ -76,10 +76,13 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-     organizationName: {
+    organizationName: {
       type: String,
       trim: true,
-    }
+    },
+
+    googleCalendarToken: String, // Refresh Token
+    isCalendarConnected: { type: Boolean, default: false }
 
   },
   {
