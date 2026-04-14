@@ -7,6 +7,7 @@ import Leads from "../models/leads.js";
 import { Users } from "../models/user.js";
 import  UserWebinarRegistrations  from "../models/userWebinarRegistrations.js";
 import { createCalendarEvent } from "../services/calendarService.js";
+import Webinars from "../models/webinars.js";
 
 export const createZohoLead = async (req, res) => {
   try {
@@ -111,13 +112,15 @@ export const createZohoLead = async (req, res) => {
   // ✅ Find user
   const user = await Users.findOne({ email: req.body.Email });
 
+  const webinar = await Webinars.findById(req.body.webinarId); // implement this function to get webinar details
+
   // 🔥 GOOGLE CALENDAR INTEGRATION
   if (user?.googleCalendarToken) {
     try {
       await createCalendarEvent({
         refreshToken: user.googleCalendarToken,
         webinar: {
-          title: req.body.FORM_NAME,
+          title: webinar.title,
           organisedBy: req.body.Category,
           startTime: req.body.Webinar_Date_TIme,
         },
