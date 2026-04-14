@@ -1,7 +1,7 @@
 // routes/google.routes.js
 
 import express from "express";
-import { connectGoogle, googleCallback } from "../controller/googleController";
+import { connectGoogle, googleCallback } from "../controller/googleController.js";
 
 const router = express.Router();
 

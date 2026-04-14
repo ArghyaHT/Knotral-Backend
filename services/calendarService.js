@@ -1,7 +1,7 @@
 // services/calendar.service.js
 
 import { google } from "googleapis";
-import { GOOGLE_CONFIG } from "../utils/google";
+import { GOOGLE_CONFIG } from "../utils/google.js";
 
 export const createCalendarEvent = async ({
   refreshToken,

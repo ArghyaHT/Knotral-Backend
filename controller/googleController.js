@@ -1,8 +1,8 @@
 // controllers/google.controller.js
 
 import { google } from "googleapis";
-import { GOOGLE_CONFIG } from "../utils/google";
-import { Users } from "../models/user";
+import { GOOGLE_CONFIG } from "../utils/google.js";
+import { Users } from "../models/user.js";
 
 
 export const connectGoogle = async (req, res) => {
