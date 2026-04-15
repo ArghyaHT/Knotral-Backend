@@ -22,18 +22,15 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: true,
       minlength: 8,
     },
 
     mobileNumber: {
       type: Number,
-      required: true,
     },
 
     countryCode: {
       type: String,
-      required: true,
     },
 
     userType: {
@@ -67,7 +64,6 @@ const userSchema = new mongoose.Schema(
         "Education Consultants",
         "Other"
       ],
-      required: true,
     },
 
 

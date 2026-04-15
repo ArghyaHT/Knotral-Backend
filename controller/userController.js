@@ -197,7 +197,7 @@ export const logoutSuperAdmin = (req, res) => {
 
 export const signupUser = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password, phone, roleDescription,otherRoleDescription, organizationName } = req.body;
+    const { firstName, lastName, email, password, phone, roleDescription, otherRoleDescription, organizationName } = req.body;
 
     // 🔴 1. Basic validation
     if (!firstName || !lastName || !email || !password || !phone || !roleDescription) {
@@ -557,10 +557,9 @@ export const googleCallbackSignup = async (req, res) => {
         firstName: given_name || "User",
         lastName: family_name || "",
         email,
-        password: null,
-        emailVerified: true,
-        isGoogleUser: true,
-        isProfileComplete: false, // 🔥 important
+
+        authType: "google",
+        isEmailVerified: true,
       });
     }
 
