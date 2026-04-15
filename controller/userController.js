@@ -538,6 +538,12 @@ export const googleSignupCallback = async (req, res) => {
 
     const oauth2Client = getOAuthClient();
 
+    console.log("🔥 GOOGLE CONFIG DEBUG:");
+console.log("CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
+console.log("CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET);
+console.log("REDIRECT_URI:", process.env.GOOGLE_REDIRECT_URI);
+console.log("CODE:", code);
+
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
 
@@ -617,7 +623,22 @@ export const googleSignupCallback = async (req, res) => {
     return res.redirect(`${process.env.FRONTEND_URL}`);
 
   } catch (error) {
-    console.error("Google Auth Error:", error);
-    return res.redirect(`${process.env.FRONTEND_URL}/error`);
+  console.error("❌ Google Auth Error FULL:");
+
+  console.error("Message:", error.message);
+  console.error("Stack:", error.stack);
+
+  // 🔥 VERY IMPORTANT for Google APIs
+  if (error.response) {
+    console.error("Response data:", error.response.data);
   }
+
+  // 🔥 Log OAuth client config (safe check)
+  console.error("OAuth Debug:", {
+    CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI,
+  });
+
+  return res.redirect(`${process.env.FRONTEND_URL}/error`);
+}
 };
