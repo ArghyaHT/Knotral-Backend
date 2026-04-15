@@ -5,6 +5,8 @@ export const GOOGLE_CONFIG = {
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   redirectUri: process.env.GOOGLE_CALLBACK_URL,
   signupRedirectUri: process.env.GOOGLE_SIGNUP_CALLBACK_URL,
+  loginRedirectUri: process.env.GOOGLE_LOGIN_CALLBACK_URL,
+
 };
 
 // ✅ Create OAuth Client

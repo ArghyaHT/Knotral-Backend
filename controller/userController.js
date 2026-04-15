@@ -5,7 +5,7 @@ import { createAllUsers, createUser, findAdminByEmailandRole, findUserByEmail } 
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { findUserWebinarRegistrations, findUserWebinars } from "../services/userWebinarRegistrationsService.js";
-import { getOAuthClient } from "../utils/google.js";
+import { getOAuthClient, GOOGLE_CONFIG } from "../utils/google.js";
 import { google } from "googleapis";
 
 export const registerSuperAdmin = async (req, res, next) => {
@@ -520,8 +520,9 @@ const oauth2Client = getOAuthClient(
 
 
 export const googleLogin = (req, res) => {
-  const oauth2Client = getOAuthClient();
-
+  const oauth2Client = getOAuthClient(
+    GOOGLE_CONFIG.loginRedirectUri
+  );
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: ["profile", "email"],
