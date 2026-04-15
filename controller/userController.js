@@ -501,8 +501,9 @@ export const getUserInfo = async (req, res, next) => {
 
 
 export const googleSignup = (req, res) => {
-  const oauth2Client = getOAuthClient();
-
+const oauth2Client = getOAuthClient(
+    GOOGLE_CONFIG.signupRedirectUri
+  );
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     prompt: "select_account consent",
