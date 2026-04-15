@@ -7,7 +7,7 @@ import { GOOGLE_CONFIG, getOAuthClient } from "../utils/google.js";
 export const googleSignup = (req, res) => {
   const oauth2Client = getOAuthClient();
 
-    const redirect = `${process.env.FRONTEND_URL}/signup`;
+  const redirect = `${process.env.FRONTEND_URL}/signup`;
 
 
   const url = oauth2Client.generateAuthUrl({
@@ -18,7 +18,7 @@ export const googleSignup = (req, res) => {
       "email",
       "https://www.googleapis.com/auth/calendar.events",
     ],
-      state: JSON.stringify({
+    state: JSON.stringify({
       type: "signup",
       redirect,   // 👈 IMPORTANT
     }),
@@ -31,11 +31,17 @@ export const googleSignup = (req, res) => {
 export const googleLogin = (req, res) => {
   const oauth2Client = getOAuthClient();
 
+  const redirect = `${process.env.FRONTEND_URL}/user-dashboard`;
+
+
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     prompt: "select_account",
     scope: ["profile", "email"],
-    state: JSON.stringify({ type: "login" }),
+    state: JSON.stringify({
+      type: "login",
+      redirect,   // 👈 IMPORTANT
+    }),
   });
 
   res.redirect(url);
@@ -60,11 +66,12 @@ export const connectGoogle = (req, res) => {
     }),
   });
 
-state: JSON.stringify({
-  type: "calendar",
-  userId,
-  redirect,
-})};
+  state: JSON.stringify({
+    type: "calendar",
+    userId,
+    redirect,
+  })
+};
 
 
 export const googleCallback = async (req, res) => {
@@ -151,22 +158,33 @@ export const googleCallback = async (req, res) => {
     // =========================
     // 🔑 LOGIN FLOW
     // =========================
-    if (type === "login") {
-      if (!existingUser) {
-        return res.redirect(`${redirect}/signup?error=no_account`);
-      }
+  if (type === "login") {
+  const safeRedirect = redirect || process.env.FRONTEND_URL;
 
-      const token = jwt.sign(
+  if (!existingUser) {
+    return res.redirect(`${safeRedirect}/signup?error=no_account`);
+  }
+
+  const token = jwt.sign(
         {
-          userId: existingUser._id,
-          email: existingUser.email,
-        },
-        process.env.JWT_USER_KEY,
-        { expiresIn: "7d" }
-      );
+        userId: existingUser._id,
+        firstName: existingUser.firstName,
+        lastName: existingUser.lastName,
+        roleDescription: existingUser.roleDescription,
+        otherRoleDescription: existingUser.otherRoleDescription,
+        organizationName: existingUser.organizationName,
+        email: existingUser.email,
+        mobileNumber: existingUser.mobileNumber,
+        countryCode: existingUser.countryCode,
+        userType: existingUser.userType,
+        isEmailVerified: existingUser.isEmailVerified,
+      },
+    process.env.JWT_USER_KEY,
+    { expiresIn: "7d" }
+  );
 
-      return res.redirect(`${redirect}/dashboard?token=${token}`);
-    }
+  return res.redirect(`${safeRedirect}/user-dashboard?token=${token}`);
+}
 
     return res.redirect(`${process.env.FRONTEND_URL}/`);
 
