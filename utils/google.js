@@ -16,7 +16,7 @@ export const getOAuthClient = () => {
   ) {
     throw new Error("Google OAuth environment variables are missing");
   }
-
+console.log("Creating Google OAuth Client with config:", GOOGLE_CONFIG);
   return new google.auth.OAuth2(
     GOOGLE_CONFIG.clientId,
     GOOGLE_CONFIG.clientSecret,
