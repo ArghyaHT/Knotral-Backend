@@ -180,7 +180,7 @@ export const googleCallback = async (req, res) => {
   );
 
 return res.redirect(
-  `${redirect}/google-auth?token=${token}`
+  `${safeRedirect}/login?token=${token}`
 );}
 
     return res.redirect(`${process.env.FRONTEND_URL}/`);
