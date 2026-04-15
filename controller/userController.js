@@ -589,9 +589,12 @@ export const googleSignupCallback = async (req, res) => {
         isCalendarConnected: true,
       });
 
+      // return res.redirect(
+      //   `${process.env.FRONTEND_URL}/signup?googleSignupSuccess=true&email=${email}&firstName=${given_name}&lastName=${family_name}`
+      // );
       return res.redirect(
-        `${process.env.FRONTEND_URL}/signup?googleSignupSuccess=true&email=${email}&firstName=${given_name}&lastName=${family_name}`
-      );
+  `${process.env.FRONTEND_URL}/login?googleSignupSuccess=true`
+);
     }
 
     // =========================
