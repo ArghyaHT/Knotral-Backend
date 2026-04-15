@@ -31,7 +31,7 @@ export const googleSignup = (req, res) => {
 export const googleLogin = (req, res) => {
   const oauth2Client = getOAuthClient();
 
-  const redirect = `${process.env.FRONTEND_URL}/user-dashboard`;
+  const redirect = `${process.env.FRONTEND_URL}`;
 
 
   const url = oauth2Client.generateAuthUrl({
@@ -57,20 +57,16 @@ export const connectGoogle = (req, res) => {
     access_type: "offline",
     prompt: "consent select_account",
     scope: [
-      "https://www.googleapis.com/auth/calendar.events"
+      "https://www.googleapis.com/auth/calendar.events",
     ],
     state: JSON.stringify({
       type: "calendar",
       userId,
-      redirect,
+      redirect: redirect || process.env.FRONTEND_URL,
     }),
   });
 
-  state: JSON.stringify({
-    type: "calendar",
-    userId,
-    redirect,
-  })
+  res.redirect(url);
 };
 
 
@@ -183,8 +179,9 @@ export const googleCallback = async (req, res) => {
     { expiresIn: "7d" }
   );
 
-  return res.redirect(`${safeRedirect}?token=${token}`);
-}
+return res.redirect(
+  `${redirect}/google-auth?token=${token}`
+);}
 
     return res.redirect(`${process.env.FRONTEND_URL}/`);
 
