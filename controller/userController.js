@@ -569,7 +569,7 @@ export const googleCallbackSignup = async (req, res) => {
         userId: user._id,
         email: user.email,
       },
-      process.env.JWT_SECRET,
+      process.env.JWT_USER_KEY,
       { expiresIn: "7d" }
     );
 
