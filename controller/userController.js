@@ -503,12 +503,12 @@ export const getUserInfo = async (req, res, next) => {
 export const googleSignup = (req, res) => {
   const oauth2Client = getOAuthClient();
 
-  const url = oauth2Client.generateAuthUrl({
-    access_type: "offline",
-    scope: ["profile", "email"],
-    prompt: "consent",
-    state: "signup", // 🔥 important
-  });
+ const url = oauth2Client.generateAuthUrl({
+  access_type: "offline",
+  scope: ["profile", "email"],
+  prompt: "select_account consent", // 🔥 FIX
+  state: "signup",
+});
 
   res.redirect(url);
 };
