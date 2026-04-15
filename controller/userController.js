@@ -540,12 +540,6 @@ export const googleSignupCallback = async (req, res) => {
 
     const oauth2Client = getOAuthClient();
 
-    console.log("🔥 GOOGLE CONFIG DEBUG:");
-console.log("CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-console.log("CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET);
-console.log("REDIRECT_URI:", process.env.GOOGLE_SIGNUP_CALLBACK_URL);
-console.log("CODE:", code);
-
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
 
