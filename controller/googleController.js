@@ -183,7 +183,7 @@ export const googleCallback = async (req, res) => {
     { expiresIn: "7d" }
   );
 
-  return res.redirect(`${safeRedirect}/user-dashboard?token=${token}`);
+  return res.redirect(`${safeRedirect}?token=${token}`);
 }
 
     return res.redirect(`${process.env.FRONTEND_URL}/`);
