@@ -5,6 +5,8 @@ import { createAllUsers, createUser, findAdminByEmailandRole, findUserByEmail } 
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { findUserWebinarRegistrations, findUserWebinars } from "../services/userWebinarRegistrationsService.js";
+import { getOAuthClient } from "../utils/google.js";
+import { google } from "googleapis";
 
 export const registerSuperAdmin = async (req, res, next) => {
   try {
@@ -494,5 +496,101 @@ export const getUserInfo = async (req, res, next) => {
 
   } catch (error) {
     next(error);
+  }
+};
+
+
+export const googleSignup = async (req, res) => {
+  try {
+    const { redirect } = req.query;
+
+    const oauth2Client = getOAuthClient();
+
+    const url = oauth2Client.generateAuthUrl({
+      access_type: "offline",
+      scope: ["profile", "email"],
+      prompt: "consent", // 🔥 ensures account selection
+      state: redirect || "/dashboard",
+    });
+
+    return res.redirect(url);
+  } catch (error) {
+    console.error("Google Signup Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Google signup failed",
+    });
+  }
+};
+
+// 🚀 2. GOOGLE CALLBACK (Signup/Login logic)
+export const googleCallbackSignup = async (req, res) => {
+  try {
+    const { code, state } = req.query;
+
+    const oauth2Client = getOAuthClient();
+
+    // 🔑 Exchange code for tokens
+    const { tokens } = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(tokens);
+
+    // 📩 Get user info
+    const oauth2 = google.oauth2({
+      auth: oauth2Client,
+      version: "v2",
+    });
+
+    const { data } = await oauth2.userinfo.get();
+
+    const { email, given_name, family_name } = data;
+
+    if (!email) {
+      return res.redirect(`${FRONTEND_URL}/login?error=google_failed`);
+    }
+
+    // 🔍 Check if user exists
+    let user = await Users.findOne({ email });
+
+    // 🆕 NEW USER → Google Signup
+    if (!user) {
+      user = await Users.create({
+        firstName: given_name || "User",
+        lastName: family_name || "",
+        email,
+        password: null,
+        emailVerified: true,
+        isGoogleUser: true,
+        isProfileComplete: false, // 🔥 important
+      });
+    }
+
+    // 🔐 Generate JWT
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // 🔥 If profile incomplete → go complete profile page
+    if (!user.isProfileComplete) {
+      return res.redirect(
+        `${FRONTEND_URL}/complete-profile?token=${token}`
+      );
+    }
+
+    // ✅ If already complete → login success
+    return res.redirect(
+      `${FRONTEND_URL}/google-success?token=${token}&redirect=${state}`
+    );
+
+  } catch (error) {
+    console.error("Google Callback Error:", error);
+
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/login?error=google_failed`
+    );
   }
 };
