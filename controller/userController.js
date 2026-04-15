@@ -500,96 +500,118 @@ export const getUserInfo = async (req, res, next) => {
 };
 
 
-export const googleSignup = async (req, res) => {
-  try {
-    const { redirect } = req.query;
+export const googleSignup = (req, res) => {
+  const oauth2Client = getOAuthClient();
 
-    const oauth2Client = getOAuthClient();
+  const url = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: ["profile", "email"],
+    prompt: "consent",
+    state: "signup", // 🔥 important
+  });
 
-    const url = oauth2Client.generateAuthUrl({
-      access_type: "offline",
-      scope: ["profile", "email"],
-      prompt: "consent", // 🔥 ensures account selection
-      state: redirect || "/dashboard",
-    });
-
-    return res.redirect(url);
-  } catch (error) {
-    console.error("Google Signup Error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Google signup failed",
-    });
-  }
+  res.redirect(url);
 };
 
-// 🚀 2. GOOGLE CALLBACK (Signup/Login logic)
-export const googleCallbackSignup = async (req, res) => {
+
+export const googleLogin = (req, res) => {
+  const oauth2Client = getOAuthClient();
+
+  const url = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: ["profile", "email"],
+    prompt: "select_account",
+    state: "login", // 🔥 important
+  });
+
+  res.redirect(url);
+};
+
+
+export const googleSignupCallback = async (req, res) => {
   try {
     const { code, state } = req.query;
 
     const oauth2Client = getOAuthClient();
 
-    // 🔑 Exchange code for tokens
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
 
-    // 📩 Get user info
     const oauth2 = google.oauth2({
       auth: oauth2Client,
       version: "v2",
     });
 
     const { data } = await oauth2.userinfo.get();
-
     const { email, given_name, family_name } = data;
 
     if (!email) {
-      return res.redirect(`${FRONTEND_URL}/login?error=google_failed`);
+      return res.redirect(`${process.env.FRONTEND_URL}/error`);
     }
 
-    // 🔍 Check if user exists
-    let user = await Users.findOne({ email });
+    const existingUser = await Users.findOne({ email });
 
-    // 🆕 NEW USER → Google Signup
-    if (!user) {
-      user = await Users.create({
-        firstName: given_name || "User",
-        lastName: family_name || "",
-        email,
+    // =========================
+    // 🔥 SIGNUP FLOW
+    // =========================
+  if (state === "signup") {
+  if (existingUser) {
 
-        authType: "google",
-        isEmailVerified: true,
-      });
-    }
-
-    // 🔐 Generate JWT
-    const token = jwt.sign(
-      {
-        userId: user._id,
-        email: user.email,
-      },
-      process.env.JWT_USER_KEY,
-      { expiresIn: "7d" }
-    );
-
-    // 🔥 If profile incomplete → go complete profile page
-    if (!user.isProfileComplete) {
+    // ❌ If LOCAL user exists → block
+    if (existingUser.authType === "local") {
       return res.redirect(
-        `${FRONTEND_URL}/complete-profile?token=${token}`
+        `${process.env.FRONTEND_URL}/signup?error=use_email_password`
       );
     }
 
-    // ✅ If already complete → login success
-    return res.redirect(
-      `${FRONTEND_URL}/google-success?token=${token}&redirect=${state}`
-    );
+    // ❌ If GOOGLE user exists → block
+    if (existingUser.authType === "google") {
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/login?error=google_account_exists`
+      );
+    }
+  }
+
+  // ✅ Create new Google user
+  await Users.create({
+    firstName: given_name || "User",
+    lastName: family_name || "",
+    email,
+    authType: "google",
+    isEmailVerified: true,
+  });
+
+  return res.redirect(
+    `${process.env.FRONTEND_URL}/login?message=signup_success`
+  );
+}
+
+    // =========================
+    // 🔥 LOGIN FLOW
+    // =========================
+    if (state === "login") {
+      if (!existingUser) {
+        return res.redirect(
+          `${process.env.FRONTEND_URL}/signup?error=no_account`
+        );
+      }
+
+      const token = jwt.sign(
+        { userId: existingUser._id, email: existingUser.email },
+        process.env.JWT_USER_KEY,
+        { expiresIn: "7d" }
+      );
+
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/dashboard?token=${token}`
+      );
+    }
+
+    // fallback
+    return res.redirect(`${process.env.FRONTEND_URL}`);
 
   } catch (error) {
-    console.error("Google Callback Error:", error);
-
-    return res.redirect(
-      `${process.env.FRONTEND_URL}/login?error=google_failed`
-    );
+    console.error("Google Auth Error:", error);
+    return res.redirect(`${process.env.FRONTEND_URL}/error`);
   }
 };
