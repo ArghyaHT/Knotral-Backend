@@ -503,12 +503,16 @@ export const getUserInfo = async (req, res, next) => {
 export const googleSignup = (req, res) => {
   const oauth2Client = getOAuthClient();
 
- const url = oauth2Client.generateAuthUrl({
-  access_type: "offline",
-  scope: ["profile", "email"],
-  prompt: "select_account consent", // 🔥 FIX
-  state: "signup",
-});
+  const url = oauth2Client.generateAuthUrl({
+    access_type: "offline",
+    prompt: "select_account consent",
+    scope: [
+      "profile",
+      "email",
+      "https://www.googleapis.com/auth/calendar.events", // 🔥 add this
+    ],
+    state: "signup",
+  });
 
   res.redirect(url);
 };
@@ -554,37 +558,39 @@ export const googleSignupCallback = async (req, res) => {
     // =========================
     // 🔥 SIGNUP FLOW
     // =========================
-  if (state === "signup") {
-  if (existingUser) {
+    if (state === "signup") {
+      if (existingUser) {
 
-    // ❌ If LOCAL user exists → block
-    if (existingUser.authType === "local") {
-      return res.redirect(
-        `${process.env.FRONTEND_URL}/signup?error=use_email_password`
-      );
+        // ❌ If LOCAL user exists → block
+        if (existingUser.authType === "local") {
+          return res.redirect(
+            `${process.env.FRONTEND_URL}/signup?error=use_email_password`
+          );
+        }
+
+        // ❌ If GOOGLE user exists → block
+        if (existingUser.authType === "google") {
+          return res.redirect(
+            `${process.env.FRONTEND_URL}/login?error=google_account_exists`
+          );
+        }
+      }
+
+      // ✅ Create new Google user
+      await Users.create({
+        firstName: given_name || "User",
+        lastName: family_name || "",
+        email,
+        authType: "google",
+        isEmailVerified: true,
+        googleCalendarToken: tokens.refresh_token,
+        isCalendarConnected: true,
+      });
+
+   return res.redirect(
+  `${process.env.FRONTEND_URL}/signup?googleSignupSuccess=true&email=${email}&firstName=${given_name}&lastName=${family_name}`
+);
     }
-
-    // ❌ If GOOGLE user exists → block
-    if (existingUser.authType === "google") {
-      return res.redirect(
-        `${process.env.FRONTEND_URL}/login?error=google_account_exists`
-      );
-    }
-  }
-
-  // ✅ Create new Google user
-  await Users.create({
-    firstName: given_name || "User",
-    lastName: family_name || "",
-    email,
-    authType: "google",
-    isEmailVerified: true,
-  });
-
-  return res.redirect(
-    `${process.env.FRONTEND_URL}/login?message=signup_success`
-  );
-}
 
     // =========================
     // 🔥 LOGIN FLOW
