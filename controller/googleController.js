@@ -129,7 +129,7 @@ export const googleCallback = async (req, res) => {
     // 📅 CALENDAR FLOW
     // =========================
     if (type === "calendar") {
-      const { userId, redirect } = parsed;
+  const { userId } = parsed;
 
       if (!userId) {
         return res.redirect(`${process.env.FRONTEND_URL}/error`);

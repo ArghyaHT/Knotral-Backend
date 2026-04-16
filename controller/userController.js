@@ -474,8 +474,6 @@ export const getUserInfo = async (req, res, next) => {
 
     const userId = req.user.userId; // coming from JWT
 
-    console.log("User ID from token:", userId);
-
     const user = await Users.findById({ _id: userId }).select("-password");
 
     if (!user) {
