@@ -87,6 +87,8 @@ export const googleCallback = async (req, res) => {
 
     const { type, redirect } = parsed;
 
+    const signupPage = `${process.env.FRONTEND_URL}/sign-up`;
+
     const oauth2Client = getOAuthClient();
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
@@ -130,7 +132,6 @@ export const googleCallback = async (req, res) => {
 // 🆕 SIGNUP FLOW (FIXED)
 // =========================
 if (type === "signup") {
-  const signupRedirect = redirect || `${process.env.FRONTEND_URL}/sign-up`;
 
 if (existingUser) {
 
@@ -143,8 +144,8 @@ if (existingUser) {
   }
 
   const errorRedirect = redirect
-    ? `${signupRedirect}?error=${errorType}&redirect=${encodeURIComponent(redirect)}`
-    : `${signupRedirect}?error=${errorType}`;
+    ? `${signupPage}?error=${errorType}&redirect=${encodeURIComponent(redirect)}`
+    : `${signupPage}?error=${errorType}`;
 
   return res.redirect(errorRedirect);
 }
@@ -162,8 +163,8 @@ if (existingUser) {
 
   // ✅ IMPORTANT: send ONLY flag, not nested path
   const finalUrl = redirect
-    ? `${signupRedirect}?signup=success&email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirect)}`
-    : `${signupRedirect}?signup=success&email=${encodeURIComponent(email)}`;
+    ? `${signupPage}?signup=success&email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirect)}`
+    : `${signupPage}?signup=success&email=${encodeURIComponent(email)}`;
 
   return res.redirect(finalUrl);
 }
