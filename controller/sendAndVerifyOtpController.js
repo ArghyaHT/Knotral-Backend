@@ -13,18 +13,21 @@ export const sendOtp = async (req, res) => {
 
     const existingUser = await Users.findOne({ email });
 
-    if (existingUser.authType === "google") {
-      return res.json({
-        status: 400, 
-        success: false, 
-        message: "Email already registered with google" });
-    }
-    else if (existingUser.authType === "local") {
-      return res.json({
-        status: 400, 
-        success: false, 
-        message: "Email already registered with email and password" });
-    }
+   if (existingUser) {
+  if (existingUser.authType === "google") {
+    return res.status(400).json({
+      success: false,
+      message: "Email already registered with Google",
+    });
+  }
+
+  if (existingUser.authType === "local") {
+    return res.status(400).json({
+      success: false,
+      message: "Email already registered with email and password",
+    });
+  }
+}
 
     const otp = otpGenerator.generate(4, {
       upperCaseAlphabets: false,

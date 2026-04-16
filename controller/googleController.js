@@ -211,11 +211,11 @@ export const googleCallback = async (req, res) => {
         return res.redirect(`${safeRedirect}/login?error=no_account`);
       }
 
-       if (existingUser.authType === "local") {
-    return res.redirect(
-      `${process.env.FRONTEND_URL}/login?error=use_password`
-    );
-  }
+      if (existingUser.authType === "local") {
+        return res.redirect(
+          `${process.env.FRONTEND_URL}/login?error=use_password`
+        );
+      }
 
       const token = jwt.sign(
         {
