@@ -113,7 +113,13 @@ export const googleCallback = async (req, res) => {
       return res.redirect(`${process.env.FRONTEND_URL}/error`);
     }
 
-    const { type, redirect } = parsed;
+    let { type, redirect } = parsed;
+
+    // ✅ CLEAN AGAIN (defensive)
+if (redirect?.includes("redirect=")) {
+  const inner = new URLSearchParams(redirect.split("?")[1]).get("redirect");
+  redirect = inner || "/";
+}
 
     console.log("🔔 Google Callback - redirect:", redirect);
 
