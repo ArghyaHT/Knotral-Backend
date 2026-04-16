@@ -7,9 +7,36 @@ import { GOOGLE_CONFIG, getOAuthClient } from "../utils/google.js";
 export const googleSignup = (req, res) => {
   const oauth2Client = getOAuthClient();
 
-  const redirect = req.query.redirect || `${process.env.FRONTEND_URL}/sign-up`;
+  let redirect = req.query.redirect;
 
-  console.log("🔔 Google Signup - redirect:", redirect);
+  // ✅ CLEAN REDIRECT HERE
+  if (redirect) {
+    try {
+      redirect = decodeURIComponent(redirect);
+
+      // ❗ If redirect contains another redirect → extract inner one
+      if (redirect.includes("redirect=")) {
+        const inner = new URLSearchParams(redirect.split("?")[1]).get("redirect");
+        redirect = inner || "/";
+      }
+
+      // ❗ If full URL → convert to path
+      if (redirect.startsWith("http")) {
+        const urlObj = new URL(redirect);
+        redirect = urlObj.pathname + urlObj.search;
+      }
+
+    } catch {
+      redirect = "/";
+    }
+  }
+
+  // ✅ fallback
+  if (!redirect) {
+    redirect = "/";
+  }
+
+  console.log("✅ CLEAN REDIRECT:", redirect);
 
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
