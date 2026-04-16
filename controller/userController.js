@@ -197,7 +197,7 @@ export const logoutSuperAdmin = (req, res) => {
 
 export const signupUser = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password, phone, roleDescription, otherRoleDescription, organizationName } = req.body;
+    const { firstName, lastName, email, password, phone, countryCode, roleDescription, otherRoleDescription, organizationName } = req.body;
 
     // 🔴 1. Basic validation
     if (!firstName || !lastName || !email || !password || !phone || !roleDescription) {
@@ -226,9 +226,6 @@ export const signupUser = async (req, res, next) => {
       });
     }
 
-    // 🔴 4. Phone split logic
-    const mobileNumber = Number(phone.slice(-10));
-    const countryCode = "+" + phone.slice(0, phone.length - 10);
 
     // 🔐 5. Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -239,7 +236,7 @@ export const signupUser = async (req, res, next) => {
       lastName,
       email,
       hashedPassword,
-      mobileNumber,
+      phone,
       countryCode,
       roleDescription,
       otherRoleDescription,
