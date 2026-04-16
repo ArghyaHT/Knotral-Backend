@@ -147,7 +147,7 @@ if (type === "signup") {
   });
 
   // ✅ IMPORTANT: send ONLY flag, not nested path
-  return res.redirect(`${signupRedirect}?signup=success`);
+  return res.redirect(`${signupRedirect}?sign-up=success`);
 }
 
     // =========================
@@ -157,7 +157,7 @@ if (type === "signup") {
   const safeRedirect = redirect || process.env.FRONTEND_URL;
 
   if (!existingUser) {
-        return res.redirect(`${safeRedirect}/signup?error=no_account`);
+        return res.redirect(`${safeRedirect}/sign-up?error=no_account`);
   }
 
   const token = jwt.sign(
