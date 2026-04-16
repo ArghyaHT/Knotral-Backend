@@ -9,6 +9,7 @@ export const googleSignup = (req, res) => {
 
   const redirect = req.query.redirect || `${process.env.FRONTEND_URL}/sign-up`;
 
+  console.log("🔔 Google Signup - redirect:", redirect);
 
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
@@ -86,6 +87,8 @@ export const googleCallback = async (req, res) => {
     }
 
     const { type, redirect } = parsed;
+
+    console.log("🔔 Google Callback - redirect:", redirect);
 
     const signupPage = `${process.env.FRONTEND_URL}/sign-up`;
 
