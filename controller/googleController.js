@@ -148,7 +148,7 @@ if (type === "signup") {
 
 
   // ✅ IMPORTANT: send ONLY flag, not nested path
-  return res.redirect(`${signupRedirect}?sign-up=success&email=${email}`);
+  return res.redirect(`${signupRedirect}?signup=success&email=${email}`);
 }
 
     // =========================
