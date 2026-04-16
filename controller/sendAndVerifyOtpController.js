@@ -19,6 +19,12 @@ export const sendOtp = async (req, res) => {
         success: false, 
         message: "Email already registered with google" });
     }
+    else if (existingUser.authType === "local") {
+      return res.json({
+        status: 400, 
+        success: false, 
+        message: "Email already registered with email and password" });
+    }
 
     const otp = otpGenerator.generate(4, {
       upperCaseAlphabets: false,
