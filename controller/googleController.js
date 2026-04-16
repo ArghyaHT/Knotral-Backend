@@ -146,8 +146,14 @@ if (type === "signup") {
     isCalendarConnected: true,
   });
 
+  const token = jwt.sign(
+  { email, userId: existingUser._id },
+  process.env.JWT_USER_KEY,
+  { expiresIn: "7d" }
+);
+
   // ✅ IMPORTANT: send ONLY flag, not nested path
-  return res.redirect(`${signupRedirect}?sign-up=success`);
+  return res.redirect(`${signupRedirect}?sign-up=success&token=${token}`);
 }
 
     // =========================
