@@ -31,8 +31,7 @@ export const googleSignup = (req, res) => {
 export const googleLogin = (req, res) => {
   const oauth2Client = getOAuthClient();
 
-  const redirect = `${process.env.FRONTEND_URL}`;
-
+  const redirect = req.query.redirect || process.env.FRONTEND_URL;
 
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
@@ -40,7 +39,7 @@ export const googleLogin = (req, res) => {
     scope: ["profile", "email"],
     state: JSON.stringify({
       type: "login",
-      redirect,   // 👈 IMPORTANT
+      redirect,
     }),
   });
 
@@ -49,20 +48,21 @@ export const googleLogin = (req, res) => {
 
 
 export const connectGoogle = (req, res) => {
-  const { userId, redirect } = req.query;
+  const { userId } = req.query;
 
   const oauth2Client = getOAuthClient();
+
+  const redirect =
+    req.query.redirect || process.env.FRONTEND_URL;
 
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     prompt: "consent select_account",
-    scope: [
-      "https://www.googleapis.com/auth/calendar.events",
-    ],
+    scope: ["https://www.googleapis.com/auth/calendar.events"],
     state: JSON.stringify({
       type: "calendar",
       userId,
-      redirect: redirect || process.env.FRONTEND_URL,
+      redirect,
     }),
   });
 
@@ -78,22 +78,20 @@ export const googleCallback = async (req, res) => {
       return res.redirect(`${process.env.FRONTEND_URL}/error`);
     }
 
-    // =========================
-    // ✅ parse state safely FIRST
-    // =========================
     let parsed;
     try {
       parsed = JSON.parse(state);
-    } catch (err) {
+    } catch {
       return res.redirect(`${process.env.FRONTEND_URL}/error`);
     }
 
-    const { type, redirect } = parsed; // ✅ FIXED HERE
+    const { type, redirect } = parsed;
 
     const oauth2Client = getOAuthClient();
-
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
+
+    const safeRedirect = redirect || process.env.FRONTEND_URL;
 
     // =========================
     // 📅 CALENDAR FLOW
@@ -124,7 +122,7 @@ export const googleCallback = async (req, res) => {
     const { data } = await oauth2.userinfo.get();
     const { email, given_name, family_name } = data;
 
-    if (!email) {
+       if (!email) {
       return res.redirect(`${process.env.FRONTEND_URL}/error`);
     }
 
@@ -148,7 +146,7 @@ export const googleCallback = async (req, res) => {
         isCalendarConnected: true,
       });
 
-      return res.redirect(`${redirect}?signup=success`);
+      return res.redirect(`${safeRedirect}/signup?signup=success`);
     }
 
     // =========================
@@ -158,7 +156,7 @@ export const googleCallback = async (req, res) => {
   const safeRedirect = redirect || process.env.FRONTEND_URL;
 
   if (!existingUser) {
-    return res.redirect(`${safeRedirect}/signup?error=no_account`);
+        return res.redirect(`${safeRedirect}/signup?error=no_account`);
   }
 
   const token = jwt.sign(
@@ -178,12 +176,11 @@ export const googleCallback = async (req, res) => {
     process.env.JWT_USER_KEY,
     { expiresIn: "7d" }
   );
+      return res.redirect(`${safeRedirect}?token=${token}`);
 
-return res.redirect(
-  `${safeRedirect}/login?token=${token}`
-);}
+}
 
-    return res.redirect(`${process.env.FRONTEND_URL}/`);
+    return res.redirect(process.env.FRONTEND_URL);
 
   } catch (error) {
     console.error("❌ Google Callback Error:", error);
