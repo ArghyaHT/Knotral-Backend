@@ -7,7 +7,7 @@ import { GOOGLE_CONFIG, getOAuthClient } from "../utils/google.js";
 export const googleSignup = (req, res) => {
   const oauth2Client = getOAuthClient();
 
-  const redirect = `${process.env.FRONTEND_URL}/signup`;
+  const redirect = `${process.env.FRONTEND_URL}/sign-up`;
 
 
   const url = oauth2Client.generateAuthUrl({
@@ -130,7 +130,7 @@ export const googleCallback = async (req, res) => {
 // 🆕 SIGNUP FLOW (FIXED)
 // =========================
 if (type === "signup") {
-  const signupRedirect = redirect || `${process.env.FRONTEND_URL}/signup`;
+  const signupRedirect = redirect || `${process.env.FRONTEND_URL}/sign-up`;
 
   if (existingUser) {
     return res.redirect(`${signupRedirect}?error=exists`);
