@@ -501,9 +501,10 @@ export const getUserInfo = async (req, res, next) => {
 
 
 export const completeProfile = async (req, res) => {
-  try {
+   try {
     const {
       email,
+      countryCode,
       phone,
       roleDescription,
       otherRoleDescription,
@@ -526,13 +527,21 @@ export const completeProfile = async (req, res) => {
       });
     }
 
-    // ✅ update only provided fields (no overwrite bugs)
-    if (phone) user.phone = phone;
+    // 🚨 ONLY GOOGLE USERS ALLOWED
+    if (user.authType !== "google") {
+      return res.status(400).json({
+        success: false,
+        message: "Only Google users can complete profile here",
+      });
+    }
+
+    // ✅ update fields
+    if (phone) user.mobileNumber = phone;
+     if (countryCode) user.countryCode = countryCode;
     if (roleDescription) user.roleDescription = roleDescription;
     if (otherRoleDescription) user.otherRoleDescription = otherRoleDescription;
     if (organizationName) user.organizationName = organizationName;
 
-    // optional flag for google onboarding completion
     user.profileCompleted = true;
 
     await user.save();
@@ -542,6 +551,7 @@ export const completeProfile = async (req, res) => {
       message: "Profile updated successfully",
       user,
     });
+
   }catch (error) {
     next(error);
   }
