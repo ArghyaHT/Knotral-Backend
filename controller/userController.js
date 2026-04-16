@@ -500,4 +500,52 @@ export const getUserInfo = async (req, res, next) => {
 };
 
 
+export const completeProfile = async (req, res) => {
+  try {
+    const {
+      email,
+      phone,
+      roleDescription,
+      otherRoleDescription,
+      organizationName,
+    } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    const user = await Users.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // ✅ update only provided fields (no overwrite bugs)
+    if (phone) user.phone = phone;
+    if (roleDescription) user.roleDescription = roleDescription;
+    if (otherRoleDescription) user.otherRoleDescription = otherRoleDescription;
+    if (organizationName) user.organizationName = organizationName;
+
+    // optional flag for google onboarding completion
+    user.profileCompleted = true;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user,
+    });
+  }catch (error) {
+    next(error);
+  }
+};
+
+
 
