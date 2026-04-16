@@ -91,8 +91,6 @@ export const googleCallback = async (req, res) => {
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
 
-    const safeRedirect = redirect || process.env.FRONTEND_URL;
-
     // =========================
     // 📅 CALENDAR FLOW
     // =========================
@@ -128,26 +126,29 @@ export const googleCallback = async (req, res) => {
 
     const existingUser = await Users.findOne({ email });
 
-    // =========================
-    // 🆕 SIGNUP FLOW
-    // =========================
-    if (type === "signup") {
-      if (existingUser) {
-        return res.redirect(`${redirect}/login?error=exists`);
-      }
+   // =========================
+// 🆕 SIGNUP FLOW (FIXED)
+// =========================
+if (type === "signup") {
+  const signupRedirect = redirect || `${process.env.FRONTEND_URL}/signup`;
 
-      await Users.create({
-        email,
-        firstName: given_name || "",
-        lastName: family_name || "",
-        authType: "google",
-        isEmailVerified: true,
-        googleCalendarToken: tokens.refresh_token,
-        isCalendarConnected: true,
-      });
+  if (existingUser) {
+    return res.redirect(`${signupRedirect}?error=exists`);
+  }
 
-      return res.redirect(`${safeRedirect}/signup?signup=success`);
-    }
+  await Users.create({
+    email,
+    firstName: given_name || "",
+    lastName: family_name || "",
+    authType: "google",
+    isEmailVerified: true,
+    googleCalendarToken: tokens.refresh_token,
+    isCalendarConnected: true,
+  });
+
+  // ✅ IMPORTANT: send ONLY flag, not nested path
+  return res.redirect(`${signupRedirect}?signup=success`);
+}
 
     // =========================
     // 🔑 LOGIN FLOW
