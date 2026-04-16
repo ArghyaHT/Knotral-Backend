@@ -36,8 +36,6 @@ export const googleSignup = (req, res) => {
     redirect = "/";
   }
 
-  console.log("✅ CLEAN REDIRECT:", redirect);
-
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     prompt: "consent select_account",
@@ -116,12 +114,10 @@ export const googleCallback = async (req, res) => {
     let { type, redirect } = parsed;
 
     // ✅ CLEAN AGAIN (defensive)
-if (redirect?.includes("redirect=")) {
-  const inner = new URLSearchParams(redirect.split("?")[1]).get("redirect");
-  redirect = inner || "/";
-}
-
-    console.log("🔔 Google Callback - redirect:", redirect);
+    if (redirect?.includes("redirect=")) {
+      const inner = new URLSearchParams(redirect.split("?")[1]).get("redirect");
+      redirect = inner || "/";
+    }
 
     const signupPage = `${process.env.FRONTEND_URL}/sign-up`;
 
@@ -158,83 +154,83 @@ if (redirect?.includes("redirect=")) {
     const { data } = await oauth2.userinfo.get();
     const { email, given_name, family_name } = data;
 
-       if (!email) {
+    if (!email) {
       return res.redirect(`${process.env.FRONTEND_URL}/error`);
     }
 
     const existingUser = await Users.findOne({ email });
 
-   // =========================
-// 🆕 SIGNUP FLOW (FIXED)
-// =========================
-if (type === "signup") {
+    // =========================
+    // 🆕 SIGNUP FLOW (FIXED)
+    // =========================
+    if (type === "signup") {
 
-if (existingUser) {
+      if (existingUser) {
 
-  let errorType = "exists";
+        let errorType = "exists";
 
-  if (existingUser.authType === "local") {
-    errorType = "local_exists"; // user signed up manually
-  } else if (existingUser.authType === "google") {
-    errorType = "google_exists"; // already signed up with google
-  }
+        if (existingUser.authType === "local") {
+          errorType = "local_exists"; // user signed up manually
+        } else if (existingUser.authType === "google") {
+          errorType = "google_exists"; // already signed up with google
+        }
 
-  const errorRedirect = redirect
-    ? `${signupPage}?error=${errorType}&redirect=${encodeURIComponent(redirect)}`
-    : `${signupPage}?error=${errorType}`;
+        const errorRedirect = redirect
+          ? `${signupPage}?error=${errorType}&redirect=${encodeURIComponent(redirect)}`
+          : `${signupPage}?error=${errorType}`;
 
-  return res.redirect(errorRedirect);
-}
+        return res.redirect(errorRedirect);
+      }
 
-  await Users.create({
-    email,
-    firstName: given_name || "",
-    lastName: family_name || "",
-    authType: "google",
-    isEmailVerified: true,
-    googleCalendarToken: tokens.refresh_token,
-    isCalendarConnected: true,
-  });
+      await Users.create({
+        email,
+        firstName: given_name || "",
+        lastName: family_name || "",
+        authType: "google",
+        isEmailVerified: true,
+        googleCalendarToken: tokens.refresh_token,
+        isCalendarConnected: true,
+      });
 
 
-  // ✅ IMPORTANT: send ONLY flag, not nested path
-  const finalUrl = redirect
-    ? `${signupPage}?signup=success&email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirect)}`
-    : `${signupPage}?signup=success&email=${encodeURIComponent(email)}`;
+      // ✅ IMPORTANT: send ONLY flag, not nested path
+      const finalUrl = redirect
+        ? `${signupPage}?signup=success&email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirect)}`
+        : `${signupPage}?signup=success&email=${encodeURIComponent(email)}`;
 
-  return res.redirect(finalUrl);
-}
+      return res.redirect(finalUrl);
+    }
 
     // =========================
     // 🔑 LOGIN FLOW
     // =========================
-  if (type === "login") {
-  const safeRedirect = redirect || process.env.FRONTEND_URL;
+    if (type === "login") {
+      const safeRedirect = redirect || process.env.FRONTEND_URL;
 
-  if (!existingUser) {
+      if (!existingUser) {
         return res.redirect(`${safeRedirect}/sign-up?error=no_account`);
-  }
+      }
 
-  const token = jwt.sign(
+      const token = jwt.sign(
         {
-        userId: existingUser._id,
-        firstName: existingUser.firstName,
-        lastName: existingUser.lastName,
-        roleDescription: existingUser.roleDescription,
-        otherRoleDescription: existingUser.otherRoleDescription,
-        organizationName: existingUser.organizationName,
-        email: existingUser.email,
-        mobileNumber: existingUser.mobileNumber,
-        countryCode: existingUser.countryCode,
-        userType: existingUser.userType,
-        isEmailVerified: existingUser.isEmailVerified,
-      },
-    process.env.JWT_USER_KEY,
-    { expiresIn: "7d" }
-  );
+          userId: existingUser._id,
+          firstName: existingUser.firstName,
+          lastName: existingUser.lastName,
+          roleDescription: existingUser.roleDescription,
+          otherRoleDescription: existingUser.otherRoleDescription,
+          organizationName: existingUser.organizationName,
+          email: existingUser.email,
+          mobileNumber: existingUser.mobileNumber,
+          countryCode: existingUser.countryCode,
+          userType: existingUser.userType,
+          isEmailVerified: existingUser.isEmailVerified,
+        },
+        process.env.JWT_USER_KEY,
+        { expiresIn: "7d" }
+      );
       return res.redirect(`${safeRedirect}?token=${token}`);
 
-}
+    }
 
     return res.redirect(process.env.FRONTEND_URL);
 

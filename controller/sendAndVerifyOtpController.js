@@ -1,6 +1,7 @@
 import otpGenerator from "otp-generator";
 import { TempUsers } from "../models/tempUsers.js";
 import { sendOtpEmail } from "../utils/emailSender.js";
+import { Users } from "../models/user.js";
 
 export const sendOtp = async (req, res) => {
   try {
@@ -8,6 +9,15 @@ export const sendOtp = async (req, res) => {
 
     if (!email) {
       return res.json({ success: false, message: "Email is required" });
+    }
+
+    const existingUser = await Users.findOne({ email });
+
+    if (existingUser.authType === "google") {
+      return res.json({
+        status: 400, 
+        success: false, 
+        message: "Email already registered with google" });
     }
 
     const otp = otpGenerator.generate(4, {
