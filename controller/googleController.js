@@ -208,7 +208,7 @@ export const googleCallback = async (req, res) => {
       const safeRedirect = redirect || process.env.FRONTEND_URL;
 
       if (!existingUser) {
-        return res.redirect(`${safeRedirect}/login?error=no_account`);
+        return res.redirect(`${process.env.FRONTEND_URL}/login?error=no_account`);
       }
 
       if (existingUser.authType === "local") {
