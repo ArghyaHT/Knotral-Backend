@@ -7,7 +7,7 @@ import { GOOGLE_CONFIG, getOAuthClient } from "../utils/google.js";
 export const googleSignup = (req, res) => {
   const oauth2Client = getOAuthClient();
 
-  const redirect = `${process.env.FRONTEND_URL}/sign-up`;
+  const redirect = req.query.redirect || `${process.env.FRONTEND_URL}/sign-up`;
 
 
   const url = oauth2Client.generateAuthUrl({
@@ -132,9 +132,22 @@ export const googleCallback = async (req, res) => {
 if (type === "signup") {
   const signupRedirect = redirect || `${process.env.FRONTEND_URL}/sign-up`;
 
-  if (existingUser) {
-    return res.redirect(`${signupRedirect}?error=exists`);
+if (existingUser) {
+
+  let errorType = "exists";
+
+  if (existingUser.authType === "local") {
+    errorType = "local_exists"; // user signed up manually
+  } else if (existingUser.authType === "google") {
+    errorType = "google_exists"; // already signed up with google
   }
+
+  const errorRedirect = redirect
+    ? `${signupRedirect}?error=${errorType}&redirect=${encodeURIComponent(redirect)}`
+    : `${signupRedirect}?error=${errorType}`;
+
+  return res.redirect(errorRedirect);
+}
 
   await Users.create({
     email,
@@ -148,7 +161,11 @@ if (type === "signup") {
 
 
   // ✅ IMPORTANT: send ONLY flag, not nested path
-  return res.redirect(`${signupRedirect}?signup=success&email=${email}`);
+  const finalUrl = redirect
+    ? `${signupRedirect}?signup=success&email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirect)}`
+    : `${signupRedirect}?signup=success&email=${encodeURIComponent(email)}`;
+
+  return res.redirect(finalUrl);
 }
 
     // =========================
