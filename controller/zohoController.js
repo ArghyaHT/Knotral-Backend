@@ -140,7 +140,7 @@ export const createZohoLead = async (req, res) => {
             _id: webinar._id,
             title: webinar.title,
             organisedBy: req.body.Category,
-            datetime: req.body.Webinar_Date_TIme, // ✅ pass full ISO
+            startTime: req.body.Webinar_Date_TIme, // ✅ pass full ISO
             duration: webinar.duration            // "1 hour"
           });
 

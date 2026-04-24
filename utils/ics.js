@@ -28,24 +28,24 @@ export const generateICS = ({ _id, title, organisedBy, startTime, duration }) =>
   // ✅ format for ICS (UTC required)
   const format = (d) => d.utc().format("YYYYMMDDTHHmmss") + "Z";
 
-  const ics = `
-BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Knotral//Webinar//EN
-CALSCALE:GREGORIAN
-METHOD:PUBLISH
-BEGIN:VEVENT
-UID:${_id}@knotral.com
-DTSTAMP:${format(moment())}
-DTSTART:${format(start)}
-DTEND:${format(end)}
-SUMMARY:${title}
-DESCRIPTION:Hosted by ${organisedBy}
-LOCATION:Online
-STATUS:CONFIRMED
-END:VEVENT
-END:VCALENDAR
-`.trim();
+ const ics = [
+  "BEGIN:VCALENDAR",
+  "VERSION:2.0",
+  "PRODID:-//Knotral//Webinar//EN",
+  "CALSCALE:GREGORIAN",
+  "METHOD:PUBLISH",
+  "BEGIN:VEVENT",
+  `UID:${_id}@knotral.com`,
+  `DTSTAMP:${format(moment())}`,
+  `DTSTART:${format(start)}`,
+  `DTEND:${format(end)}`,
+  `SUMMARY:${title}`,
+  `DESCRIPTION:Hosted by ${organisedBy}`,
+  "LOCATION:Online",
+  "STATUS:CONFIRMED",
+  "END:VEVENT",
+  "END:VCALENDAR"
+].join("\r\n")
 
   return ics;
 };
