@@ -5,9 +5,11 @@ import logger, { logToFile } from "../utils/logger.js";
 import SolutionProvider from "../models/solutionProvider.js";
 import Leads from "../models/leads.js";
 import { Users } from "../models/user.js";
-import  UserWebinarRegistrations  from "../models/userWebinarRegistrations.js";
+import UserWebinarRegistrations from "../models/userWebinarRegistrations.js";
 import { createCalendarEvent } from "../services/calendarService.js";
 import Webinars from "../models/webinars.js";
+import { generateICS } from "../utils/ics.js";
+import { sendCalendarEmail } from "../utils/emailSender.js";
 
 export const createZohoLead = async (req, res) => {
   try {
@@ -100,48 +102,68 @@ export const createZohoLead = async (req, res) => {
     //   //   webinarDate: req.body.Webinar_Date_TIme,
     //   //   registeredAt: new Date()
     //   // });
-      
+
 
     // }
 
     if (response.data?.data?.[0]?.code === "SUCCESS") {
 
-  // ✅ Save registration
-  await Registrations.create(payload.data);
+      // ✅ Save registration
+      await Registrations.create(payload.data);
 
-  // ✅ Find user
-  const user = await Users.findOne({ email: req.body.Email });
+      // ✅ Find user
+      const user = await Users.findOne({ email: req.body.Email });
 
-  const webinar = await Webinars.findById(req.body.webinarId); // implement this function to get webinar details
+      const webinar = await Webinars.findById(req.body.webinarId); // implement this function to get webinar details
 
-  // 🔥 GOOGLE CALENDAR INTEGRATION
-  if (user?.googleCalendarToken) {
-    try {
-      await createCalendarEvent({
-        refreshToken: user.googleCalendarToken,
-        webinar: {
-          title: webinar.title,
-          organisedBy: req.body.Category,
-          startTime: req.body.Webinar_Date_TIme,
-        },
-      });
+      // 🔥 GOOGLE CALENDAR INTEGRATION
+      if (user?.authType === "google" && user.googleCalendarToken) {
+        try {
+          await createCalendarEvent({
+            refreshToken: user.googleCalendarToken,
+            webinar: {
+              title: webinar.title,
+              organisedBy: req.body.Category,
+              startTime: req.body.Webinar_Date_TIme,
+            },
+          });
 
-      console.log("📅 Calendar event created");
-    } catch (err) {
-      console.error("❌ Calendar error:", err.message);
+          console.log("📅 Calendar event created");
+        } catch (err) {
+          console.error("❌ Calendar error:", err.message);
+        }
+      }
+      else {
+        try {
+
+          const icsContent = generateICS({
+            _id: webinar._id,
+            title: webinar.title,
+            organisedBy: req.body.Category,
+            datetime: req.body.Webinar_Date_TIme, // ✅ pass full ISO
+            duration: webinar.duration            // "1 hour"
+          });
+
+          await sendCalendarEmail({
+            to: user.email,
+            subject: `📅 ${webinar.title} - Your Webinar Confirmed`,
+            text: "Your webinar is confirmed. Open the attachment to add it to your calendar.",
+            icsContent,
+          });
+
+          console.log("📩 ICS email sent to non-Google user");
+        } catch (err) {
+          console.error("❌ Email calendar error:", err.message);
+        }
+      }
+      //   // await UserWebinarRegistrations.create({
+      //   //   userId: user?._id, // store if user exists
+      //   //   email: req.body.Email,
+      //   //   webinar: req.body.webinarId,
+      //   //   webinarDate: req.body.Webinar_Date_TIme,
+      //   //   registeredAt: new Date()
+      //   // });
     }
-  } else {
-    console.log("⚠️ User has not connected Google Calendar");
-  }
-
-    //   // await UserWebinarRegistrations.create({
-    //   //   userId: user?._id, // store if user exists
-    //   //   email: req.body.Email,
-    //   //   webinar: req.body.webinarId,
-    //   //   webinarDate: req.body.Webinar_Date_TIme,
-    //   //   registeredAt: new Date()
-    //   // });
-}
 
     return res.status(200).json({
       success: true,

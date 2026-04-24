@@ -136,3 +136,71 @@ export const sendOtpEmail = async (email, otp) => {
     return { success: false };
   }
 };
+
+
+export const sendCalendarEmail = async ({ to, subject, text, icsContent }) => {
+  try {
+    const mailOptions = {
+      from: `"India Market Entry" <contact@indiamarketentry.com>`,
+      to,
+      subject,
+
+      // ✅ Plain fallback
+      text,
+
+      // ✅ Beautiful HTML email
+      html: `
+        <div style="max-width: 520px; margin: auto; font-family: 'Segoe UI', sans-serif; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
+          
+          <div style="background: #4f5d8c; padding: 20px; text-align: center; color: white;">
+            <h2 style="margin: 0;">Knotral Trainings</h2>
+          </div>
+
+          <div style="padding: 30px; text-align: center;">
+            <h3 style="margin-bottom: 10px; color: #333;">🎉 Webinar Confirmed!</h3>
+
+            <p style="font-size: 15px; color: #555;">
+              Your registration has been successfully confirmed.
+            </p>
+
+            <p style="font-size: 14px; color: #666; margin-top: 20px;">
+              📅 Please find the calendar file attached.<br/>
+              Open it to add this webinar to your calendar.
+            </p>
+
+            <div style="margin: 25px 0;">
+              <a href="#" style="background: #4f5d8c; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-size: 14px;">
+                Add to Calendar
+              </a>
+            </div>
+
+            <hr style="margin: 30px 0;" />
+
+            <p style="font-size: 12px; color: #aaa;">
+              If you have any questions, feel free to contact us.
+            </p>
+          </div>
+        </div>
+      `,
+
+      // ✅ ICS Attachment (CRITICAL)
+      attachments: [
+        {
+          filename: "webinar.ics",
+          content: icsContent,
+          contentType: "text/calendar",
+        },
+      ],
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+
+    console.log("📅 Calendar Email sent:", to);
+
+    return { success: true, messageId: info.messageId };
+
+  } catch (error) {
+    console.error("❌ Error sending calendar email:", error);
+    return { success: false };
+  }
+};
