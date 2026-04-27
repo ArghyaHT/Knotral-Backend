@@ -205,7 +205,8 @@ export const createZohoLead = async (req, res) => {
             title: webinar.title,
             organisedBy: req.body.Category,
             startTime: req.body.Webinar_Date_TIme, // ✅ pass full ISO
-            duration: webinar.duration            // "1 hour"
+            duration: webinar.duration,            // "1 hour"
+            userEmail: user.email, // ✅ pass user email for ATTENDEE field
           });
 
           const emailHtml = `

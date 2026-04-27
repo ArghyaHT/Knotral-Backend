@@ -18,7 +18,7 @@ const parseDurationToMinutes = (durationStr) => {
   return 60;
 };
 
-export const generateICS = ({ _id, title, organisedBy, startTime, duration }) => {
+export const generateICS = ({ _id, title, organisedBy, startTime, duration, userEmail }) => {
   const start = moment(startTime);
   const durationMinutes = parseDurationToMinutes(duration);
   const end = moment(start).add(durationMinutes, "minutes");
@@ -40,6 +40,9 @@ export const generateICS = ({ _id, title, organisedBy, startTime, duration }) =>
     `SUMMARY:${title}`,
     `DESCRIPTION:Hosted by ${organisedBy}`,
     "LOCATION:Online",
+
+    `ORGANIZER;CN=Knotral:mailto:contact@indiamarketentry.com`,
+    `ATTENDEE;CN=User:mailto:${userEmail}`,
 
     // ✅ Outlook-safe fields
     "SEQUENCE:0",
