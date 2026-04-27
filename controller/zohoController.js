@@ -144,10 +144,93 @@ export const createZohoLead = async (req, res) => {
             duration: webinar.duration            // "1 hour"
           });
 
+          const emailHtml = `
+  <div style="background:#f5f7fb; padding:30px 10px; font-family: Arial, sans-serif;">
+    
+    <table width="100%" cellspacing="0" cellpadding="0">
+      <tr>
+        <td align="center">
+          
+          <table width="520" style="background:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+            
+            <!-- HEADER -->
+            <tr>
+              <td style="background:#4f5d8c; padding:20px; text-align:center; color:#fff;">
+                <h2 style="margin:0;">Knotral Trainings</h2>
+              </td>
+            </tr>
+
+            <!-- BODY -->
+            <tr>
+              <td style="padding:30px;">
+                
+                <h2 style="margin-top:0; color:#333;">🎉 You're Registered!</h2>
+
+                <p style="color:#555; font-size:14px;">
+                  Your webinar registration has been confirmed. Here are your details:
+                </p>
+
+                <!-- DETAILS BOX -->
+                <table width="100%" style="margin-top:20px; font-size:14px; color:#444;">
+                  <tr>
+                    <td style="padding:8px 0;"><strong>📌 Title:</strong></td>
+                    <td>${webinar.title}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 0;"><strong>📂 Category:</strong></td>
+                    <td>${req.body.Category}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 0;"><strong>📅 Date & Time:</strong></td>
+                    <td>${moment(req.body.Webinar_Date_TIme).format("LLLL")}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 0;"><strong>⏱ Duration:</strong></td>
+                    <td>${webinar.duration}</td>
+                  </tr>
+                </table>
+
+                <!-- CTA BUTTON -->
+                ${webinar.meetingLink
+              ? `
+                <div style="text-align:center; margin:30px 0;">
+                  <a href="${webinar.meetingLink}" 
+                     style="background:#4f5d8c; color:#fff; padding:12px 20px; text-decoration:none; border-radius:6px; font-size:14px;">
+                     Join Webinar
+                  </a>
+                </div>
+                `
+              : ""
+            }
+
+                <!-- CALENDAR INFO -->
+                <p style="font-size:13px; color:#666; text-align:center;">
+                  📎 Download the attached calendar file to add this webinar.
+                </p>
+
+              </td>
+            </tr>
+
+            <!-- FOOTER -->
+            <tr>
+              <td style="background:#fafafa; padding:15px; text-align:center; font-size:12px; color:#aaa;">
+                Need help? Contact us anytime.
+              </td>
+            </tr>
+
+          </table>
+
+        </td>
+      </tr>
+    </table>
+
+  </div>
+`;
+
           await sendCalendarEmail({
             to: user.email,
             subject: `📅 ${webinar.title} - Your Webinar Confirmed`,
-            text: "Your webinar is confirmed. Open the attachment to add it to your calendar.",
+            html: emailHtml,        // ✅ include details
             icsContent,
           });
 
