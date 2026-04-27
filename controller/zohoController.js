@@ -194,7 +194,6 @@ export const createZohoLead = async (req, res) => {
                     <td>${webinar.duration}</td>
                   </tr>
                 </table>              
-            }
 
                 <!-- CALENDAR INFO -->
                 <p style="font-size:13px; color:#666; text-align:center;">
