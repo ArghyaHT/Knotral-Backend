@@ -59,8 +59,6 @@ export const googleLogin = (req, res) => {
 
   const redirect = req.query.redirect || process.env.FRONTEND_URL;
 
-  console.log("🔗 Google Login Redirect:", redirect);
-
  const url = oauth2Client.generateAuthUrl({
   access_type: "offline",
   prompt: "consent", // 🔥 FORCE refresh_token
