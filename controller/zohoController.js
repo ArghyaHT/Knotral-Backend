@@ -181,27 +181,20 @@ export const createZohoLead = async (req, res) => {
                     <td style="padding:8px 0;"><strong>📂 Category:</strong></td>
                     <td>${req.body.Category}</td>
                   </tr>
-                  <tr>
-                    <td style="padding:8px 0;"><strong>📅 Date & Time:</strong></td>
-                    <td>${moment(req.body.Webinar_Date_TIme).format("LLLL")}</td>
-                  </tr>
+                 <tr>
+                 <td style="padding:8px 0;"><strong>📅 Date & Time:</strong></td>
+                 <td>
+                ${moment(req.body.Webinar_Date_TIme).format("dddd, MMM D, YYYY")} 
+                at 
+                ${moment(webinar.startTime)
+                .format("h:mm A")} IST
+                </td>
+                </tr>
                   <tr>
                     <td style="padding:8px 0;"><strong>⏱ Duration:</strong></td>
                     <td>${webinar.duration}</td>
                   </tr>
-                </table>
-
-                <!-- CTA BUTTON -->
-                ${webinar.meetingLink
-              ? `
-                <div style="text-align:center; margin:30px 0;">
-                  <a href="${webinar.meetingLink}" 
-                     style="background:#4f5d8c; color:#fff; padding:12px 20px; text-decoration:none; border-radius:6px; font-size:14px;">
-                     Join Webinar
-                  </a>
-                </div>
-                `
-              : ""
+                </table>              
             }
 
                 <!-- CALENDAR INFO -->
