@@ -66,6 +66,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://training.knotral.com",
   "https://cms-training.knotral.com",
+  "https://knotraldashboard.netlify.app"
 ];
 
 //Use Multiple Cors
