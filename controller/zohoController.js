@@ -188,10 +188,10 @@ export const createZohoLead = async (req, res) => {
 </div>
 `;
 
-     await sendGoogleEmail({
+          await sendGoogleEmail({
             to: user.email,
             subject: `📅 ${webinar.title} - Your Webinar Confirmed`,
-            html: googleEmailHtml,        
+            html: googleEmailHtml,
           });
         } catch (err) {
           console.error("❌ Calendar error:", err.message);
@@ -302,6 +302,16 @@ export const createZohoLead = async (req, res) => {
       //   //   webinarDate: req.body.Webinar_Date_TIme,
       //   //   registeredAt: new Date()
       //   // });
+
+      if (user) {
+        await UserWebinarRegistrations.create({
+          userId: user._id,
+          email: user.email,
+          webinar: req.body.webinarId,
+          webinarDate: req.body.Webinar_Date_TIme,
+          registeredAt: new Date()
+        });
+      }
     }
 
     return res.status(200).json({
