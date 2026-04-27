@@ -217,7 +217,6 @@ export const sendCalendarEmail = async ({
       to,
       subject,
 
-      // ✅ USE CUSTOM HTML
       html:
         html ||
         `<div style="font-family: Arial;">Default Email</div>`,
@@ -227,14 +226,16 @@ export const sendCalendarEmail = async ({
         {
           filename: "webinar.ics",
           content: icsContent,
-          contentType: "text/calendar; method=REQUEST",
+          contentType: "text/calendar; method=REQUEST; charset=UTF-8",
+          contentDisposition: "attachment", // ✅ FIX
+          encoding: "base64", // ✅ optional but recommended
         },
       ],
 
-      // ✅ REQUIRED for proper calendar invite
+      // ✅ Required for Outlook + Apple Mail
       alternatives: [
         {
-          contentType: "text/calendar; method=REQUEST",
+          contentType: "text/calendar; method=REQUEST; charset=UTF-8",
           content: icsContent,
         },
       ],

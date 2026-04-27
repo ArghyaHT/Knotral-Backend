@@ -19,33 +19,35 @@ const parseDurationToMinutes = (durationStr) => {
 };
 
 export const generateICS = ({ _id, title, organisedBy, startTime, duration }) => {
-  // ✅ parse ISO startTime directly (BEST PRACTICE)
   const start = moment(startTime);
-
   const durationMinutes = parseDurationToMinutes(duration);
   const end = moment(start).add(durationMinutes, "minutes");
 
-  // ✅ format for ICS (UTC required)
   const format = (d) => d.utc().format("YYYYMMDDTHHmmss") + "Z";
 
- const ics = [
-  "BEGIN:VCALENDAR",
-  "VERSION:2.0",
-  "PRODID:-//Knotral//Webinar//EN",
-  "CALSCALE:GREGORIAN",
-  "METHOD:PUBLISH",
-  "BEGIN:VEVENT",
-  `UID:${_id}@knotral.com`,
-  `DTSTAMP:${format(moment())}`,
-  `DTSTART:${format(start)}`,
-  `DTEND:${format(end)}`,
-  `SUMMARY:${title}`,
-  `DESCRIPTION:Hosted by ${organisedBy}`,
-  "LOCATION:Online",
-  "STATUS:CONFIRMED",
-  "END:VEVENT",
-  "END:VCALENDAR"
-].join("\r\n")
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Knotral//Webinar//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:REQUEST", // ✅ FIXED
 
-  return ics;
+    "BEGIN:VEVENT",
+    `UID:${_id}@knotral.com`,
+    `DTSTAMP:${format(moment())}`,
+    `DTSTART:${format(start)}`,
+    `DTEND:${format(end)}`,
+    `SUMMARY:${title}`,
+    `DESCRIPTION:Hosted by ${organisedBy}`,
+    "LOCATION:Online",
+
+    // ✅ Outlook-safe fields
+    "SEQUENCE:0",
+    "CLASS:PUBLIC",
+    "TRANSP:OPAQUE",
+    "STATUS:CONFIRMED",
+
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
 };
