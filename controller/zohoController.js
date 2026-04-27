@@ -186,8 +186,7 @@ export const createZohoLead = async (req, res) => {
                  <td>
                 ${moment(req.body.Webinar_Date_TIme).format("dddd, MMM D, YYYY")} 
                 at 
-                ${moment(webinar.startTime)
-                .format("h:mm A")} IST
+                ${webinar.startTime}
                 </td>
                 </tr>
                   <tr>
