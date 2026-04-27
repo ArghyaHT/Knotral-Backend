@@ -250,3 +250,33 @@ export const sendCalendarEmail = async ({
     return { success: false };
   }
 };
+
+
+
+export const sendGoogleEmail = async ({
+  to,
+  subject,
+  html,
+}) => {
+  try {
+    const mailOptions = {
+      from: `"India Market Entry" <contact@indiamarketentry.com>`,
+      to,
+      subject,
+
+      // ✅ USE CUSTOM HTML
+      html:
+        html ||
+        `<div style="font-family: Arial;">Default Email</div>`,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+
+    console.log("📅 Calendar Email sent:", to);
+
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error("❌ Error sending calendar email:", error);
+    return { success: false };
+  }
+};

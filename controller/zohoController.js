@@ -9,7 +9,7 @@ import UserWebinarRegistrations from "../models/userWebinarRegistrations.js";
 import { createCalendarEvent } from "../services/calendarService.js";
 import Webinars from "../models/webinars.js";
 import { generateICS } from "../utils/ics.js";
-import { sendCalendarEmail } from "../utils/emailSender.js";
+import { sendCalendarEmail, sendGoogleEmail } from "../utils/emailSender.js";
 import moment from "moment";
 
 export const createZohoLead = async (req, res) => {
@@ -130,6 +130,69 @@ export const createZohoLead = async (req, res) => {
           });
 
           console.log("📅 Calendar event created");
+
+          const googleEmailHtml = `
+<div style="background:#f5f7fb; padding:30px 10px; font-family: Arial, sans-serif;">
+  <table width="100%">
+    <tr>
+      <td align="center">
+        <table width="520" style="background:#fff; border-radius:10px;">
+          
+          <tr>
+            <td style="background:#4f5d8c; padding:20px; text-align:center; color:#fff;">
+              <h2>Knotral Trainings</h2>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:30px;">
+              
+              <h2>🎉 You're Registered!</h2>
+
+              <p>Your webinar has been successfully added to your Google Calendar.</p>
+
+              <table width="100%">
+                <tr>
+                  <td><strong>📌 Title:</strong></td>
+                  <td>${webinar.title}</td>
+                </tr>
+                <tr>
+                  <td><strong>📂 Organised By:</strong></td>
+                  <td>${req.body.Category}</td>
+                </tr>
+                <tr>
+                  <td><strong>📅 Date & Time:</strong></td>
+                  <td>
+                    ${moment(req.body.Webinar_Date_TIme).format("dddd, MMM D, YYYY")} 
+                    at 
+                    ${webinar.startTime}
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>⏱ Duration:</strong></td>
+                  <td>${webinar.duration}</td>
+                </tr>
+              </table>
+
+              <p style="margin-top:20px; text-align:center;">
+                📅 Check your Google Calendar for the event details.
+              </p>
+
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>
+`;
+
+     await sendGoogleEmail({
+            to: user.email,
+            subject: `📅 ${webinar.title} - Your Webinar Confirmed`,
+            html: googleEmailHtml,        
+          });
         } catch (err) {
           console.error("❌ Calendar error:", err.message);
         }
@@ -146,7 +209,7 @@ export const createZohoLead = async (req, res) => {
           });
 
           const emailHtml = `
-  <div style="background:#f5f7fb; padding:30px 10px; font-family: Arial, sans-serif;">
+                <div style="background:#f5f7fb; padding:30px 10px; font-family: Arial, sans-serif;">
     
     <table width="100%" cellspacing="0" cellpadding="0">
       <tr>
@@ -178,7 +241,7 @@ export const createZohoLead = async (req, res) => {
                     <td>${webinar.title}</td>
                   </tr>
                   <tr>
-                    <td style="padding:8px 0;"><strong>📂 Category:</strong></td>
+                    <td style="padding:8px 0;"><strong>📂 Organised By:</strong></td>
                     <td>${req.body.Category}</td>
                   </tr>
                  <tr>
