@@ -135,11 +135,12 @@ export const googleCallback = async (req, res) => {
         return res.redirect(`${process.env.FRONTEND_URL}/error`);
       }
 
-      await Users.findByIdAndUpdate(userId, {
-        googleCalendarToken: tokens.refresh_token,
-        isCalendarConnected: true,
-      });
-
+      if (tokens.refresh_token) {
+        await Users.findByIdAndUpdate(userId, {
+          googleCalendarToken: tokens.refresh_token,
+          isCalendarConnected: true,
+        });
+      }
       return res.redirect(`${redirect}?calendar=connected`);
     }
 
@@ -182,15 +183,30 @@ export const googleCallback = async (req, res) => {
         return res.redirect(errorRedirect);
       }
 
-      await Users.create({
+      // await Users.create({
+      //   email,
+      //   firstName: given_name || "",
+      //   lastName: family_name || "",
+      //   authType: "google",
+      //   isEmailVerified: true,
+      //   googleCalendarToken: tokens.refresh_token,
+      //   isCalendarConnected: true,
+      // });
+
+      const updateData = {
         email,
         firstName: given_name || "",
         lastName: family_name || "",
         authType: "google",
         isEmailVerified: true,
-        googleCalendarToken: tokens.refresh_token,
-        isCalendarConnected: true,
-      });
+      };
+
+      if (tokens.refresh_token) {
+        updateData.googleCalendarToken = tokens.refresh_token;
+        updateData.isCalendarConnected = true;
+      }
+
+      await Users.create(updateData);
 
 
       // ✅ IMPORTANT: send ONLY flag, not nested path
