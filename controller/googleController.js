@@ -59,41 +59,46 @@ export const googleLogin = (req, res) => {
 
   const redirect = req.query.redirect || process.env.FRONTEND_URL;
 
-  const url = oauth2Client.generateAuthUrl({
-    access_type: "offline",
-    prompt: "select_account",
-    scope: ["profile", "email"],
-    state: JSON.stringify({
-      type: "login",
-      redirect,
-    }),
-  });
+ const url = oauth2Client.generateAuthUrl({
+  access_type: "offline",
+  prompt: "consent", // 🔥 FORCE refresh_token
+  include_granted_scopes: true,
+  scope: [
+    "profile",
+    "email",
+    "https://www.googleapis.com/auth/calendar.events",
+  ],
+  state: JSON.stringify({
+    type: "login",
+    redirect,
+  }),
+});
 
   res.redirect(url);
 };
 
 
-export const connectGoogle = (req, res) => {
-  const { userId } = req.query;
+// export const connectGoogle = (req, res) => {
+//   const { userId } = req.query;
 
-  const oauth2Client = getOAuthClient();
+//   const oauth2Client = getOAuthClient();
 
-  const redirect =
-    req.query.redirect || process.env.FRONTEND_URL;
+//   const redirect =
+//     req.query.redirect || process.env.FRONTEND_URL;
 
-  const url = oauth2Client.generateAuthUrl({
-    access_type: "offline",
-    prompt: "consent select_account",
-    scope: ["https://www.googleapis.com/auth/calendar.events"],
-    state: JSON.stringify({
-      type: "calendar",
-      userId,
-      redirect,
-    }),
-  });
+//   const url = oauth2Client.generateAuthUrl({
+//     access_type: "offline",
+//     prompt: "consent select_account",
+//     scope: ["https://www.googleapis.com/auth/calendar.events"],
+//     state: JSON.stringify({
+//       type: "calendar",
+//       userId,
+//       redirect,
+//     }),
+//   });
 
-  res.redirect(url);
-};
+//   res.redirect(url);
+// };
 
 
 export const googleCallback = async (req, res) => {
@@ -128,21 +133,21 @@ export const googleCallback = async (req, res) => {
     // =========================
     // 📅 CALENDAR FLOW
     // =========================
-    if (type === "calendar") {
-      const { userId } = parsed;
+    // if (type === "calendar") {
+    //   const { userId } = parsed;
 
-      if (!userId) {
-        return res.redirect(`${process.env.FRONTEND_URL}/error`);
-      }
+    //   if (!userId) {
+    //     return res.redirect(`${process.env.FRONTEND_URL}/error`);
+    //   }
 
-      if (tokens.refresh_token) {
-        await Users.findByIdAndUpdate(userId, {
-          googleCalendarToken: tokens.refresh_token,
-          isCalendarConnected: true,
-        });
-      }
-      return res.redirect(`${redirect}?calendar=connected`);
-    }
+    //   if (tokens.refresh_token) {
+    //     await Users.findByIdAndUpdate(userId, {
+    //       googleCalendarToken: tokens.refresh_token,
+    //       isCalendarConnected: true,
+    //     });
+    //   }
+    //   return res.redirect(`${redirect}?calendar=connected`);
+    // }
 
     // =========================
     // 🔐 USER INFO
