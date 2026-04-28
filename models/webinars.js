@@ -315,6 +315,21 @@ const webinarsSchema = new mongoose.Schema(
             default: "theme1" 
         },
 
+        joiningLink: {
+            type: String,
+            default: ""
+        },
+
+        meetingId: {
+            type: String,
+            default: ""
+        },
+        
+        passcode: {
+            type: String,
+            default: ""
+        },
+
         pastSessions: [
             {
                 youtubeId: {
