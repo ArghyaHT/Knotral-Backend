@@ -131,7 +131,7 @@ export const createZohoLead = async (req, res) => {
 
           console.log("📅 Calendar event created");
 
-const googleEmailHtml = `
+          const googleEmailHtml = `
 <div style="background:#f5f7fb; padding:30px 10px; font-family: Arial, sans-serif;">
   <table width="100%" cellspacing="0" cellpadding="0">
     <tr>
@@ -240,6 +240,9 @@ const googleEmailHtml = `
             startTime: req.body.Webinar_Date_TIme, // ✅ pass full ISO
             duration: webinar.duration,            // "1 hour"
             userEmail: user.email, // ✅ pass user email for ATTENDEE field
+            joiningLink: webinar.joiningLink? webinar.joiningLink : "Online",
+            meetingId: webinar.meetingId? webinar.meetingId : "-",
+            passcode: webinar.passcode? webinar.passcode : "-"
           });
 
           const emailHtml = `

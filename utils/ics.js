@@ -18,7 +18,7 @@ const parseDurationToMinutes = (durationStr) => {
   return 60;
 };
 
-export const generateICS = ({ _id, title, organisedBy, startTime, duration, userEmail }) => {
+export const generateICS = ({ _id, title, organisedBy, startTime, duration, userEmail, joiningLink, meetingId, passcode }) => {
   const start = moment(startTime);
   const durationMinutes = parseDurationToMinutes(duration);
   const end = moment(start).add(durationMinutes, "minutes");
@@ -39,7 +39,7 @@ export const generateICS = ({ _id, title, organisedBy, startTime, duration, user
     `DTEND:${format(end)}`,
     `SUMMARY:${title}`,
     `DESCRIPTION:Hosted by ${organisedBy}`,
-    "LOCATION:Online",
+    `LOCATION:${joiningLink}`,
 
     `ORGANIZER;CN=Knotral:mailto:contact@indiamarketentry.com`,
     `ATTENDEE;CN=User:mailto:${userEmail}`,
