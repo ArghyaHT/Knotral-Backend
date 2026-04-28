@@ -64,7 +64,7 @@ export const emailWithNodeMail = async (name, email, imageUrl, subject, body) =>
 
         // 9️⃣ Send Email with PDF attachment
         const mailOptions = {
-            from: `"India Market Entry" <contact@indiamarketentry.com>`,
+            from: `"Knotral Trainings" <contact@indiamarketentry.com>`,
             to: email,
             subject: `${subject}`,
             html: `
@@ -96,14 +96,14 @@ export const emailWithNodeMail = async (name, email, imageUrl, subject, body) =>
 export const sendOtpEmail = async (email, otp) => {
   try {
     const mailOptions = {
-      from: `"India Market Entry" <contact@indiamarketentry.com>`,
+      from: `"Knotral Trainings" <contact@indiamarketentry.com>`,
       to: email,
       subject: "Verify Your Email - OTP Inside",
       html: `
         <div style="max-width: 500px; margin: auto; font-family: 'Segoe UI', sans-serif; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
           
           <div style="background: #4f5d8c; padding: 20px; text-align: center; color: white;">
-            <h2 style="margin: 0;">Knotral Tranings</h2>
+            <h2 style="margin: 0;">Knotral Trainings</h2>
           </div>
 
           <div style="padding: 30px; text-align: center;">
@@ -213,7 +213,7 @@ export const sendCalendarEmail = async ({
 }) => {
   try {
     const mailOptions = {
-      from: `"India Market Entry" <contact@indiamarketentry.com>`,
+      from: `"Knotral Trainings" <contact@indiamarketentry.com>`,
       to,
       subject,
 
@@ -261,7 +261,7 @@ export const sendGoogleEmail = async ({
 }) => {
   try {
     const mailOptions = {
-      from: `"India Market Entry" <contact@indiamarketentry.com>`,
+      from: `"Knotral Trainings" <contact@indiamarketentry.com>`,
       to,
       subject,
 
