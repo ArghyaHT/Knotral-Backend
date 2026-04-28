@@ -29,7 +29,15 @@ export const createCalendarEvent = async ({
     calendarId: "primary",
     requestBody: {
       summary: webinar.title,
-      description: `Organized by ${webinar.organisedBy}`,
+
+      description: `
+Organized by ${webinar.organisedBy}
+
+🔗 Join here: ${webinar.joiningLink}
+
+🆔 Meeting ID: ${webinar.meetingId || "-"}
+🔐 Passcode: ${webinar.passcode || "-"}
+  `,
 
       start: {
         dateTime: start.toISOString(),
