@@ -131,57 +131,90 @@ export const createZohoLead = async (req, res) => {
 
           console.log("📅 Calendar event created");
 
-          const googleEmailHtml = `
+const googleEmailHtml = `
 <div style="background:#f5f7fb; padding:30px 10px; font-family: Arial, sans-serif;">
-  <table width="100%">
+  <table width="100%" cellspacing="0" cellpadding="0">
     <tr>
       <td align="center">
-        <table width="520" style="background:#fff; border-radius:10px;">
+        
+        <table width="520" style="background:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
           
+          <!-- HEADER -->
           <tr>
             <td style="background:#4f5d8c; padding:20px; text-align:center; color:#fff;">
-              <h2>Knotral Trainings</h2>
+              <h2 style="margin:0;">Knotral Trainings</h2>
             </td>
           </tr>
 
+          <!-- BODY -->
           <tr>
             <td style="padding:30px;">
               
-              <h2>🎉 You're Registered!</h2>
+              <p style="font-size:14px; color:#333;">
+                Hi <strong>${[user.firstName, user.lastName].filter(Boolean).join(" ") || "Participant"}</strong>,
+              </p>
 
-              <p>Your webinar has been successfully added to your Google Calendar.</p>
+              <h2 style="margin-top:0; color:#333;">🎉 You're Registered!</h2>
 
-              <table width="100%">
+              <p style="font-size:14px; color:#555;">
+                Your webinar has been successfully added to your Google Calendar.
+              </p>
+
+              <!-- DETAILS -->
+              <table width="100%" style="margin-top:15px; font-size:14px; color:#444;">
+                
                 <tr>
-                  <td><strong>📌 Title:</strong></td>
+                  <td style="padding:6px 0;"><strong>📌 Title:</strong></td>
                   <td>${webinar.title}</td>
                 </tr>
+
                 <tr>
-                  <td><strong>📂 Organised By:</strong></td>
+                  <td style="padding:6px 0;"><strong>📂 Organised By:</strong></td>
                   <td>${req.body.Category}</td>
                 </tr>
+
                 <tr>
-                  <td><strong>📅 Date & Time:</strong></td>
-                  <td>
-                    ${moment(req.body.Webinar_Date_TIme).format("dddd, MMM D, YYYY")} 
-                    at 
-                    ${webinar.startTime}
-                  </td>
+                  <td style="padding:6px 0;"><strong>📅 Date:</strong></td>
+                  <td>${moment(req.body.Webinar_Date_TIme).format("dddd, MMM D, YYYY")}</td>
                 </tr>
+
                 <tr>
-                  <td><strong>⏱ Duration:</strong></td>
+                  <td style="padding:6px 0;"><strong>⏰ Time:</strong></td>
+                  <td>${webinar.startTime}</td>
+                </tr>
+
+                <tr>
+                  <td style="padding:6px 0;"><strong>⏱ Duration:</strong></td>
                   <td>${webinar.duration}</td>
                 </tr>
+
               </table>
 
-              <p style="margin-top:20px; text-align:center;">
-                📅 Check your Google Calendar for the event details.
+              <p style="margin-top:20px; font-size:13px; color:#666; text-align:center;">
+                📅 Please check your Google Calendar for full event details.
+              </p>
+
+              <p style="margin-top:15px; font-size:13px; color:#666;">
+                We recommend joining the session 5–10 minutes early.
+              </p>
+
+              <p style="margin-top:20px; font-size:14px; color:#333;">
+                Best regards,<br/>
+                <strong>Team India Market Entry</strong>
               </p>
 
             </td>
           </tr>
 
+          <!-- FOOTER -->
+          <tr>
+            <td style="background:#fafafa; padding:15px; text-align:center; font-size:12px; color:#aaa;">
+              Need help? Contact us anytime.
+            </td>
+          </tr>
+
         </table>
+
       </td>
     </tr>
   </table>
@@ -210,82 +243,110 @@ export const createZohoLead = async (req, res) => {
           });
 
           const emailHtml = `
-                <div style="background:#f5f7fb; padding:30px 10px; font-family: Arial, sans-serif;">
-    
-    <table width="100%" cellspacing="0" cellpadding="0">
-      <tr>
-        <td align="center">
+<div style="background:#f5f7fb; padding:30px 10px; font-family: Arial, sans-serif;">
+
+  <table width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="center">
+        
+        <table width="520" style="background:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
           
-          <table width="520" style="background:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
-            
-            <!-- HEADER -->
-            <tr>
-              <td style="background:#4f5d8c; padding:20px; text-align:center; color:#fff;">
-                <h2 style="margin:0;">Knotral Trainings</h2>
-              </td>
-            </tr>
+          <!-- HEADER -->
+          <tr>
+            <td style="background:#4f5d8c; padding:20px; text-align:center; color:#fff;">
+              <h2 style="margin:0;">Knotral Trainings</h2>
+            </td>
+          </tr>
 
-            <!-- BODY -->
-            <tr>
-              <td style="padding:30px;">
+          <!-- BODY -->
+          <tr>
+            <td style="padding:30px;">
+              
+            <p style="font-size:14px; color:#333;">
+                Hi <strong>${[user.firstName, user.lastName].filter(Boolean).join(" ") || "Participant"}</strong>,
+            </p>
+
+              <p style="font-size:14px; color:#555;">
+                Thank you for registering for <strong>${webinar.title}</strong>.
+              </p>
+
+              <p style="font-size:14px; color:#555;">
+                Your registration has been successfully confirmed. Here are the details:
+              </p>
+
+              <!-- DETAILS -->
+              <table width="100%" style="margin-top:15px; font-size:14px; color:#444;">
                 
-                <h2 style="margin-top:0; color:#333;">🎉 You're Registered!</h2>
-
-                <p style="color:#555; font-size:14px;">
-                  Your webinar registration has been confirmed. Here are your details:
-                </p>
-
-                <!-- DETAILS BOX -->
-                <table width="100%" style="margin-top:20px; font-size:14px; color:#444;">
-                  <tr>
-                    <td style="padding:8px 0;"><strong>📌 Title:</strong></td>
-                    <td>${webinar.title}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding:8px 0;"><strong>📂 Organised By:</strong></td>
-                    <td>${req.body.Category}</td>
-                  </tr>
-                 <tr>
-                 <td style="padding:8px 0;"><strong>📅 Date & Time:</strong></td>
-                 <td>
-                ${moment(req.body.Webinar_Date_TIme).format("dddd, MMM D, YYYY")} 
-                at 
-                ${webinar.startTime}
-                </td>
+                <tr>
+                  <td style="padding:6px 0;"><strong>📅 Date:</strong></td>
+                  <td>${moment(req.body.Webinar_Date_TIme).format("dddd, MMM D, YYYY")}</td>
                 </tr>
-                  <tr>
-                    <td style="padding:8px 0;"><strong>⏱ Duration:</strong></td>
-                    <td>${webinar.duration}</td>
-                  </tr>
-                </table>              
 
-                <!-- CALENDAR INFO -->
-                <p style="font-size:13px; color:#666; text-align:center;">
-                  📎 Download the attached calendar file to add this webinar.
-                </p>
+                <tr>
+                  <td style="padding:6px 0;"><strong>⏰ Time:</strong></td>
+                  <td>${webinar.startTime}</td>
+                </tr>
 
-              </td>
-            </tr>
+                <tr>
+                  <td style="padding:6px 0;"><strong>🔗 Joining Link:</strong></td>
+                  <td>
+                    <a href="${webinar.joiningLink}" style="color:#4f5d8c;">
+                      Join Webinar
+                    </a>
+                  </td>
+                </tr>
 
-            <!-- FOOTER -->
-            <tr>
-              <td style="background:#fafafa; padding:15px; text-align:center; font-size:12px; color:#aaa;">
-                Need help? Contact us anytime.
-              </td>
-            </tr>
+                <tr>
+                  <td style="padding:6px 0;"><strong>🆔 Meeting ID:</strong></td>
+                  <td>${webinar.meetingId || "-"}</td>
+                </tr>
 
-          </table>
+                <tr>
+                  <td style="padding:6px 0;"><strong>🔐 Passcode:</strong></td>
+                  <td>${webinar.passcode || "-"}</td>
+                </tr>
 
-        </td>
-      </tr>
-    </table>
+              </table>
 
-  </div>
+              <p style="margin-top:20px; font-size:13px; color:#666;">
+                Please join the session 5–10 minutes early to avoid any last-minute issues.
+              </p>
+
+              <p style="font-size:13px; color:#666;">
+                If you have any questions or need assistance, feel free to reply to this email.
+              </p>
+
+              <p style="margin-top:20px; font-size:14px; color:#333;">
+                We look forward to your participation.
+              </p>
+
+              <p style="font-size:14px; color:#333;">
+                Best regards,<br/>
+                <strong>Team India Market Entry</strong>
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="background:#fafafa; padding:15px; text-align:center; font-size:12px; color:#aaa;">
+              Need help? Contact us anytime.
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</div>
 `;
 
           await sendCalendarEmail({
             to: user.email,
-            subject: `📅 ${webinar.title} - Your Webinar Confirmed`,
+            subject: `Registration Confirmed – ${webinar.title}`,
             html: emailHtml,        // ✅ include details
             icsContent,
           });
