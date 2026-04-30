@@ -1,7 +1,7 @@
 import { validateEmail } from "../middlewares/validator.js";
 import { TempUsers } from "../models/tempUsers.js";
 import { Users } from "../models/user.js";
-import { createAllUsers, createUser, findAdminByEmailandRole, findUserByEmail } from "../services/userService.js"
+import { createAllUsers, createUser, findAdminByEmailandRole, findUserByEmail, getUsers } from "../services/userService.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { findUserWebinarRegistrations, findUserWebinars } from "../services/userWebinarRegistrationsService.js";
@@ -553,4 +553,19 @@ export const completeProfile = async (req, res) => {
 };
 
 
+export const getAllUsers = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const users = await getUsers(page, limit);
+
+    return res.status(200).json({
+      success: true,
+      message: "Users fetched successfully",
+      response: users
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};  
 

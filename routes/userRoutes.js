@@ -1,5 +1,5 @@
 import express, { response } from "express";
-import { completeProfile, getUserInfo, getUserRegisteredWebinars, getUserWebinars, loginSuperAdmin, loginUser, logoutSuperAdmin, logoutUser, registerSuperAdmin, resetPassword, signupUser, updateUserProfile } from "../controller/userController.js";
+import { completeProfile, getAllUsers, getUserInfo, getUserRegisteredWebinars, getUserWebinars, loginSuperAdmin, loginUser, logoutSuperAdmin, logoutUser, registerSuperAdmin, resetPassword, signupUser, updateUserProfile } from "../controller/userController.js";
 import { refreshSuperAdminToken } from "../middlewares/VerifyRefreshTokenAdmin.js";
 import { authMiddleware } from "../middlewares/VerifyTokenUser.js";
 
