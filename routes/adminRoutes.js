@@ -13,7 +13,7 @@ import { getRegistrations } from "../controller/registartionController.js";
 import { verifySuperAdminAccessToken } from "../middlewares/VerifyRefreshTokenAdmin.js";
 import { deleteCertificate, getAllCertificates, getWebinarCertificates, sendCertificateEmail, uploadWebinarCertificate } from "../controller/certificatesController.js";
 import { getAllLeadsAndProviders } from "../controller/leadsController.js";
-import { getAllUsers } from "../controller/userController.js";
+import { getAllUsers, sendBulkMails } from "../controller/userController.js";
 
 const router = express.Router();
 
@@ -75,6 +75,7 @@ router.post("/send-certificate-email", sendCertificateEmail);
 
 router.get("/get-users", verifySuperAdminAccessToken, getAllUsers);
 
+router.post("/send-email", verifySuperAdminAccessToken, sendBulkMails);
 
 
 export default router;

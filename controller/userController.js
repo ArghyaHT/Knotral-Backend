@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken"
 import { findUserWebinarRegistrations, findUserWebinars } from "../services/userWebinarRegistrationsService.js";
 import { getOAuthClient, GOOGLE_CONFIG } from "../utils/google.js";
 import { google } from "googleapis";
+import sendEmail from "../utils/emailSender.js";
 
 export const registerSuperAdmin = async (req, res, next) => {
   try {
@@ -580,4 +581,80 @@ export const getAllUsers = async (req, res, next) => {
     next(error);
   }
 };  
+
+
+export const sendBulkMails = async (req, res, next) => {
+  try {
+    const {
+      type,
+      selectedIds = [],
+      excludedIds = [],
+      subject,
+      message
+    } = req.body;
+
+    /* ================= VALIDATION ================= */
+    if (!subject || !message) {
+      return res.status(400).json({
+        success: false,
+        message: "Subject and message are required from frontend"
+      });
+    }
+
+    let users = [];
+
+    /* ================= FETCH USERS ================= */
+    if (type === "ALL") {
+      users = await Users.find({
+        isSuperAdmin: { $ne: true },
+        _id: { $nin: excludedIds }
+      }).select("email firstName lastName");
+
+    } else if (type === "PARTIAL") {
+      users = await Users.find({
+        _id: { $in: selectedIds }
+      }).select("email firstName lastName");
+    }
+
+    if (!users.length) {
+      return res.status(400).json({
+        success: false,
+        message: "No users found"
+      });
+    }
+
+    /* ================= CHUNK MAILING ================= */
+    const chunkSize = 50;
+
+    for (let i = 0; i < users.length; i += chunkSize) {
+      const chunk = users.slice(i, i + chunkSize);
+
+      await Promise.all(
+        chunk.map((user) =>
+          sendEmail({
+            to: user.email,
+            subject: subject,   // 🔥 FROM FRONTEND
+            html: `
+              <div style="font-family: Arial; line-height:1.6;">
+                <h3>Hello ${user.firstName || "User"},</h3>
+                <p>${message}</p>
+                <br/>
+                <small>This is an automated message from Admin Panel</small>
+              </div>
+            `,
+          })
+        )
+      );
+    }
+
+    /* ================= RESPONSE ================= */
+    return res.status(200).json({
+      success: true,
+      message: `Emails sent successfully to ${users.length} users`
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
 

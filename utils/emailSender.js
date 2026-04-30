@@ -281,3 +281,15 @@ export const sendGoogleEmail = async ({
     return { success: false };
   }
 };
+
+
+const sendEmail = async ({ to, subject, html }) => {
+  return transporter.sendMail({
+    from: `"Knotral Trainings" <contact@indiamarketentry.com>`,
+    to,
+    subject,
+    html,
+  });
+};
+
+export default sendEmail;
