@@ -555,13 +555,25 @@ export const completeProfile = async (req, res) => {
 
 export const getAllUsers = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
-    const users = await getUsers(page, limit);
+    let { page = 1, limit = 10 } = req.query;
+
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    const { users, total } = await getUsers(page, limit);
+
+    const totalPages = Math.ceil(total / limit);
 
     return res.status(200).json({
       success: true,
       message: "Users fetched successfully",
-      response: users
+      response: users,
+      pagination: {
+        total,        // total users count
+        page,         // current page
+        limit,        // per page
+        totalPages    // total pages
+      }
     });
 
   } catch (error) {
