@@ -306,7 +306,8 @@ export const loginUser = async (req, res, next) => {
         isEmailVerified: user.isEmailVerified,
       },
       process.env.JWT_USER_KEY,
-      { expiresIn: "7d" }
+      // { expiresIn: "7d" }
+      { expiresIn: "2m" }
     );
 
     // Remove password from response
@@ -316,7 +317,8 @@ export const loginUser = async (req, res, next) => {
       httpOnly: true,
       secure: true,        // REQUIRED for cross-site cookies
       sameSite: "none",    // REQUIRED for cross-domain
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      // maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 2 * 60 * 1000, // 1 minute
       path: "/"
     });
 
