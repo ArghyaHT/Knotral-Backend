@@ -60,7 +60,7 @@ export const createZohoLead = async (req, res) => {
           Address_of_Firm: req.body.Address || "",
           Landmark: req.body.Landmark || "",
           Webinar_Date_TIme: req.body.Webinar_Date_TIme || "",
-          New_Product: req.body.Category,
+          New_Product: req.body.Category ? [req.body.Category] : [],
 
           // ✅ UTM fields
           utm_source: req.body.utm_source || "",
@@ -485,7 +485,7 @@ export const createZohoSlutionProvidersForm = async (req, res) => {
           Primary_Target_Audience: [req.body.Primary_Target_Audience],
           Lead_Status: "No Contact Initiated",
           Lead_Source: "Knotral Trainings",
-          New_Product: "Solution Provider",
+          New_Product: ["Solution Provider"],
 
         }
       ]
@@ -509,7 +509,7 @@ export const createZohoSlutionProvidersForm = async (req, res) => {
       const { New_Product, ...rest } = item;
       return {
         ...rest,
-        Products: New_Product
+        Products: Array.isArray(New_Product) ? New_Product[0] : New_Product
       };
     });
 
