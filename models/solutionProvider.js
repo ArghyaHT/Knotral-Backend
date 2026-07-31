@@ -10,26 +10,26 @@ const solutionProviderSchema = new mongoose.Schema(
     Designation: { type: String },
 
     // 🏷️ Lead / Form Meta
-    FORM_NAME: { 
-      type: String, 
-      default: "Solution Providers Landing Page" 
+    FORM_NAME: {
+      type: String,
+      default: "Solution Providers Landing Page"
     },
-    Lead_Status: { 
-      type: String, 
-      default: "No Contact Initiated" 
+    Lead_Status: {
+      type: String,
+      default: "No Contact Initiated"
     },
-    Lead_Source: { 
-      type: String, 
-      default: "Knotral" 
+    Lead_Source: {
+      type: String,
+      default: "Knotral"
     },
 
     // 🧩 Solution Info
     Type_of_Solution_You_Offer: [{ type: String }],
-    Primary_Target_Audience: [{ type: String }],   
-    Products: { 
-      type: String, 
+    Primary_Target_Audience: [{ type: String }],
+    Products: {
+      type: String,
       default: "Solution Provider"
-    },   
+    },
 
 
     // 🕒 Meta
