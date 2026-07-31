@@ -60,6 +60,7 @@ export const createZohoLead = async (req, res) => {
           Address_of_Firm: req.body.Address || "",
           Landmark: req.body.Landmark || "",
           Webinar_Date_TIme: req.body.Webinar_Date_TIme || "",
+          New_Product: req.body.Category,
 
           // ✅ UTM fields
           utm_source: req.body.utm_source || "",
